@@ -1,0 +1,36 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/landing/logo";
+import { siteConfig } from "@/lib/constants";
+
+export function SiteHeader() {
+  return (
+    <header className="nav-blur sticky top-0 z-50 border-b border-border/70">
+      <div className="section-shell flex h-[72px] items-center justify-between gap-6 py-4">
+        <Logo />
+        <nav className="hidden items-center gap-9 text-sm font-medium text-foreground/80 lg:flex">
+          {siteConfig.nav.map((item) => (
+            <Link key={item.href} href={item.href} className="transition hover:text-primary">
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="hidden text-sm font-medium text-foreground/80 transition hover:text-primary sm:inline-flex"
+          >
+            Log in
+          </Link>
+          <Button asChild size="sm">
+            <Link href="/dashboard/generate">
+              Start free
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </header>
+  );
+}

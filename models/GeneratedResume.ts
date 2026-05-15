@@ -1,0 +1,36 @@
+import { Schema, model, models, type InferSchemaType } from "mongoose";
+
+const GeneratedContentSchema = new Schema(
+  {
+    summary: { type: String, required: true },
+    skills: [{ type: String }],
+    bullets: [{ type: String }]
+  },
+  { _id: false }
+);
+
+const GeneratedResumeSchema = new Schema(
+  {
+    userId: { type: String, required: true, index: true },
+    originalResumeId: { type: Schema.Types.ObjectId, ref: "MasterResume" },
+    company: { type: String, required: true },
+    role: { type: String, required: true },
+    generatedContent: { type: GeneratedContentSchema, required: true },
+    atsScore: { type: Number, default: 0 },
+    keywords: [{ type: String }],
+    pdfUrl: { type: String },
+    status: {
+      type: String,
+      enum: ["draft", "ready", "downloaded"],
+      default: "ready"
+    }
+  },
+  { timestamps: true }
+);
+
+GeneratedResumeSchema.index({ userId: 1, createdAt: -1 });
+
+export type GeneratedResumeDocument = InferSchemaType<typeof GeneratedResumeSchema>;
+
+export const GeneratedResume =
+  models.GeneratedResume || model("GeneratedResume", GeneratedResumeSchema);
