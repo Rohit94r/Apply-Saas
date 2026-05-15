@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
-import { getOpenAIClient } from "@/lib/ai/openai";
+import { getImageAIClient } from "@/lib/ai/openai";
 
 export async function POST(request: Request) {
   try {
     const { prompt } = await request.json();
-    const openai = getOpenAIClient();
+    const openai = getImageAIClient();
 
     if (!openai) {
       return NextResponse.json({
         imageUrl: null,
         message:
-          "OPENAI_API_KEY is not configured. The professional photo workflow is ready for image generation once credentials are added."
+          "OPENAI_API_KEY is not configured. Groq can power the text AI routes, but professional photo generation needs an image-capable provider such as OpenAI."
       });
     }
 

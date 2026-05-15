@@ -3,7 +3,7 @@ import type {
   GenerateResumeInput,
   InterviewGuideInput
 } from "@/lib/validations";
-import { getOpenAIClient } from "@/lib/ai/openai";
+import { getTextAIClient } from "@/lib/ai/openai";
 import {
   coverLetterPrompt,
   interviewGuidePrompt,
@@ -80,15 +80,15 @@ function fallbackResume(input: GenerateResumeInput): TailoredResumeOutput {
 export async function generateTailoredResume(
   input: GenerateResumeInput
 ): Promise<TailoredResumeOutput> {
-  const openai = getOpenAIClient();
+  const textAI = getTextAIClient();
   const fallback = fallbackResume(input);
 
-  if (!openai) {
+  if (!textAI) {
     return fallback;
   }
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const completion = await textAI.client.chat.completions.create({
+    model: textAI.model,
     response_format: { type: "json_object" },
     messages: [
       {
@@ -119,7 +119,7 @@ export async function generateTailoredResume(
 }
 
 export async function generateInterviewGuide(input: InterviewGuideInput) {
-  const openai = getOpenAIClient();
+  const textAI = getTextAIClient();
   const fallback = {
     companyAnalysis: `${input.company} is hiring for ${input.role}; prepare examples that connect your resume projects to the role requirements.`,
     generatedQuestions: [
@@ -135,12 +135,12 @@ export async function generateInterviewGuide(input: InterviewGuideInput) {
     technicalTopics: extractKeywords(input.jobDescription).slice(0, 6)
   };
 
-  if (!openai) {
+  if (!textAI) {
     return fallback;
   }
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const completion = await textAI.client.chat.completions.create({
+    model: textAI.model,
     response_format: { type: "json_object" },
     messages: [{ role: "user", content: interviewGuidePrompt(input) }]
   });
@@ -149,17 +149,17 @@ export async function generateInterviewGuide(input: InterviewGuideInput) {
 }
 
 export async function generateCoverLetter(input: CoverLetterInput) {
-  const openai = getOpenAIClient();
+  const textAI = getTextAIClient();
   const fallback = {
     coverLetter: `Dear ${input.company} team,\n\nI am excited to apply for the ${input.role} role. My resume reflects hands-on experience that aligns with your job description, including practical project work, collaboration, and a strong willingness to learn quickly.\n\nI would be grateful for the opportunity to contribute to your team and discuss how my background fits this role.\n\nSincerely,\nApply Candidate`
   };
 
-  if (!openai) {
+  if (!textAI) {
     return fallback;
   }
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const completion = await textAI.client.chat.completions.create({
+    model: textAI.model,
     response_format: { type: "json_object" },
     messages: [{ role: "user", content: coverLetterPrompt(input) }]
   });
