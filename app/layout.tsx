@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   description:
     "Upload your resume once. Generate ATS-optimized resumes, cover letters, and interview prep for every job application.",
   applicationName: "Apply",
+  icons: {
+    icon: "/symbol.png",
+    shortcut: "/symbol.png",
+    apple: "/symbol.png"
+  },
   keywords: [
     "AI resume builder",
     "ATS resume",
@@ -39,13 +44,15 @@ export const metadata: Metadata = {
       "Generate tailored, ATS-optimized resumes for every role from one master profile.",
     url: "https://apply.neexmeet.com",
     siteName: "Apply",
+    images: [{ url: "/logo.png", width: 1536, height: 1024, alt: "Apply" }],
     type: "website"
   },
   twitter: {
     card: "summary_large_image",
     title: "Apply - AI resumes for every job",
     description:
-      "Upload once. Paste a job description. Download a tailored resume instantly."
+      "Upload once. Paste a job description. Download a tailored resume instantly.",
+    images: ["/logo.png"]
   }
 };
 

@@ -1,16 +1,22 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <Link href="/" className={cn("flex items-center gap-3", className)}>
-      <span className="grid h-9 w-9 grid-cols-2 gap-1 rounded-lg border border-primary/15 bg-white p-1 shadow-sm">
-        <span className="rounded-[3px] bg-primary" />
-        <span className="rounded-[3px] bg-accent" />
-        <span className="rounded-[3px] bg-[#de8b1d]" />
-        <span className="rounded-[3px] bg-[#9ccdc5]" />
+    <Link href="/" aria-label="Apply home" className={cn("inline-flex items-center gap-3", className)}>
+      <span className="relative h-12 w-12 shrink-0 overflow-hidden">
+        <Image
+          src="/symbol.png"
+          alt=""
+          width={168}
+          height={112}
+          priority
+          aria-hidden="true"
+          className="absolute left-1/2 top-1/2 h-28 w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain drop-shadow-sm"
+        />
       </span>
-      <span className="text-lg font-semibold tracking-tight text-primary">
+      <span className="text-2xl font-semibold leading-none tracking-tight text-primary">
         Apply
       </span>
     </Link>
