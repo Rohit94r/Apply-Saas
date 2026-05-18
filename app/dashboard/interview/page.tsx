@@ -5,7 +5,7 @@ import { getInterviewGuides } from "@/lib/data/resumes";
 
 export default async function InterviewPage() {
   const userId = await getCurrentUserId();
-  const guides = await getInterviewGuides(userId, 1);
+  const guides = await getInterviewGuides(userId, 1).catch(() => []);
 
   return (
     <div>

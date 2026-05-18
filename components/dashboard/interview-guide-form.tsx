@@ -9,12 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { InterviewGuide } from "@/types";
 
-const demoResume =
-  "Frontend engineer intern candidate with React, Next.js, TypeScript, MongoDB, reusable dashboard components, REST API integrations, accessibility improvements, and performance optimization project work.";
-
-const demoJob =
-  "We are hiring a Frontend Engineer Intern to build responsive dashboards with React and TypeScript. The role requires API integration, accessibility awareness, reusable component design, performance optimization, and clear collaboration with product teams.";
-
 export function InterviewGuideForm({
   initialGuide
 }: {
@@ -62,13 +56,18 @@ export function InterviewGuideForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
               <span className="text-sm font-semibold text-foreground">Company</span>
-              <Input name="company" defaultValue={guide?.company ?? "Neon Labs"} />
+              <Input
+                name="company"
+                defaultValue={guide?.company ?? ""}
+                placeholder="Company name"
+              />
             </label>
             <label className="space-y-2">
               <span className="text-sm font-semibold text-foreground">Role</span>
               <Input
                 name="role"
-                defaultValue={guide?.role ?? "Frontend Engineer Intern"}
+                defaultValue={guide?.role ?? ""}
+                placeholder="Target role"
               />
             </label>
           </div>
@@ -76,13 +75,17 @@ export function InterviewGuideForm({
             <span className="text-sm font-semibold text-foreground">Resume content</span>
             <Textarea
               name="resumeContent"
-              defaultValue={demoResume}
+              placeholder="Paste the resume content you want interview prep to use."
               className="min-h-36"
             />
           </label>
           <label className="block space-y-2">
             <span className="text-sm font-semibold text-foreground">Job description</span>
-            <Textarea name="jobDescription" defaultValue={demoJob} className="min-h-44" />
+            <Textarea
+              name="jobDescription"
+              placeholder="Paste the job description here."
+              className="min-h-44"
+            />
           </label>
           <Button type="submit" disabled={loading}>
             {loading ? (
