@@ -7,7 +7,7 @@ import { getGeneratedResumes } from "@/lib/data/resumes";
 
 export default async function ResumesPage() {
   const userId = await getCurrentUserId();
-  const resumes = await getGeneratedResumes(userId);
+  const resumes = await getGeneratedResumes(userId).catch(() => []);
 
   return (
     <div>

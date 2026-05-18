@@ -13,8 +13,8 @@ import {
 export default async function AnalyticsPage() {
   const userId = await getCurrentUserId();
   const [resumes, guides] = await Promise.all([
-    getGeneratedResumes(userId),
-    getInterviewGuides(userId)
+    getGeneratedResumes(userId).catch(() => []),
+    getInterviewGuides(userId).catch(() => [])
   ]);
   const dashboardStats = buildDashboardStats(resumes, guides);
   const keywordCoverage = buildKeywordCoverage(resumes);
