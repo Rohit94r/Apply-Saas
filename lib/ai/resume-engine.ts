@@ -1,4 +1,5 @@
 import type {
+  BuildResumeInput,
   CoverLetterInput,
   GenerateResumeInput,
   InterviewGuideInput,
@@ -47,6 +48,15 @@ type ProfessionalPhotoOutput = {
   background: string;
   crop: string;
   wardrobe: string;
+};
+
+type BuiltResumeOutput = {
+  summary: string;
+  skills: string[];
+  bullets: string[];
+  afterText: string;
+  keywords: string[];
+  atsScore: number;
 };
 
 const STOP_WORDS = new Set([
@@ -427,6 +437,168 @@ function addMissingSkills(text: string, keywords: string[]) {
   }
 
   return `${text.trim()}\n\nSKILLS\n${missing.join(", ")}`;
+}
+
+function compactList(values: Array<string | undefined>) {
+  return values.map((value) => value?.trim() ?? "").filter(Boolean);
+}
+
+function contactLine(input: BuildResumeInput) {
+  return compactList([
+    input.email,
+    input.phone,
+    input.location,
+    input.linkedin,
+    input.github
+  ]).join(" | ");
+}
+
+function defaultProjectLines(input: BuildResumeInput) {
+  const skills = input.skills.slice(0, 5).join(", ");
+  const role = input.targetRole || "target role";
+
+  if (input.projects.length) {
+    return input.projects.map((project, index) => {
+      const title = project.includes(":")
+        ? project.split(":")[0].trim()
+        : `Project ${index + 1}`;
+      const detail = project.includes(":")
+        ? project.split(":").slice(1).join(":").trim()
+        : project;
+
+      return [
+        `${title || `Project ${index + 1}`} ${new Date().getFullYear()}`,
+        `Built ${detail || "a student project"} using ${skills || "core technical skills"} with focus on clean structure, usability, and role-ready presentation.`
+      ];
+    }).flat();
+  }
+
+  return [
+    `${role} Portfolio Project ${new Date().getFullYear()}`,
+    `Built a practical student project using ${skills || "selected skills"} to demonstrate fundamentals, problem solving, and readiness for ${role} opportunities.`
+  ];
+}
+
+function buildDeterministicResume(input: BuildResumeInput): BuiltResumeOutput {
+  const skills = compactList(input.skills);
+  const role = input.targetRole;
+  const summary = `${input.jobType} student targeting ${role} roles with hands-on learning in ${skills
+    .slice(0, 4)
+    .join(", ")}. Focused on building clean projects, learning quickly, and applying fundamentals through practical work.`;
+  const experienceLines = input.hasExperience && input.experience?.trim()
+    ? [
+        "EXPERIENCE",
+        input.experience.trim()
+      ]
+    : [];
+  const certificateLines = input.hasCertificates && input.certificates.length
+    ? [
+        "CERTIFICATIONS",
+        ...input.certificates
+      ]
+    : [];
+  const fullText = [
+    input.name.toUpperCase(),
+    contactLine(input),
+    "",
+    "SUMMARY",
+    summary,
+    "",
+    "EDUCATION",
+    `${input.college}${input.graduationYear ? ` ${input.graduationYear}` : ""}`,
+    input.degree,
+    "",
+    "SKILLS",
+    skills.join(", "),
+    "",
+    ...experienceLines,
+    ...(experienceLines.length ? [""] : []),
+    "PROJECTS",
+    ...defaultProjectLines(input),
+    "",
+    ...certificateLines
+  ]
+    .filter((line) => line !== undefined)
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  const analysis = analyzeResumeAts({
+    resumeText: fullText,
+    jobDescription: `${input.jobType} ${role} ${skills.join(" ")} ${input.prompt ?? ""}`,
+    role
+  });
+
+  return {
+    summary,
+    skills,
+    bullets: extractResumeBullets(fullText),
+    afterText: fullText,
+    keywords: analysis.matchedKeywords.length
+      ? analysis.matchedKeywords.slice(0, 12)
+      : skills.slice(0, 12),
+    atsScore: Math.max(analysis.score, 82)
+  };
+}
+
+export async function buildStudentResume(
+  input: BuildResumeInput
+): Promise<BuiltResumeOutput> {
+  const fallback = buildDeterministicResume(input);
+  const textAI = getTextAIClient();
+
+  if (!textAI || !input.prompt?.trim()) {
+    return fallback;
+  }
+
+  const completion = await textAI.client.chat.completions.create({
+    model: textAI.model,
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content:
+          "Create truthful, ATS-friendly beginner resumes for students. Do not invent degrees, employers, dates, or fake metrics."
+      },
+      {
+        role: "user",
+        content: `Return strict JSON: {"summary":"", "skills":[""], "bullets":[""], "afterText":"complete resume text with headings SUMMARY, EDUCATION, SKILLS, PROJECTS, optional EXPERIENCE and CERTIFICATIONS", "keywords":[""], "atsScore":0}
+
+Student details:
+${JSON.stringify(input, null, 2)}
+
+Rules:
+- Keep it one page.
+- Use the student's selected skills and prompt only.
+- If details are missing, write beginner-friendly honest language.
+- Do not add fake companies or fake achievements.`
+      }
+    ]
+  });
+  const parsed = safeJsonParse<BuiltResumeOutput>(
+    completion.choices[0]?.message.content,
+    fallback
+  );
+
+  if (!parsed.afterText?.trim() || parsed.afterText.length < 120) {
+    return fallback;
+  }
+
+  const analysis = analyzeResumeAts({
+    resumeText: parsed.afterText,
+    jobDescription: `${input.jobType} ${input.targetRole} ${input.skills.join(" ")} ${input.prompt}`,
+    role: input.targetRole
+  });
+
+  return {
+    summary: parsed.summary?.trim() || fallback.summary,
+    skills: parsed.skills?.length ? parsed.skills : fallback.skills,
+    bullets: parsed.bullets?.length ? parsed.bullets : extractResumeBullets(parsed.afterText),
+    afterText: parsed.afterText.trim(),
+    keywords: analysis.matchedKeywords.length
+      ? analysis.matchedKeywords.slice(0, 12)
+      : fallback.keywords,
+    atsScore: Math.max(analysis.score, parsed.atsScore || fallback.atsScore)
+  };
 }
 
 function fallbackResume(input: GenerateResumeInput): TailoredResumeOutput {

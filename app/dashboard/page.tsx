@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, FileText, Wand2 } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, FileText, Layers3, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -28,8 +28,36 @@ export default async function DashboardPage() {
         eyebrow="Overview"
         title="Your job search command center."
         description="Manage tailored resumes, generate new versions, prepare for interviews, and keep every application connected to the role it was made for."
-        cta="Generate resume"
+        cta="Improve resume"
       />
+      <div className="mb-6 grid gap-4 md:grid-cols-2">
+        <Card className="p-5">
+          <p className="fine-label mb-2">Already have a resume</p>
+          <h3 className="text-lg font-semibold text-foreground">Improve resume</h3>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Upload your PDF, paste job details, compare before and after, then download.
+          </p>
+          <Button asChild className="mt-4" size="sm">
+            <Link href="/dashboard/generate">
+              Improve
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </Card>
+        <Card className="p-5">
+          <p className="fine-label mb-2">No resume yet</p>
+          <h3 className="text-lg font-semibold text-foreground">Build resume</h3>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Answer simple student questions, choose a template, preview, edit, and save.
+          </p>
+          <Button asChild className="mt-4" size="sm" variant="outline">
+            <Link href="/dashboard/build">
+              Build
+              <Layers3 className="h-4 w-4" />
+            </Link>
+          </Button>
+        </Card>
+      </div>
       <div className="grid gap-5 md:grid-cols-3">
         {dashboardStats.map((stat) => (
           <StatCard key={stat.label} stat={stat} />

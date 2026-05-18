@@ -59,6 +59,11 @@ export async function GET(request: Request) {
   const resumeId = searchParams.get("resumeId");
   const isPreview = searchParams.get("preview") === "1";
   const mode = searchParams.get("mode") === "before" ? "before" : "after";
+  const templateParam = searchParams.get("template");
+  const template =
+    templateParam === "modern" || templateParam === "compact" || templateParam === "classic"
+      ? templateParam
+      : undefined;
 
   if (resumeId) {
     const userId = await getCurrentUserId();
@@ -89,6 +94,7 @@ export async function GET(request: Request) {
       name: "Resume",
       role: resume.role,
       fullText: fallbackText,
+      template: template ?? resume.generatedContent.template,
       summary: resume.generatedContent.summary,
       skills: resume.generatedContent.skills,
       bullets: resume.generatedContent.bullets

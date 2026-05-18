@@ -9,6 +9,10 @@ const GeneratedContentSchema = new Schema(
     afterText: { type: String },
     changeSummary: [{ type: String }],
     beforeAtsScore: { type: Number },
+    template: {
+      type: String,
+      enum: ["classic", "modern", "compact"]
+    },
     sourceFilePath: { type: String },
     sourceFileType: { type: String },
     sourceLayout: { type: Schema.Types.Mixed }

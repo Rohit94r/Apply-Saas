@@ -1,0 +1,684 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import {
+  Download,
+  Edit3,
+  Eye,
+  Loader2,
+  Save,
+  Sparkles
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+type TemplateId = "classic" | "modern" | "compact";
+
+type BuiltResume = {
+  id: string;
+  company: string;
+  role: string;
+  atsScore: number;
+  keywords: string[];
+  generatedContent: {
+    summary: string;
+    skills: string[];
+    bullets: string[];
+    beforeText?: string;
+    afterText?: string;
+    changeSummary?: string[];
+    beforeAtsScore?: number;
+    template?: TemplateId;
+  };
+};
+
+type BuiltResumeResponse = {
+  resume: BuiltResume;
+};
+
+const jobTypes = [
+  "Technology",
+  "Engineering",
+  "Business",
+  "Design",
+  "Data",
+  "Marketing"
+];
+
+const roleOptions: Record<string, string[]> = {
+  Technology: [
+    "Software Engineer",
+    "Full Stack Developer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Mobile App Developer"
+  ],
+  Engineering: [
+    "Electronics Engineer",
+    "Mechanical Engineer",
+    "Civil Engineer",
+    "Electrical Engineer"
+  ],
+  Business: ["Business Analyst", "Operations Associate", "Product Intern"],
+  Design: ["UI UX Designer", "Product Designer", "Graphic Designer"],
+  Data: ["Data Analyst", "Data Engineer", "Machine Learning Intern"],
+  Marketing: ["Digital Marketing Intern", "SEO Executive", "Content Marketer"]
+};
+
+const skillOptions: Record<string, string[]> = {
+  Technology: [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "React",
+    "Next.js",
+    "Node.js",
+    "Express.js",
+    "MongoDB",
+    "REST APIs",
+    "Git",
+    "GitHub",
+    "Responsive Design"
+  ],
+  Engineering: [
+    "AutoCAD",
+    "MATLAB",
+    "Circuit Design",
+    "SolidWorks",
+    "Problem Solving",
+    "Project Documentation"
+  ],
+  Business: [
+    "Excel",
+    "Market Research",
+    "Communication",
+    "Dashboards",
+    "Process Improvement"
+  ],
+  Design: [
+    "Figma",
+    "Wireframes",
+    "User Research",
+    "Prototyping",
+    "Visual Design"
+  ],
+  Data: ["Python", "SQL", "Excel", "Power BI", "Data Cleaning", "Statistics"],
+  Marketing: [
+    "SEO",
+    "Google Analytics",
+    "Content Writing",
+    "Social Media",
+    "Canva"
+  ]
+};
+
+const templates: Array<{ id: TemplateId; title: string; detail: string }> = [
+  {
+    id: "classic",
+    title: "Classic ATS",
+    detail: "Clean one-page layout used by most students."
+  },
+  {
+    id: "modern",
+    title: "Modern Student",
+    detail: "Light color, polished headings, still ATS friendly."
+  },
+  {
+    id: "compact",
+    title: "Compact One Page",
+    detail: "Dense layout for more projects and skills."
+  }
+];
+
+async function readApiJson<T>(response: Response, fallbackMessage: string) {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    const data = (await response.json()) as T & { error?: string };
+
+    if (!response.ok) {
+      throw new Error(data.error ?? fallbackMessage);
+    }
+
+    return data;
+  }
+
+  throw new Error(fallbackMessage);
+}
+
+function splitLines(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function splitComma(value: string) {
+  return value
+    .split(",")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function buildPreview(response: BuiltResume) {
+  return {
+    id: response.id,
+    role: response.role,
+    atsScore: response.atsScore,
+    keywords: response.keywords,
+    summary: response.generatedContent.summary,
+    skills: response.generatedContent.skills,
+    bullets: response.generatedContent.bullets,
+    afterText: response.generatedContent.afterText ?? "",
+    changeSummary: response.generatedContent.changeSummary ?? [],
+    template: response.generatedContent.template ?? "classic"
+  };
+}
+
+export function BuildResumeForm() {
+  const [jobType, setJobType] = useState("Technology");
+  const [targetRole, setTargetRole] = useState("Full Stack Developer");
+  const [template, setTemplate] = useState<TemplateId>("classic");
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "React",
+    "Node.js"
+  ]);
+  const [hasExperience, setHasExperience] = useState(false);
+  const [hasProjects, setHasProjects] = useState(true);
+  const [hasCertificates, setHasCertificates] = useState(false);
+  const [wantsPhoto, setWantsPhoto] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [preview, setPreview] = useState<ReturnType<typeof buildPreview> | null>(
+    null
+  );
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    location: "",
+    linkedin: "",
+    github: "",
+    degree: "",
+    college: "",
+    graduationYear: "",
+    experience: "",
+    projects: "",
+    certificates: "",
+    prompt: ""
+  });
+  const roles = roleOptions[jobType] ?? roleOptions.Technology;
+  const skills = useMemo(
+    () => skillOptions[jobType] ?? skillOptions.Technology,
+    [jobType]
+  );
+
+  function updateField(name: keyof typeof form, value: string) {
+    setForm((current) => ({ ...current, [name]: value }));
+  }
+
+  function toggleSkill(skill: string) {
+    setSelectedSkills((current) =>
+      current.includes(skill)
+        ? current.filter((item) => item !== skill)
+        : [...current, skill]
+    );
+  }
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setEditing(false);
+
+    try {
+      const response = await fetch("/api/resumes/build", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          jobType,
+          targetRole,
+          template,
+          skills: selectedSkills,
+          hasExperience,
+          hasProjects,
+          hasCertificates,
+          wantsPhoto,
+          projects: hasProjects ? splitLines(form.projects) : [],
+          certificates: hasCertificates ? splitLines(form.certificates) : []
+        })
+      });
+      const data = await readApiJson<BuiltResumeResponse>(
+        response,
+        "Resume build failed"
+      );
+
+      setPreview(buildPreview(data.resume));
+      toast.success("Resume built");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Resume build failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function savePreview({ silent = false } = {}) {
+    if (!preview) {
+      return null;
+    }
+
+    setSaving(true);
+
+    try {
+      const response = await fetch(`/api/resumes/${preview.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          summary: preview.summary,
+          skills: preview.skills,
+          bullets: preview.bullets,
+          beforeText: preview.afterText,
+          afterText: preview.afterText,
+          changeSummary: preview.changeSummary,
+          beforeAtsScore: preview.atsScore,
+          keywords: preview.keywords,
+          atsScore: preview.atsScore,
+          template: preview.template
+        })
+      });
+      const data = await readApiJson<BuiltResumeResponse>(
+        response,
+        "Resume save failed"
+      );
+      const saved = buildPreview(data.resume);
+
+      setPreview(saved);
+      setEditing(false);
+
+      if (!silent) {
+        toast.success("Resume saved");
+      }
+
+      return saved;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Resume save failed");
+      return null;
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function onDownload() {
+    const saved = await savePreview({ silent: true });
+
+    if (saved) {
+      window.open(`/api/pdf?resumeId=${saved.id}`, "_blank", "noopener,noreferrer");
+    }
+  }
+
+  return (
+    <div className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
+      <form className="space-y-6" onSubmit={onSubmit}>
+        <Card className="p-6">
+          <p className="fine-label mb-3">Quick questions</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">Full name</span>
+              <Input
+                value={form.name}
+                onChange={(event) => updateField("name", event.target.value)}
+                placeholder="Rohit Jadhav"
+                required
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">Email</span>
+              <Input
+                type="email"
+                value={form.email}
+                onChange={(event) => updateField("email", event.target.value)}
+                placeholder="you@email.com"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">Phone</span>
+              <Input
+                value={form.phone}
+                onChange={(event) => updateField("phone", event.target.value)}
+                placeholder="Phone number"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">Location</span>
+              <Input
+                value={form.location}
+                onChange={(event) => updateField("location", event.target.value)}
+                placeholder="Mumbai"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">LinkedIn</span>
+              <Input
+                value={form.linkedin}
+                onChange={(event) => updateField("linkedin", event.target.value)}
+                placeholder="linkedin.com/in/username"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">GitHub / Portfolio</span>
+              <Input
+                value={form.github}
+                onChange={(event) => updateField("github", event.target.value)}
+                placeholder="github.com/username"
+              />
+            </label>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <p className="fine-label mb-3">Job direction</p>
+          <div className="mb-5 flex flex-wrap gap-2">
+            {jobTypes.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => {
+                  setJobType(item);
+                  setTargetRole(roleOptions[item][0]);
+                  setSelectedSkills(skillOptions[item].slice(0, 5));
+                }}
+                className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
+                  jobType === item
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-white text-muted-foreground"
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">Target role</span>
+              <select
+                value={targetRole}
+                onChange={(event) => setTargetRole(event.target.value)}
+                className="h-11 w-full rounded-xl border border-input bg-white px-3 text-sm"
+              >
+                {roles.map((role) => (
+                  <option key={role}>{role}</option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-semibold">Custom role</span>
+              <Input
+                value={targetRole}
+                onChange={(event) => setTargetRole(event.target.value)}
+                placeholder="Enter role"
+              />
+            </label>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <p className="fine-label mb-3">Education and skills</p>
+          <div className="grid gap-4 md:grid-cols-[1fr_1fr_0.45fr]">
+            <Input
+              value={form.degree}
+              onChange={(event) => updateField("degree", event.target.value)}
+              placeholder="B.E. Electronics and Computer Science"
+              required
+            />
+            <Input
+              value={form.college}
+              onChange={(event) => updateField("college", event.target.value)}
+              placeholder="College name"
+              required
+            />
+            <Input
+              value={form.graduationYear}
+              onChange={(event) =>
+                updateField("graduationYear", event.target.value)
+              }
+              placeholder="2029"
+            />
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {skills.map((skill) => (
+              <button
+                key={skill}
+                type="button"
+                onClick={() => toggleSkill(skill)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                  selectedSkills.includes(skill)
+                    ? "border-accent bg-accent/10 text-accent"
+                    : "border-border bg-white text-muted-foreground"
+                }`}
+              >
+                {skill}
+              </button>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <p className="fine-label mb-3">Student sections</p>
+          <div className="grid gap-3 md:grid-cols-4">
+            {[
+              ["Experience", hasExperience, setHasExperience],
+              ["Projects", hasProjects, setHasProjects],
+              ["Certificates", hasCertificates, setHasCertificates],
+              ["Photo needed", wantsPhoto, setWantsPhoto]
+            ].map(([label, value, setter]) => (
+              <button
+                key={label as string}
+                type="button"
+                onClick={() => (setter as (next: boolean) => void)(!(value as boolean))}
+                className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
+                  value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-white text-muted-foreground"
+                }`}
+              >
+                {label as string}: {value ? "Yes" : "No"}
+              </button>
+            ))}
+          </div>
+          {hasExperience ? (
+            <Textarea
+              className="mt-4 min-h-24"
+              value={form.experience}
+              onChange={(event) => updateField("experience", event.target.value)}
+              placeholder="Internship or freelance work. Example: Frontend intern at ABC - built responsive pages with React."
+            />
+          ) : null}
+          {hasProjects ? (
+            <Textarea
+              className="mt-4 min-h-28"
+              value={form.projects}
+              onChange={(event) => updateField("projects", event.target.value)}
+              placeholder="One project per line. Example: Car Rental App: booking UI, auth, listings, search filters"
+            />
+          ) : null}
+          {hasCertificates ? (
+            <Textarea
+              className="mt-4 min-h-20"
+              value={form.certificates}
+              onChange={(event) => updateField("certificates", event.target.value)}
+              placeholder="One certificate per line"
+            />
+          ) : null}
+        </Card>
+
+        <Card className="p-6">
+          <p className="fine-label mb-3">Templates</p>
+          <div className="grid gap-3 md:grid-cols-3">
+            {templates.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setTemplate(item.id);
+                  setPreview((current) =>
+                    current ? { ...current, template: item.id } : current
+                  );
+                }}
+                className={`min-h-28 rounded-lg border p-4 text-left ${
+                  template === item.id
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-white"
+                }`}
+              >
+                <span className="text-sm font-semibold text-foreground">
+                  {item.title}
+                </span>
+                <span className="mt-2 block text-xs leading-5 text-muted-foreground">
+                  {item.detail}
+                </span>
+              </button>
+            ))}
+          </div>
+          <label className="mt-5 block space-y-2">
+            <span className="text-sm font-semibold">
+              Direct AI prompt
+            </span>
+            <Textarea
+              value={form.prompt}
+              onChange={(event) => updateField("prompt", event.target.value)}
+              className="min-h-24"
+              placeholder="Optional: Tell AI what kind of resume you want, target companies, strongest projects, or style."
+            />
+          </label>
+          <Button type="submit" className="mt-5" disabled={loading}>
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
+            {loading ? "Building..." : "Build resume"}
+          </Button>
+        </Card>
+      </form>
+
+      <Card className="min-h-[720px] p-6 xl:sticky xl:top-24 xl:self-start">
+        <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="fine-label mb-2">Live preview</p>
+            <h3 className="font-serif text-3xl text-primary">
+              {preview?.role ?? "Built resume"}
+            </h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={!preview}
+              onClick={() => setEditing((value) => !value)}
+            >
+              {editing ? <Eye className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+              {editing ? "Preview" : "Edit"}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={!preview || saving}
+              onClick={() => savePreview()}
+            >
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              Save
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={!preview || saving}
+              onClick={onDownload}
+            >
+              <Download className="h-4 w-4" />
+              Download
+            </Button>
+          </div>
+        </div>
+
+        {preview ? (
+          editing ? (
+            <div className="space-y-4">
+              <Textarea
+                value={preview.afterText}
+                onChange={(event) =>
+                  setPreview({ ...preview, afterText: event.target.value })
+                }
+                className="min-h-[520px] font-mono text-xs leading-5"
+              />
+              <Textarea
+                value={preview.skills.join(", ")}
+                onChange={(event) =>
+                  setPreview({ ...preview, skills: splitComma(event.target.value) })
+                }
+                className="min-h-20"
+              />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-lg border border-border bg-white p-3">
+                  <p className="text-[10px] font-semibold uppercase text-muted-foreground">
+                    Readiness
+                  </p>
+                  <p className="mt-1 text-2xl font-bold text-accent">
+                    {preview.atsScore}%
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border bg-white p-3">
+                  <p className="text-[10px] font-semibold uppercase text-muted-foreground">
+                    Template
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-primary">
+                    {templates.find((item) => item.id === preview.template)?.title}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {preview.keywords.slice(0, 10).map((keyword) => (
+                  <span
+                    key={keyword}
+                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                  >
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+              <div className="overflow-hidden rounded-xl border border-border bg-white shadow-inner">
+                <iframe
+                  title="Built resume PDF preview"
+                  src={`/api/pdf?resumeId=${preview.id}&preview=1&template=${preview.template}`}
+                  className="h-[720px] w-full bg-white"
+                />
+              </div>
+            </div>
+          )
+        ) : (
+          <div className="flex min-h-[540px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-white/55 p-8 text-center">
+            <Sparkles className="h-8 w-8 text-accent" />
+            <h4 className="mt-4 font-serif text-3xl text-primary">
+              Answer and build
+            </h4>
+            <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
+              Select role, skills, projects, and a template. Your editable PDF
+              preview appears here.
+            </p>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}

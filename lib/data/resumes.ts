@@ -63,6 +63,7 @@ type GeneratedResumeRecord = {
     afterText?: string;
     changeSummary?: string[];
     beforeAtsScore?: number;
+    template?: "classic" | "modern" | "compact";
     sourceFilePath?: string;
     sourceFileType?: string;
     sourceLayout?: ResumeSourceLine[];
@@ -399,6 +400,7 @@ export async function createGeneratedResume(
               afterText: generatedContent.afterText,
               changeSummary: generatedContent.changeSummary,
               beforeAtsScore: generatedContent.beforeAtsScore,
+              template: generatedContent.template,
               sourceFilePath: generatedContent.sourceFilePath,
               sourceFileType: generatedContent.sourceFileType,
               sourceLayout: generatedContent.sourceLayout
@@ -426,6 +428,7 @@ export async function createGeneratedResume(
           afterText: generatedContent.afterText,
           changeSummary: generatedContent.changeSummary,
           beforeAtsScore: generatedContent.beforeAtsScore,
+          template: generatedContent.template,
           sourceFilePath: generatedContent.sourceFilePath,
           sourceFileType: generatedContent.sourceFileType,
           sourceLayout: generatedContent.sourceLayout
@@ -505,6 +508,7 @@ export async function updateGeneratedResume(
             "generatedContent.afterText": input.afterText,
             "generatedContent.changeSummary": input.changeSummary ?? [],
             "generatedContent.beforeAtsScore": input.beforeAtsScore,
+            "generatedContent.template": input.template,
             status: "ready"
           }
         },
@@ -543,6 +547,9 @@ export async function updateGeneratedResume(
           beforeAtsScore:
             input.beforeAtsScore ??
             store.generatedResumes[resumeIndex].generatedContent.beforeAtsScore,
+          template:
+            input.template ??
+            store.generatedResumes[resumeIndex].generatedContent.template,
           sourceFilePath:
             store.generatedResumes[resumeIndex].generatedContent.sourceFilePath,
           sourceFileType:

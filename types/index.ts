@@ -68,6 +68,7 @@ export type GeneratedResume = {
     afterText?: string;
     changeSummary?: string[];
     beforeAtsScore?: number;
+    template?: "classic" | "modern" | "compact";
     sourceFilePath?: string;
     sourceFileType?: string;
     sourceLayout?: ResumeSourceLine[];

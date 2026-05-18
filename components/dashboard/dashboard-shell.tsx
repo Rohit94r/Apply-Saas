@@ -9,6 +9,7 @@ import {
   BriefcaseBusiness,
   FileText,
   Home,
+  Layers3,
   PanelLeftClose,
   PanelLeftOpen,
   Sparkles,
@@ -21,7 +22,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Overview", href: "/dashboard", icon: Home },
   { label: "My resumes", href: "/dashboard/resumes", icon: FileText },
-  { label: "Generate", href: "/dashboard/generate", icon: Sparkles },
+  { label: "Improve", href: "/dashboard/generate", icon: Sparkles },
+  { label: "Build resume", href: "/dashboard/build", icon: Layers3 },
   { label: "Interview prep", href: "/dashboard/interview", icon: BriefcaseBusiness },
   { label: "AI tools", href: "/dashboard/tools", icon: Wand2 },
   { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 }

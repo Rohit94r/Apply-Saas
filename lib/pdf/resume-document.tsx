@@ -12,6 +12,7 @@ export type ResumePdfData = {
   email?: string;
   location?: string;
   fullText?: string;
+  template?: "classic" | "modern" | "compact";
   summary: string;
   skills: string[];
   bullets: string[];
@@ -79,6 +80,66 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontFamily: "Helvetica",
     lineHeight: 1.16
+  },
+  modernPage: {
+    paddingTop: 22,
+    paddingHorizontal: 34,
+    paddingBottom: 22,
+    fontSize: 9,
+    color: "#132238",
+    fontFamily: "Helvetica",
+    lineHeight: 1.22
+  },
+  modernName: {
+    fontSize: 24,
+    fontFamily: "Helvetica-Bold",
+    color: "#0f5f6d",
+    marginBottom: 4
+  },
+  modernContacts: {
+    fontSize: 8.5,
+    color: "#4d5d67",
+    borderBottomWidth: 1,
+    borderBottomColor: "#b8d6d5",
+    paddingBottom: 8,
+    marginBottom: 8
+  },
+  modernSectionTitle: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: "#0f5f6d",
+    textTransform: "uppercase",
+    marginTop: 9,
+    marginBottom: 5
+  },
+  compactPage: {
+    paddingTop: 20,
+    paddingHorizontal: 28,
+    paddingBottom: 18,
+    fontSize: 8,
+    color: "#111111",
+    fontFamily: "Helvetica",
+    lineHeight: 1.12
+  },
+  compactName: {
+    fontSize: 20,
+    fontFamily: "Helvetica-Bold",
+    textAlign: "left",
+    marginBottom: 3
+  },
+  compactContacts: {
+    fontSize: 8,
+    marginBottom: 5
+  },
+  compactSectionTitle: {
+    borderTopWidth: 0.75,
+    borderTopColor: "#111111",
+    paddingTop: 3,
+    fontSize: 8.5,
+    fontFamily: "Helvetica-Bold",
+    textTransform: "uppercase",
+    marginTop: 7,
+    marginBottom: 3
   },
   templateName: {
     fontSize: 26,
@@ -217,13 +278,27 @@ function looksLikeHeading(line: string) {
   );
 }
 
-function TemplateSection({ section }: { section: ParsedSection }) {
+function TemplateSection({
+  section,
+  template = "classic"
+}: {
+  section: ParsedSection;
+  template?: ResumePdfData["template"];
+}) {
   const isSkills = section.title === "SKILLS";
   const isSummary = section.title === "SUMMARY";
+  const sectionTitleStyle =
+    template === "modern"
+      ? styles.modernSectionTitle
+      : template === "compact"
+        ? styles.compactSectionTitle
+        : styles.templateSectionTitle;
+  const paragraphStyle =
+    template === "compact" ? styles.templateParagraph : styles.templateParagraph;
 
   return (
     <View style={styles.templateSection}>
-      <Text style={styles.templateSectionTitle}>{section.title}</Text>
+      <Text style={sectionTitleStyle}>{section.title}</Text>
       {isSkills ? (
         <View style={styles.templateSkillGrid}>
           {section.lines.map((line) => (
@@ -251,7 +326,7 @@ function TemplateSection({ section }: { section: ParsedSection }) {
               style={
                 !isSummary && looksLikeHeading(line)
                   ? styles.templateBoldLine
-                  : styles.templateParagraph
+                  : paragraphStyle
               }
             >
               {line}
@@ -266,16 +341,39 @@ function TemplateSection({ section }: { section: ParsedSection }) {
 export function ResumeDocument({ data }: { data: ResumePdfData }) {
   if (data.fullText?.trim()) {
     const parsed = parseResumeText(data.fullText);
+    const template = data.template ?? "classic";
+    const pageStyle =
+      template === "modern"
+        ? styles.modernPage
+        : template === "compact"
+          ? styles.compactPage
+          : styles.templatePage;
+    const nameStyle =
+      template === "modern"
+        ? styles.modernName
+        : template === "compact"
+          ? styles.compactName
+          : styles.templateName;
+    const contactStyle =
+      template === "modern"
+        ? styles.modernContacts
+        : template === "compact"
+          ? styles.compactContacts
+          : styles.templateContacts;
 
     return (
       <Document title={`${data.name} - ${data.role} Resume`}>
-        <Page size="A4" style={styles.templatePage}>
-          <Text style={styles.templateName}>{parsed.name}</Text>
+        <Page size="A4" style={pageStyle}>
+          <Text style={nameStyle}>{parsed.name}</Text>
           {parsed.contacts ? (
-            <Text style={styles.templateContacts}>{parsed.contacts}</Text>
+            <Text style={contactStyle}>{parsed.contacts}</Text>
           ) : null}
           {parsed.sections.map((section) => (
-            <TemplateSection key={section.title} section={section} />
+            <TemplateSection
+              key={section.title}
+              section={section}
+              template={template}
+            />
           ))}
         </Page>
       </Document>

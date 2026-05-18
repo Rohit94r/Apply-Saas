@@ -14,6 +14,32 @@ export const generateResumeRequestSchema = generateResumeSchema
     masterResumeId: z.string().optional()
   });
 
+export const resumeTemplateSchema = z.enum(["classic", "modern", "compact"]);
+
+export const buildResumeSchema = z.object({
+  template: resumeTemplateSchema.default("classic"),
+  prompt: z.string().trim().max(2000).optional(),
+  name: z.string().trim().min(2, "Name is required"),
+  email: z.string().trim().email("Valid email is required").optional().or(z.literal("")),
+  phone: z.string().trim().max(40).optional(),
+  location: z.string().trim().max(80).optional(),
+  linkedin: z.string().trim().max(120).optional(),
+  github: z.string().trim().max(120).optional(),
+  jobType: z.string().trim().min(2, "Select a job type"),
+  targetRole: z.string().trim().min(2, "Select or enter a target role"),
+  degree: z.string().trim().min(2, "Degree is required"),
+  college: z.string().trim().min(2, "College is required"),
+  graduationYear: z.string().trim().max(20).optional(),
+  skills: z.array(z.string().trim().min(1)).min(3, "Select at least 3 skills"),
+  hasExperience: z.boolean().default(false),
+  experience: z.string().trim().max(1200).optional(),
+  hasProjects: z.boolean().default(true),
+  projects: z.array(z.string().trim().min(1)).default([]),
+  hasCertificates: z.boolean().default(false),
+  certificates: z.array(z.string().trim().min(1)).default([]),
+  wantsPhoto: z.boolean().default(false)
+});
+
 export const masterResumeSchema = z.object({
   title: z.string().trim().min(2).max(80).optional(),
   sourceName: z.string().trim().max(160).optional(),
@@ -30,7 +56,8 @@ export const updateGeneratedResumeSchema = z.object({
   changeSummary: z.array(z.string().trim().min(1)).optional(),
   beforeAtsScore: z.number().min(0).max(100).optional(),
   keywords: z.array(z.string().trim().min(1)).optional(),
-  atsScore: z.number().min(0).max(100).optional()
+  atsScore: z.number().min(0).max(100).optional(),
+  template: resumeTemplateSchema.optional()
 });
 
 export const interviewGuideSchema = z.object({
@@ -62,6 +89,8 @@ export type GenerateResumeInput = z.infer<typeof generateResumeSchema>;
 export type GenerateResumeRequestInput = z.infer<
   typeof generateResumeRequestSchema
 >;
+export type BuildResumeInput = z.infer<typeof buildResumeSchema>;
+export type ResumeTemplateId = z.infer<typeof resumeTemplateSchema>;
 export type MasterResumeInput = z.infer<typeof masterResumeSchema>;
 export type UpdateGeneratedResumeInput = z.infer<
   typeof updateGeneratedResumeSchema
