@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/landing/logo";
 import { siteConfig } from "@/lib/constants";
 
 export function SiteHeader() {
+  const { isLoaded, isSignedIn } = useAuth();
+
   return (
     <header className="nav-blur sticky top-0 z-50 border-b border-border/70">
       <div className="section-shell flex h-[72px] items-center justify-between gap-6 py-4">
@@ -18,29 +22,32 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <SignedOut>
-            <Link
-              href="/sign-in"
-              className="hidden text-sm font-medium text-foreground/80 transition hover:text-primary sm:inline-flex"
-            >
-              Log in
-            </Link>
-            <Button asChild size="sm">
-              <Link href="/sign-up">
-                Start free
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </SignedOut>
-          <SignedIn>
+          {isLoaded && isSignedIn ? (
             <Button asChild size="sm">
               <Link href="/dashboard/generate">
                 Dashboard
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className="hidden text-sm font-medium text-foreground/80 transition hover:text-primary sm:inline-flex"
+              >
+                Log in
+              </Link>
+              <Button asChild size="sm">
+                <Link href="/sign-up">
+                  Start free
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </>
+          )}
+          {isLoaded && isSignedIn ? (
             <UserButton />
-          </SignedIn>
+          ) : null}
         </div>
       </div>
     </header>
