@@ -1,23 +1,28 @@
 import { NextResponse } from "next/server";
+import { generateProfessionalPhotoPlan } from "@/lib/ai/resume-engine";
 import { getImageAIClient } from "@/lib/ai/openai";
+import { getCurrentUserId } from "@/lib/auth";
+import { professionalPhotoSchema } from "@/lib/validations";
 
 export async function POST(request: Request) {
   try {
-    const { prompt } = await request.json();
+    const input = professionalPhotoSchema.parse(await request.json());
+    await getCurrentUserId();
     const openai = getImageAIClient();
 
-    if (!openai) {
+    if (!openai || input.imageUrl) {
+      const plan = await generateProfessionalPhotoPlan(input);
+
       return NextResponse.json({
-        imageUrl: null,
-        message:
-          "OPENAI_API_KEY is not configured. Groq can power the text AI routes, but professional photo generation needs an image-capable provider such as OpenAI."
+        imageUrl: input.imageUrl ?? null,
+        plan
       });
     }
 
     const image = await openai.images.generate({
       model: "gpt-image-1",
       prompt:
-        prompt ??
+        input.prompt ??
         "Create a professional LinkedIn profile photo with a clean neutral background and formal appearance.",
       size: "1024x1024"
     });

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { generateTailoredResume } from "@/lib/ai/resume-engine";
 import { generateResumeSchema } from "@/lib/validations";
 import { getCurrentUserId } from "@/lib/auth";
+import { createGeneratedResume } from "@/lib/data/resumes";
 
 export async function POST(request: Request) {
   try {
@@ -9,19 +10,10 @@ export async function POST(request: Request) {
     const input = generateResumeSchema.parse(body);
     const userId = await getCurrentUserId();
     const generatedContent = await generateTailoredResume(input);
+    const resume = await createGeneratedResume(userId, input, generatedContent);
 
     return NextResponse.json({
-      resume: {
-        id: crypto.randomUUID(),
-        userId,
-        company: input.company,
-        role: input.role,
-        atsScore: generatedContent.atsScore,
-        keywords: generatedContent.keywords,
-        status: "ready",
-        generatedContent,
-        createdAt: new Date().toISOString()
-      }
+      resume
     });
   } catch (error) {
     const message =
