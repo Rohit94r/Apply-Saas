@@ -1,15 +1,20 @@
 import { GenerateResumeForm } from "@/components/dashboard/generate-resume-form";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { getCurrentUserId } from "@/lib/auth";
+import { getLatestMasterResume } from "@/lib/data/resumes";
 
-export default function GeneratePage() {
+export default async function GeneratePage() {
+  const userId = await getCurrentUserId();
+  const masterResume = await getLatestMasterResume(userId).catch(() => null);
+
   return (
     <div>
       <PageHeader
-        eyebrow="Generate new resume"
-        title="Paste the role. Get the resume."
-        description="This workflow is wired to an API route with validation, OpenAI-ready prompt logic, deterministic fallback output, loading states, and toast feedback."
+        eyebrow="Improve resume"
+        title="Upload. Improve. Compare. Download."
+        description="Upload your resume, add the company, role, and job details, then review small ATS improvements before saving or downloading."
       />
-      <GenerateResumeForm />
+      <GenerateResumeForm initialMasterResume={masterResume} />
     </div>
   );
 }
