@@ -5,7 +5,6 @@ import { renderPreservedSourcePdf } from "@/lib/pdf/source-pdf";
 import { getCurrentUserId } from "@/lib/auth";
 import {
   getGeneratedResume,
-  getLatestMasterResume,
   getMasterResume,
   markResumeDownloaded
 } from "@/lib/data/resumes";
@@ -75,7 +74,7 @@ export async function GET(request: Request) {
 
     const sourceResume = resume.originalResumeId
       ? await getMasterResume(userId, resume.originalResumeId).catch(() => null)
-      : await getLatestMasterResume(userId).catch(() => null);
+      : null;
     const preservedBuffer = await renderPreservedSourcePdf({
       sourceFilePath:
         resume.generatedContent.sourceFilePath ?? sourceResume?.sourceFilePath,
