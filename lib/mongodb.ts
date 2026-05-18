@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const DATABASE_CONNECTION_ERROR =
+  "Database connection failed. Check MongoDB Atlas Network Access IP whitelist or update MONGODB_URI to a reachable database.";
 
 type CachedConnection = {
   conn: typeof mongoose | null;
@@ -30,9 +32,15 @@ export async function connectToDatabase() {
   }
 
   cached.promise ??= mongoose.connect(MONGODB_URI, {
-    bufferCommands: false
+    bufferCommands: false,
+    serverSelectionTimeoutMS: 5000
   });
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+  try {
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch {
+    cached.promise = null;
+    throw new Error(DATABASE_CONNECTION_ERROR);
+  }
 }
