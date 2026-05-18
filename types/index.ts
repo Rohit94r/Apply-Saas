@@ -21,9 +21,28 @@ export type ResumeExperience = {
   bullets: string[];
 };
 
+export type ResumeSourceLine = {
+  pageIndex: number;
+  text: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  pageWidth: number;
+  pageHeight: number;
+};
+
 export type MasterResume = {
   id: string;
   userId: string;
+  title: string;
+  sourceName?: string;
+  sourceUrl?: string;
+  sourceFilePath?: string;
+  sourceFileType?: string;
+  sourceLayout?: ResumeSourceLine[];
+  rawText?: string;
   summary: string;
   education: string[];
   skills: ResumeSkill[];
@@ -45,6 +64,13 @@ export type GeneratedResume = {
     summary: string;
     skills: string[];
     bullets: string[];
+    beforeText?: string;
+    afterText?: string;
+    changeSummary?: string[];
+    beforeAtsScore?: number;
+    sourceFilePath?: string;
+    sourceFileType?: string;
+    sourceLayout?: ResumeSourceLine[];
   };
   pdfUrl?: string;
   createdAt: string;
