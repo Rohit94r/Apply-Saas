@@ -46,6 +46,9 @@ type PdfLineDraft = {
 
 type PdfJsGlobalScope = typeof globalThis & {
   DOMMatrix?: typeof DOMMatrix;
+  pdfjsWorker?: {
+    WorkerMessageHandler: unknown;
+  };
 };
 
 const SECTION_HEADERS = new Set([
@@ -237,6 +240,12 @@ async function extractPdf(buffer: Buffer) {
   ensurePdfJsNodeGlobals();
 
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const pdfjsWorker = await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
+
+  (globalThis as PdfJsGlobalScope).pdfjsWorker = {
+    WorkerMessageHandler: pdfjsWorker.WorkerMessageHandler
+  };
+
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(buffer),
     disableFontFace: true,
