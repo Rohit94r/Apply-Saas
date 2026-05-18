@@ -2,7 +2,8 @@ import type { z } from "zod";
 import {
   coverLetterSchema,
   generateResumeSchema,
-  interviewGuideSchema
+  interviewGuideSchema,
+  resumeCritiqueSchema
 } from "@/lib/validations";
 
 export const apiContracts = {
@@ -20,9 +21,15 @@ export const apiContracts = {
     path: "/api/cover-letter",
     method: "POST",
     schema: coverLetterSchema
+  },
+  resumeCritique: {
+    path: "/api/critique",
+    method: "POST",
+    schema: resumeCritiqueSchema
   }
 } as const;
 
 export type GenerateResumePayload = z.infer<typeof generateResumeSchema>;
 export type InterviewGuidePayload = z.infer<typeof interviewGuideSchema>;
 export type CoverLetterPayload = z.infer<typeof coverLetterSchema>;
+export type ResumeCritiquePayload = z.infer<typeof resumeCritiqueSchema>;

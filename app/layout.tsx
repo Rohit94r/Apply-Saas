@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Instrument_Serif } from "next/font/google";
+import Script from "next/script";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
@@ -67,11 +69,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC;
+  const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+
   return (
-    <html lang="en">
-      <body className={`${geist.variable} ${instrumentSerif.variable}`}>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${geist.variable} ${instrumentSerif.variable}`}>
+          <Providers>{children}</Providers>
+          {umamiSrc && umamiWebsiteId ? (
+            <Script
+              defer
+              src={umamiSrc}
+              data-website-id={umamiWebsiteId}
+              strategy="afterInteractive"
+            />
+          ) : null}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
