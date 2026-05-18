@@ -15,6 +15,7 @@ import {
   Wand2
 } from "lucide-react";
 import { Logo } from "@/components/landing/logo";
+import { clerkIsConfigured } from "@/lib/clerk-config";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -27,6 +28,35 @@ const navItems = [
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
+  if (!clerkIsConfigured) {
+    return <DashboardAuthSetup />;
+  }
+
+  return <AuthenticatedDashboardShell>{children}</AuthenticatedDashboardShell>;
+}
+
+function DashboardAuthSetup() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#f7f4ee] px-5">
+      <div className="max-w-md rounded-xl border border-border bg-white p-6 text-center shadow-sm">
+        <Logo className="justify-center" />
+        <h1 className="mt-6 text-xl font-semibold text-foreground">
+          Clerk is not configured
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          Add a real NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY in
+          Vercel before opening the dashboard.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function AuthenticatedDashboardShell({
+  children
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const { user } = useUser();
   const [collapsed, setCollapsed] = useState(false);
