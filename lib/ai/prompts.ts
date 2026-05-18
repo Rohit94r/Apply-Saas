@@ -15,15 +15,25 @@ Return strict JSON with this shape:
   "summary": "two sentence resume summary",
   "skills": ["skill"],
   "bullets": ["impact bullet"],
+  "afterText": "complete resume text after strong truthful ATS edits",
+  "changeSummary": ["specific change made"],
+  "beforeAtsScore": 0,
   "keywords": ["keyword"],
   "atsScore": 0
 }
 
 Rules:
+- Treat the master resume as an already-created uploaded resume, not a blank input.
+- Return a complete afterText resume that keeps the original contact details, headings, section order, employers, project names, dates, education, certificates, and line-break style as much as possible.
+- Use maximum truthful ATS improvement: rewrite the summary, skills, existing experience descriptions, and existing project descriptions wherever the job description gives a stronger supported angle.
+- Keep the original resume format and identity, but do not be too timid. The goal is a high-selection, ATS-ready version of the same resume, not a tiny wording change.
 - Use only evidence from the master resume.
-- Tailor language to the target role.
-- Prefer measurable, ATS-friendly, concise bullets.
-- Do not invent employers, dates, degrees, or metrics.
+- Tailor language to the target role and company.
+- Prefer keyword-rich, measurable, ATS-friendly, concise lines when the original evidence supports them.
+- Do not invent employers, dates, degrees, projects, technologies, certifications, links, awards, employment history, or fake metrics.
+- If a job keyword is not directly proven by the resume, use it only in a target-role context, not as a claimed skill or achievement.
+- changeSummary must explain only the actual edits you made.
+- beforeAtsScore is the score for the original master resume against this job. atsScore is the score after your edits.
 
 Company: ${input.company}
 Role: ${input.role}
