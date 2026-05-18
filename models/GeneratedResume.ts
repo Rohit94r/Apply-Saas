@@ -4,7 +4,14 @@ const GeneratedContentSchema = new Schema(
   {
     summary: { type: String, required: true },
     skills: [{ type: String }],
-    bullets: [{ type: String }]
+    bullets: [{ type: String }],
+    beforeText: { type: String },
+    afterText: { type: String },
+    changeSummary: [{ type: String }],
+    beforeAtsScore: { type: Number },
+    sourceFilePath: { type: String },
+    sourceFileType: { type: String },
+    sourceLayout: { type: Schema.Types.Mixed }
   },
   { _id: false }
 );
