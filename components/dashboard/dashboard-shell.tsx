@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import {
   BarChart3,
   BriefcaseBusiness,
   FileText,
   Home,
+  PanelLeftClose,
+  PanelLeftOpen,
   Sparkles,
   Wand2
 } from "lucide-react";
@@ -26,36 +29,60 @@ const navItems = [
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user } = useUser();
+  const [collapsed, setCollapsed] = useState(false);
   const displayName =
     user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "Apply user";
 
   return (
     <div className="min-h-screen bg-[#f7f4ee]">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-border bg-[#fbfaf6] p-5 lg:block">
-        <Logo />
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 hidden border-r border-border bg-[#fbfaf6] p-4 transition-[width] duration-200 lg:block",
+          collapsed ? "w-20" : "w-64"
+        )}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <Logo className={cn(collapsed && "[&>span:last-child]:hidden")} />
+          <button
+            type="button"
+            onClick={() => setCollapsed((value) => !value)}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-white text-muted-foreground transition hover:text-primary"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="h-4 w-4" />
+            ) : (
+              <PanelLeftClose className="h-4 w-4" />
+            )}
+          </button>
+        </div>
         <nav className="mt-10 space-y-1">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
+              title={item.label}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
+                "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
+                collapsed && "justify-center px-0",
                 pathname === item.href && "bg-muted text-primary"
               )}
             >
               <item.icon className="h-4 w-4" />
-              {item.label}
+              <span className={cn(collapsed && "sr-only")}>{item.label}</span>
             </Link>
           ))}
         </nav>
-        <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-accent/20 bg-accent/10 p-4">
-          <p className="text-sm font-semibold text-accent">Free plan</p>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            10 resume generations included. Pro is ready for ₹149 or $4 monthly pricing.
-          </p>
-        </div>
+        {!collapsed ? (
+          <div className="absolute bottom-5 left-4 right-4 rounded-xl border border-accent/20 bg-accent/10 p-4">
+            <p className="text-sm font-semibold text-accent">Free plan</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              10 resume generations included. Pro is ready for ₹149 or $4 monthly pricing.
+            </p>
+          </div>
+        ) : null}
       </aside>
-      <div className="lg:pl-72">
+      <div className={cn("transition-[padding] duration-200", collapsed ? "lg:pl-20" : "lg:pl-64")}>
         <header className="sticky top-0 z-30 border-b border-border bg-[#f7f4ee]/88 px-5 py-4 backdrop-blur lg:px-8">
           <div className="flex items-center justify-between gap-4">
             <div className="lg:hidden">
