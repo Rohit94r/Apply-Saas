@@ -2,9 +2,13 @@ import { FileText } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ResumeCard } from "@/components/dashboard/resume-card";
-import { sampleResumes } from "@/lib/constants";
+import { getCurrentUserId } from "@/lib/auth";
+import { getGeneratedResumes } from "@/lib/data/resumes";
 
-export default function ResumesPage() {
+export default async function ResumesPage() {
+  const userId = await getCurrentUserId();
+  const resumes = await getGeneratedResumes(userId);
+
   return (
     <div>
       <PageHeader
@@ -13,9 +17,9 @@ export default function ResumesPage() {
         description="Store generated resumes by company, role, ATS score, keyword match, and PDF status so you always know what you submitted."
         cta="New resume"
       />
-      {sampleResumes.length ? (
+      {resumes.length ? (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {sampleResumes.map((resume) => (
+          {resumes.map((resume) => (
             <ResumeCard key={resume.id} resume={resume} />
           ))}
         </div>

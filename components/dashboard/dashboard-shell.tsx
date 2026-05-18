@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { UserButton, useUser } from "@clerk/nextjs";
 import {
   BarChart3,
   BriefcaseBusiness,
@@ -24,6 +25,9 @@ const navItems = [
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user } = useUser();
+  const displayName =
+    user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "Apply user";
 
   return (
     <div className="min-h-screen bg-[#f7f4ee]">
@@ -63,11 +67,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden rounded-full border border-border bg-white px-4 py-2 text-sm text-muted-foreground sm:block">
-                apply.neexmeet.com
+                {displayName}
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-                AM
-              </div>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "h-10 w-10"
+                  }
+                }}
+              />
             </div>
           </div>
           <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">

@@ -2,12 +2,26 @@ import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, FileText, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ResumeCard } from "@/components/dashboard/resume-card";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { dashboardStats, sampleInterviewGuide, sampleResumes } from "@/lib/constants";
+import { getCurrentUserId } from "@/lib/auth";
+import {
+  buildDashboardStats,
+  getGeneratedResumes,
+  getInterviewGuides
+} from "@/lib/data/resumes";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const userId = await getCurrentUserId();
+  const [resumes, guides] = await Promise.all([
+    getGeneratedResumes(userId, 6),
+    getInterviewGuides(userId, 3)
+  ]);
+  const dashboardStats = buildDashboardStats(resumes, guides);
+  const latestGuide = guides[0];
+
   return (
     <div>
       <PageHeader
@@ -35,28 +49,51 @@ export default function DashboardPage() {
               </Link>
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {sampleResumes.map((resume) => (
-              <ResumeCard key={resume.id} resume={resume} />
-            ))}
-          </div>
+          {resumes.length ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {resumes.slice(0, 2).map((resume) => (
+                <ResumeCard key={resume.id} resume={resume} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={FileText}
+              title="No saved resumes yet"
+              description="Generate a role-specific resume and it will be saved here automatically."
+              action="Generate resume"
+            />
+          )}
         </Card>
         <div className="space-y-6">
           <Card className="p-6">
             <p className="fine-label mb-2">Interview prep</p>
-            <h3 className="font-serif text-3xl text-primary">
-              {sampleInterviewGuide.role}
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {sampleInterviewGuide.companyAnalysis}
-            </p>
-            <ul className="mt-5 space-y-3">
-              {sampleInterviewGuide.generatedQuestions.slice(0, 3).map((question) => (
-                <li key={question} className="rounded-xl border border-border bg-white p-3 text-sm">
-                  {question}
-                </li>
-              ))}
-            </ul>
+            {latestGuide ? (
+              <>
+                <h3 className="font-serif text-3xl text-primary">
+                  {latestGuide.role}
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {latestGuide.companyAnalysis}
+                </p>
+                <ul className="mt-5 space-y-3">
+                  {latestGuide.generatedQuestions.slice(0, 3).map((question) => (
+                    <li
+                      key={question}
+                      className="rounded-xl border border-border bg-white p-3 text-sm"
+                    >
+                      {question}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <EmptyState
+                icon={BriefcaseBusiness}
+                title="No guides yet"
+                description="Create an interview guide from a target role and resume content."
+                action="Generate guide"
+              />
+            )}
           </Card>
           <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
             {[

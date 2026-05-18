@@ -2,9 +2,23 @@ import { BarChart3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/dashboard/page-header";
-import { dashboardStats, sampleResumes } from "@/lib/constants";
+import { getCurrentUserId } from "@/lib/auth";
+import {
+  buildDashboardStats,
+  buildKeywordCoverage,
+  getGeneratedResumes,
+  getInterviewGuides
+} from "@/lib/data/resumes";
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  const userId = await getCurrentUserId();
+  const [resumes, guides] = await Promise.all([
+    getGeneratedResumes(userId),
+    getInterviewGuides(userId)
+  ]);
+  const dashboardStats = buildDashboardStats(resumes, guides);
+  const keywordCoverage = buildKeywordCoverage(resumes);
+
   return (
     <div>
       <PageHeader
@@ -12,7 +26,7 @@ export default function AnalyticsPage() {
         title="Know what is improving."
         description="Track ATS scores, keyword coverage, generated versions, and application readiness across your job search."
       />
-      {sampleResumes.length ? (
+      {resumes.length ? (
         <div className="grid gap-5 lg:grid-cols-3">
           {dashboardStats.map((stat) => (
             <Card key={stat.label} className="p-6">
@@ -26,12 +40,17 @@ export default function AnalyticsPage() {
           <Card className="p-6 lg:col-span-3">
             <p className="fine-label mb-6">Keyword coverage</p>
             <div className="grid gap-4 md:grid-cols-4">
-              {["React", "TypeScript", "MongoDB", "Accessibility"].map((keyword, index) => (
-                <div key={keyword} className="rounded-xl border border-border bg-white p-4">
-                  <p className="text-sm font-semibold text-foreground">{keyword}</p>
+              {keywordCoverage.map((item) => (
+                <div
+                  key={item.keyword}
+                  className="rounded-xl border border-border bg-white p-4"
+                >
+                  <p className="text-sm font-semibold text-foreground">
+                    {item.keyword}
+                  </p>
                   <div className="mt-4 h-28 rounded-xl bg-gradient-to-t from-accent/30 to-muted" />
                   <p className="mt-3 text-xs text-muted-foreground">
-                    Coverage {92 - index * 7}%
+                    Coverage {item.coverage}%
                   </p>
                 </div>
               ))}

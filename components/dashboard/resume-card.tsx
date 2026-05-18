@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Download, Eye, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,13 +37,17 @@ export function ResumeCard({ resume }: { resume: GeneratedResume }) {
         Created {formatDate(resume.createdAt)}
       </p>
       <div className="mt-5 flex gap-2">
-        <Button size="sm" variant="outline" className="flex-1">
-          <Eye className="h-4 w-4" />
-          Preview
+        <Button asChild size="sm" variant="outline" className="flex-1">
+          <Link href={`/api/pdf?resumeId=${resume.id}`} target="_blank">
+            <Eye className="h-4 w-4" />
+            Preview
+          </Link>
         </Button>
-        <Button size="sm" className="flex-1">
-          <Download className="h-4 w-4" />
-          PDF
+        <Button asChild size="sm" className="flex-1">
+          <Link href={`/api/pdf?resumeId=${resume.id}`}>
+            <Download className="h-4 w-4" />
+            PDF
+          </Link>
         </Button>
       </div>
     </article>
