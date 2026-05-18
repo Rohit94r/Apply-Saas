@@ -16,8 +16,8 @@ import {
 export default async function DashboardPage() {
   const userId = await getCurrentUserId();
   const [resumes, guides] = await Promise.all([
-    getGeneratedResumes(userId, 6),
-    getInterviewGuides(userId, 3)
+    getGeneratedResumes(userId, 6).catch(() => []),
+    getInterviewGuides(userId, 3).catch(() => [])
   ]);
   const dashboardStats = buildDashboardStats(resumes, guides);
   const latestGuide = guides[0];
