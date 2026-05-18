@@ -9,10 +9,11 @@ Apply is a modern AI SaaS product for Indian students and early-career job seeke
 - Tailwind CSS
 - Framer Motion
 - MongoDB and Mongoose
-- Clerk-ready auth helper
+- Clerk protected authentication
 - Groq/OpenAI-compatible AI workflow helpers
 - React PDF generation
-- UploadThing/Cloudinary-ready storage placeholders
+- UploadThing file uploads
+- Umami analytics
 
 ## Getting Started
 
@@ -21,9 +22,9 @@ npm install
 npm run dev
 ```
 
-Copy `.env.example` to `.env.local` and add credentials when you want live MongoDB, Clerk, Groq/OpenAI, or upload storage.
+Copy `.env.example` to `.env.local` and add credentials for MongoDB, Clerk, Groq, UploadThing, and Umami.
 
-For low-cost text generation, add `GROQ_API_KEY`. The resume, interview, and cover letter routes prefer Groq automatically. `OPENAI_API_KEY` is optional unless you want AI professional photo generation.
+For text generation, add `GROQ_API_KEY`. The resume, interview, cover letter, critique, and photo-planning routes prefer Groq automatically. `OPENAI_API_KEY` is optional fallback only.
 
 ## Product Routes
 
@@ -40,11 +41,12 @@ For low-cost text generation, add `GROQ_API_KEY`. The resume, interview, and cov
 - `POST /api/resumes/generate`
 - `POST /api/interview`
 - `POST /api/cover-letter`
+- `POST /api/critique`
 - `POST /api/photo`
 - `POST /api/pdf`
 - `GET /api/health`
 
-The AI routes use deterministic fallback responses when both `GROQ_API_KEY` and `OPENAI_API_KEY` are missing, so the app remains demoable locally.
+The dashboard and API routes are protected with Clerk. Generated resumes and interview guides are stored in MongoDB per signed-in user.
 
 ## Pricing Placeholder
 
