@@ -36,12 +36,6 @@ type PhotoPlan = {
   wardrobe: string;
 };
 
-const resumeText =
-  "Computer science student with React, TypeScript, Next.js, Node.js, MongoDB, REST API, dashboard project, accessibility, and performance optimization experience. Built a placement portal, reusable UI components, and application tracking workflows.";
-
-const jobText =
-  "We are hiring a Frontend Engineer Intern to build responsive dashboards with React and TypeScript. The role requires API integration, accessibility awareness, reusable component design, performance optimization, and clear collaboration with product teams.";
-
 const tabs = [
   { id: "cover", label: "Cover letter", icon: Mail },
   { id: "critique", label: "Critique", icon: Wand2 },
@@ -238,11 +232,11 @@ export function ToolsWorkspace() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-foreground">Company</span>
-                  <Input name="company" defaultValue="Neon Labs" />
+                  <Input name="company" placeholder="Company name" />
                 </label>
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-foreground">Role</span>
-                  <Input name="role" defaultValue="Frontend Engineer Intern" />
+                  <Input name="role" placeholder="Target role" />
                 </label>
               </div>
               <label className="block space-y-2">
@@ -312,39 +306,37 @@ export function ToolsWorkspace() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-foreground">Name</span>
-                  <Input name="name" defaultValue="Aarav Mehta" />
+                  <Input name="name" placeholder="Your name" />
                 </label>
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-foreground">Role</span>
-                  <Input name="role" defaultValue="Frontend Engineer Intern" />
+                  <Input name="role" placeholder="Target role" />
                 </label>
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-foreground">Email</span>
-                  <Input name="email" defaultValue="aarav@example.com" />
+                  <Input name="email" placeholder="name@example.com" />
                 </label>
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-foreground">Location</span>
-                  <Input name="location" defaultValue="Bengaluru, India" />
+                  <Input name="location" placeholder="City, country" />
                 </label>
               </div>
               <label className="block space-y-2">
                 <span className="text-sm font-semibold text-foreground">Summary</span>
-                <Textarea name="summary" defaultValue={resumeText} />
+                <Textarea name="summary" placeholder="Paste or write the resume summary." />
               </label>
               <label className="block space-y-2">
                 <span className="text-sm font-semibold text-foreground">Skills</span>
                 <Input
                   name="skills"
-                  defaultValue="React, Next.js, TypeScript, Tailwind CSS, REST APIs"
+                  placeholder="Skill one, skill two, skill three"
                 />
               </label>
               <label className="block space-y-2">
                 <span className="text-sm font-semibold text-foreground">Bullets</span>
                 <Textarea
                   name="bullets"
-                  defaultValue={
-                    "Built a campus hiring dashboard used by 700+ students.\nImproved page load speed through route splitting and image optimization.\nCollaborated with backend team to ship resilient REST integrations."
-                  }
+                  placeholder="Add each resume bullet on a new line."
                 />
               </label>
               <SubmitButton loading={loading} label="Export PDF" icon={Download} />
@@ -431,11 +423,19 @@ function TextInputs() {
     <>
       <label className="block space-y-2">
         <span className="text-sm font-semibold text-foreground">Resume content</span>
-        <Textarea name="resumeContent" defaultValue={resumeText} className="min-h-36" />
+        <Textarea
+          name="resumeContent"
+          placeholder="Paste resume content here."
+          className="min-h-36"
+        />
       </label>
       <label className="block space-y-2">
         <span className="text-sm font-semibold text-foreground">Job description</span>
-        <Textarea name="jobDescription" defaultValue={jobText} className="min-h-44" />
+        <Textarea
+          name="jobDescription"
+          placeholder="Paste the job description here."
+          className="min-h-44"
+        />
       </label>
     </>
   );
