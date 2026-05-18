@@ -37,6 +37,13 @@ const ExperienceSchema = new Schema(
 const MasterResumeSchema = new Schema(
   {
     userId: { type: String, required: true, index: true },
+    title: { type: String, default: "Master resume" },
+    sourceName: { type: String },
+    sourceUrl: { type: String },
+    sourceFilePath: { type: String },
+    sourceFileType: { type: String },
+    sourceLayout: { type: Schema.Types.Mixed },
+    rawText: { type: String, default: "" },
     summary: { type: String, default: "" },
     education: [{ type: String }],
     skills: [SkillSchema],
