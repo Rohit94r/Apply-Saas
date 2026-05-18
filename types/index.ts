@@ -35,7 +35,7 @@ export type MasterResume = {
 export type GeneratedResume = {
   id: string;
   userId: string;
-  originalResumeId: string;
+  originalResumeId?: string;
   company: string;
   role: string;
   atsScore: number;

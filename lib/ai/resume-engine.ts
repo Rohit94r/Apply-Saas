@@ -1,12 +1,16 @@
 import type {
   CoverLetterInput,
   GenerateResumeInput,
-  InterviewGuideInput
+  InterviewGuideInput,
+  ProfessionalPhotoInput,
+  ResumeCritiqueInput
 } from "@/lib/validations";
 import { getTextAIClient } from "@/lib/ai/openai";
 import {
   coverLetterPrompt,
   interviewGuidePrompt,
+  professionalPhotoPrompt,
+  resumeCritiquePrompt,
   resumeTailoringPrompt
 } from "@/lib/ai/prompts";
 import { clampScore } from "@/lib/utils";
@@ -17,6 +21,22 @@ type TailoredResumeOutput = {
   bullets: string[];
   keywords: string[];
   atsScore: number;
+};
+
+type ResumeCritiqueOutput = {
+  atsScore: number;
+  strengths: string[];
+  risks: string[];
+  fixes: string[];
+  missingKeywords: string[];
+};
+
+type ProfessionalPhotoOutput = {
+  headline: string;
+  recommendations: string[];
+  background: string;
+  crop: string;
+  wardrobe: string;
 };
 
 function extractKeywords(text: string) {
@@ -165,4 +185,97 @@ export async function generateCoverLetter(input: CoverLetterInput) {
   });
 
   return safeJsonParse(completion.choices[0]?.message.content, fallback);
+}
+
+export async function generateResumeCritique(
+  input: ResumeCritiqueInput
+): Promise<ResumeCritiqueOutput> {
+  const textAI = getTextAIClient();
+  const keywords = extractKeywords(input.jobDescription);
+  const resumeKeywords = extractKeywords(input.resumeContent);
+  const missingKeywords = keywords.filter((keyword) => !resumeKeywords.includes(keyword));
+  const fallback: ResumeCritiqueOutput = {
+    atsScore: clampScore(82 - Math.min(missingKeywords.length * 3, 18)),
+    strengths: [
+      "The resume includes concrete technical experience that can be mapped to the role.",
+      "The content has enough project context to support role-specific tailoring."
+    ],
+    risks: [
+      "Some bullets may need clearer metrics, scope, or direct job-description keywords.",
+      "The strongest role-matching skills should be easier to scan in the top third."
+    ],
+    fixes: [
+      "Move the most relevant technical skills into a concise skills section near the top.",
+      "Rewrite project bullets with action, technical method, and measurable outcome.",
+      "Mirror important job-description keywords only when they are supported by real experience."
+    ],
+    missingKeywords: missingKeywords.length ? missingKeywords : keywords.slice(0, 4)
+  };
+
+  if (!textAI) {
+    return fallback;
+  }
+
+  const completion = await textAI.client.chat.completions.create({
+    model: textAI.model,
+    response_format: { type: "json_object" },
+    messages: [{ role: "user", content: resumeCritiquePrompt(input) }]
+  });
+
+  const parsed = safeJsonParse<ResumeCritiqueOutput>(
+    completion.choices[0]?.message.content,
+    fallback
+  );
+
+  return {
+    ...fallback,
+    ...parsed,
+    atsScore: clampScore(parsed.atsScore ?? fallback.atsScore),
+    strengths: parsed.strengths?.length ? parsed.strengths : fallback.strengths,
+    risks: parsed.risks?.length ? parsed.risks : fallback.risks,
+    fixes: parsed.fixes?.length ? parsed.fixes : fallback.fixes,
+    missingKeywords: parsed.missingKeywords?.length
+      ? parsed.missingKeywords
+      : fallback.missingKeywords
+  };
+}
+
+export async function generateProfessionalPhotoPlan(
+  input: ProfessionalPhotoInput
+): Promise<ProfessionalPhotoOutput> {
+  const textAI = getTextAIClient();
+  const fallback: ProfessionalPhotoOutput = {
+    headline: input.imageUrl ? "Photo uploaded and ready" : "Profile photo plan ready",
+    recommendations: [
+      "Use soft front-facing light and keep the face clearly visible.",
+      "Choose a neutral, uncluttered background with enough contrast.",
+      "Crop from the upper chest with eyes near the upper third of the frame."
+    ],
+    background: "Use a clean light gray, off-white, or simple office background.",
+    crop: "Square crop, centered face, shoulders visible, no heavy tilt.",
+    wardrobe: "Solid shirt or blazer, medium contrast, no busy patterns."
+  };
+
+  if (!textAI) {
+    return fallback;
+  }
+
+  const completion = await textAI.client.chat.completions.create({
+    model: textAI.model,
+    response_format: { type: "json_object" },
+    messages: [{ role: "user", content: professionalPhotoPrompt(input) }]
+  });
+
+  const parsed = safeJsonParse<ProfessionalPhotoOutput>(
+    completion.choices[0]?.message.content,
+    fallback
+  );
+
+  return {
+    ...fallback,
+    ...parsed,
+    recommendations: parsed.recommendations?.length
+      ? parsed.recommendations
+      : fallback.recommendations
+  };
 }

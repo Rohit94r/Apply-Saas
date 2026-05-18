@@ -22,6 +22,18 @@ export const coverLetterSchema = z.object({
   tone: z.enum(["confident", "warm", "concise"]).default("confident")
 });
 
+export const resumeCritiqueSchema = z.object({
+  resumeContent: z.string().min(80, "Add enough resume content to critique"),
+  jobDescription: z.string().min(80, "Paste a job description with enough detail")
+});
+
+export const professionalPhotoSchema = z.object({
+  imageUrl: z.string().url().optional(),
+  prompt: z.string().max(500).optional()
+});
+
 export type GenerateResumeInput = z.infer<typeof generateResumeSchema>;
 export type InterviewGuideInput = z.infer<typeof interviewGuideSchema>;
 export type CoverLetterInput = z.infer<typeof coverLetterSchema>;
+export type ResumeCritiqueInput = z.infer<typeof resumeCritiqueSchema>;
+export type ProfessionalPhotoInput = z.infer<typeof professionalPhotoSchema>;

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/landing/logo";
@@ -17,18 +18,29 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard"
-            className="hidden text-sm font-medium text-foreground/80 transition hover:text-primary sm:inline-flex"
-          >
-            Log in
-          </Link>
-          <Button asChild size="sm">
-            <Link href="/dashboard/generate">
-              Start free
-              <ArrowRight className="h-4 w-4" />
+          <SignedOut>
+            <Link
+              href="/sign-in"
+              className="hidden text-sm font-medium text-foreground/80 transition hover:text-primary sm:inline-flex"
+            >
+              Log in
             </Link>
-          </Button>
+            <Button asChild size="sm">
+              <Link href="/sign-up">
+                Start free
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </SignedOut>
+          <SignedIn>
+            <Button asChild size="sm">
+              <Link href="/dashboard/generate">
+                Dashboard
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
     </header>
