@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Layers3 } from "lucide-react";
-import { GenerateResumeForm } from "@/components/dashboard/generate-resume-form";
+import { GenerateResumeForm } from "@/components/dashboard/resume-improve/generate-resume-form";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

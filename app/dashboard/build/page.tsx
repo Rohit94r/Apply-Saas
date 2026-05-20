@@ -1,4 +1,4 @@
-import { BuildResumeForm } from "@/components/dashboard/build-resume-form";
+import { BuildResumeForm } from "@/components/dashboard/resume-builder/build-resume-form";
 import { PageHeader } from "@/components/dashboard/page-header";
 
 export default function BuildResumePage() {
