@@ -31,7 +31,8 @@ For text generation, add `GROQ_API_KEY`. The resume, interview, cover letter, cr
 - `/` - premium landing page
 - `/dashboard` - overview
 - `/dashboard/resumes` - resume version management
-- `/dashboard/generate` - AI resume tailoring workflow
+- `/dashboard/build` - guided student resume builder for users starting from zero
+- `/dashboard/generate` - uploaded resume improvement workflow
 - `/dashboard/interview` - interview prep guide
 - `/dashboard/tools` - cover letter, PDF editing, photo generation modules
 - `/dashboard/analytics` - resume analytics
@@ -39,6 +40,9 @@ For text generation, add `GROQ_API_KEY`. The resume, interview, cover letter, cr
 ## API Routes
 
 - `POST /api/resumes/generate`
+- `POST /api/resumes/build`
+- `POST /api/resumes/import`
+- `PATCH /api/resumes/:resumeId`
 - `POST /api/interview`
 - `POST /api/cover-letter`
 - `POST /api/critique`
@@ -47,6 +51,20 @@ For text generation, add `GROQ_API_KEY`. The resume, interview, cover letter, cr
 - `GET /api/health`
 
 The dashboard and API routes are protected with Clerk. Generated resumes and interview guides are stored in MongoDB per signed-in user.
+
+## Folder Structure
+
+- `app/` - Next.js routes, pages, metadata routes, and API endpoints.
+- `components/landing/` - public marketing page sections.
+- `components/dashboard/` - authenticated workspace shell and shared dashboard UI.
+- `components/dashboard/resume-builder/` - guided new-resume builder UI.
+- `components/dashboard/resume-improve/` - uploaded-resume improvement UI.
+- `components/ui/` - reusable primitives.
+- `lib/ai/` - Groq/OpenAI clients, prompts, scoring, and resume generation logic.
+- `lib/data/` - MongoDB access with local fallback storage.
+- `lib/pdf/` - PDF rendering and uploaded PDF preservation.
+- `models/` - Mongoose schemas.
+- `types/` - shared TypeScript declarations.
 
 ## Pricing Placeholder
 
