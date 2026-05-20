@@ -3,13 +3,14 @@
 import { useRef, useState } from "react";
 import {
   Camera,
-  Download,
-  FilePenLine,
-  Loader2,
-  Mail,
-  Sparkles,
-  Wand2
-} from "lucide-react";
+  DownloadSimple,
+  EnvelopeSimple,
+  FilePdf,
+  MagicWand,
+  Sparkle,
+  SpinnerGap
+} from "@phosphor-icons/react";
+import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -37,11 +38,11 @@ type PhotoPlan = {
 };
 
 const tabs = [
-  { id: "cover", label: "Cover letter", icon: Mail },
-  { id: "critique", label: "Critique", icon: Wand2 },
-  { id: "pdf", label: "PDF", icon: FilePenLine },
+  { id: "cover", label: "Cover letter", icon: EnvelopeSimple },
+  { id: "critique", label: "Critique", icon: MagicWand },
+  { id: "pdf", label: "PDF", icon: FilePdf },
   { id: "photo", label: "Photo", icon: Camera }
-] satisfies { id: Tool; label: string; icon: typeof Mail }[];
+] satisfies { id: Tool; label: string; icon: PhosphorIcon }[];
 
 export function ToolsWorkspace() {
   const [activeTool, setActiveTool] = useState<Tool>("cover");
@@ -219,7 +220,7 @@ export function ToolsWorkspace() {
               activeTool === tab.id && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
             )}
           >
-            <tab.icon className="h-4 w-4" />
+            <tab.icon className="h-4 w-4" weight="regular" />
             {tab.label}
           </button>
         ))}
@@ -257,7 +258,7 @@ export function ToolsWorkspace() {
           </Card>
           <OutputPanel
             title="Generated letter"
-            icon={Mail}
+            icon={EnvelopeSimple}
             empty="Your cover letter will appear here."
           >
             {coverLetter ? (
@@ -279,7 +280,7 @@ export function ToolsWorkspace() {
           </Card>
           <OutputPanel
             title="Critique report"
-            icon={Wand2}
+            icon={MagicWand}
             empty="ATS score, risks, fixes, and keywords will appear here."
           >
             {critique ? (
@@ -339,12 +340,12 @@ export function ToolsWorkspace() {
                   placeholder="Add each resume bullet on a new line."
                 />
               </label>
-              <SubmitButton loading={loading} label="Export PDF" icon={Download} />
+              <SubmitButton loading={loading} label="Export PDF" icon={DownloadSimple} />
             </form>
           </Card>
           <OutputPanel
             title="PDF export"
-            icon={FilePenLine}
+            icon={FilePdf}
             empty="Use the form to download an ATS-friendly PDF."
           />
         </div>
@@ -362,7 +363,7 @@ export function ToolsWorkspace() {
                 onChange={onPhotoSelected}
               />
               <div className="rounded-2xl border border-dashed border-border bg-white/60 p-6 text-center">
-                <Camera className="mx-auto h-8 w-8 text-accent" />
+                <Camera className="mx-auto h-8 w-8 text-accent" weight="regular" />
                 <h3 className="mt-4 font-serif text-3xl text-primary">
                   Upload profile photo
                 </h3>
@@ -377,9 +378,9 @@ export function ToolsWorkspace() {
                   onClick={() => photoInputRef.current?.click()}
                 >
                   {isUploading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
                   ) : (
-                    <Camera className="h-4 w-4" />
+                    <Camera className="h-4 w-4" weight="regular" />
                   )}
                   {isUploading ? "Uploading..." : "Choose photo"}
                 </Button>
@@ -444,15 +445,19 @@ function TextInputs() {
 function SubmitButton({
   loading,
   label,
-  icon: Icon = Sparkles
+  icon: Icon = Sparkle
 }: {
   loading: boolean;
   label: string;
-  icon?: typeof Sparkles;
+  icon?: PhosphorIcon;
 }) {
   return (
     <Button type="submit" disabled={loading}>
-      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Icon className="h-4 w-4" />}
+      {loading ? (
+        <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
+      ) : (
+        <Icon className="h-4 w-4" weight="regular" />
+      )}
       {loading ? "Working..." : label}
     </Button>
   );
@@ -465,7 +470,7 @@ function OutputPanel({
   children
 }: {
   title: string;
-  icon: typeof Mail;
+  icon: PhosphorIcon;
   empty: string;
   children?: React.ReactNode;
 }) {
@@ -477,12 +482,12 @@ function OutputPanel({
           <h3 className="font-serif text-3xl text-primary">{title}</h3>
         </div>
         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Icon className="h-5 w-5" />
+          <Icon className="h-5 w-5" weight="regular" />
         </div>
       </div>
       {children ?? (
         <div className="flex min-h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/50 p-8 text-center">
-          <Sparkles className="h-8 w-8 text-accent" />
+          <Sparkle className="h-8 w-8 text-accent" weight="regular" />
           <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
             {empty}
           </p>

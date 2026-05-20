@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, FileText, Layers3, Wand2 } from "lucide-react";
+import {
+  ArrowRight,
+  Briefcase,
+  FileText,
+  MagicWand,
+  Stack
+} from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -40,7 +46,7 @@ export default async function DashboardPage() {
           <Button asChild className="mt-4" size="sm">
             <Link href="/dashboard/generate">
               Improve
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" weight="regular" />
             </Link>
           </Button>
         </Card>
@@ -53,7 +59,7 @@ export default async function DashboardPage() {
           <Button asChild className="mt-4" size="sm" variant="outline">
             <Link href="/dashboard/build">
               Build
-              <Layers3 className="h-4 w-4" />
+              <Stack className="h-4 w-4" weight="regular" />
             </Link>
           </Button>
         </Card>
@@ -73,7 +79,7 @@ export default async function DashboardPage() {
             <Button asChild variant="outline" size="sm">
               <Link href="/dashboard/resumes">
                 View all
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" weight="regular" />
               </Link>
             </Button>
           </div>
@@ -116,7 +122,7 @@ export default async function DashboardPage() {
               </>
             ) : (
               <EmptyState
-                icon={BriefcaseBusiness}
+                icon={Briefcase}
                 title="No guides yet"
                 description="Create an interview guide from a target role and resume content."
                 action="Generate guide"
@@ -126,8 +132,8 @@ export default async function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
             {[
               { title: "Cover letter", icon: FileText },
-              { title: "PDF editing", icon: Wand2 },
-              { title: "Interview guide", icon: BriefcaseBusiness }
+              { title: "PDF editing", icon: MagicWand },
+              { title: "Interview guide", icon: Briefcase }
             ].map((item) => (
               <Link
                 href="/dashboard/tools"
@@ -135,7 +141,7 @@ export default async function DashboardPage() {
                 className="flex items-center gap-3 rounded-2xl border border-border bg-white p-4 shadow-soft transition hover:-translate-y-0.5"
               >
                 <span className="rounded-full bg-accent/10 p-3 text-accent">
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-4 w-4" weight="regular" />
                 </span>
                 <span className="text-sm font-semibold text-foreground">{item.title}</span>
               </Link>

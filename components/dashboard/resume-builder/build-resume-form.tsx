@@ -2,15 +2,15 @@
 
 import { useMemo, useState } from "react";
 import {
-  Download,
-  Edit3,
+  DownloadSimple,
   Eye,
-  Loader2,
+  FloppyDisk,
+  PencilSimple,
   Plus,
-  Save,
-  Sparkles,
+  Sparkle,
+  SpinnerGap,
   X
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -603,7 +603,7 @@ export function BuildResumeForm() {
               variant="outline"
               onClick={() => addSkills(skillDraft)}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4" weight="regular" />
               Add skills
             </Button>
           </div>
@@ -622,7 +622,7 @@ export function BuildResumeForm() {
                     aria-label={`Remove ${skill}`}
                     className="text-accent"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <X className="h-3.5 w-3.5" weight="regular" />
                   </button>
                 </span>
               ))}
@@ -700,7 +700,7 @@ export function BuildResumeForm() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="fine-label">Custom sections</p>
               <Button type="button" variant="outline" onClick={addCustomSection}>
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4" weight="regular" />
                 Add section
               </Button>
             </div>
@@ -723,7 +723,7 @@ export function BuildResumeForm() {
                       variant="ghost"
                       onClick={() => removeCustomSection(section.id)}
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-4 w-4" weight="regular" />
                       Remove
                     </Button>
                   </div>
@@ -782,9 +782,9 @@ export function BuildResumeForm() {
           </label>
           <Button type="submit" className="mt-5" disabled={loading}>
             {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
             ) : (
-              <Sparkles className="h-4 w-4" />
+              <Sparkle className="h-4 w-4" weight="regular" />
             )}
             {loading ? "Building..." : "Build resume"}
           </Button>
@@ -807,7 +807,11 @@ export function BuildResumeForm() {
               disabled={!preview}
               onClick={() => setEditing((value) => !value)}
             >
-              {editing ? <Eye className="h-4 w-4" /> : <Edit3 className="h-4 w-4" />}
+              {editing ? (
+                <Eye className="h-4 w-4" weight="regular" />
+              ) : (
+                <PencilSimple className="h-4 w-4" weight="regular" />
+              )}
               {editing ? "Preview" : "Edit"}
             </Button>
             <Button
@@ -817,7 +821,11 @@ export function BuildResumeForm() {
               disabled={!preview || saving}
               onClick={() => savePreview()}
             >
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {saving ? (
+                <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
+              ) : (
+                <FloppyDisk className="h-4 w-4" weight="regular" />
+              )}
               Save
             </Button>
             <Button
@@ -826,7 +834,7 @@ export function BuildResumeForm() {
               disabled={!preview || saving}
               onClick={onDownload}
             >
-              <Download className="h-4 w-4" />
+              <DownloadSimple className="h-4 w-4" weight="regular" />
               Download
             </Button>
           </div>
@@ -891,7 +899,7 @@ export function BuildResumeForm() {
           )
         ) : (
           <div className="flex min-h-[540px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-white/55 p-8 text-center">
-            <Sparkles className="h-8 w-8 text-accent" />
+            <Sparkle className="h-8 w-8 text-accent" weight="regular" />
             <h4 className="mt-4 font-serif text-3xl text-primary">
               Answer and build
             </h4>

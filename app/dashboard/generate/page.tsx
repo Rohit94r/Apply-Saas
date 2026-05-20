@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Layers3 } from "lucide-react";
+import { Stack } from "@phosphor-icons/react/ssr";
 import { GenerateResumeForm } from "@/components/dashboard/resume-improve/generate-resume-form";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export default async function GeneratePage() {
         </div>
         <Button asChild variant="outline">
           <Link href="/dashboard/build">
-            <Layers3 className="h-4 w-4" />
+            <Stack className="h-4 w-4" weight="regular" />
             Build resume
           </Link>
         </Button>

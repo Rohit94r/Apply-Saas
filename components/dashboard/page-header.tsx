@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 
 type PageHeaderProps = {
   eyebrow: string;
@@ -30,7 +30,7 @@ export function PageHeader({
         <Button asChild>
           <Link href={href}>
             {cta}
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4" weight="regular" />
           </Link>
         </Button>
       ) : null}

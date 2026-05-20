@@ -1,4 +1,4 @@
-import { BarChart3 } from "lucide-react";
+import { ChartBar } from "@phosphor-icons/react/ssr";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -59,7 +59,7 @@ export default async function AnalyticsPage() {
         </div>
       ) : (
         <EmptyState
-          icon={BarChart3}
+          icon={ChartBar}
           title="No analytics yet"
           description="Analytics appear after you generate and download role-specific resumes."
         />

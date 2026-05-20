@@ -5,28 +5,33 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import {
-  BarChart3,
-  BriefcaseBusiness,
+  Briefcase,
+  CaretLineLeft,
+  CaretLineRight,
+  ChartBar,
   FileText,
-  Home,
-  Layers3,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Sparkles,
-  Wand2
-} from "lucide-react";
+  House,
+  MagicWand,
+  Sparkle,
+  Stack
+} from "@phosphor-icons/react";
+import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/landing/logo";
 import { clerkIsConfigured } from "@/lib/clerk-config";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { label: "Overview", href: "/dashboard", icon: Home },
+const navItems: Array<{
+  label: string;
+  href: string;
+  icon: PhosphorIcon;
+}> = [
+  { label: "Overview", href: "/dashboard", icon: House },
   { label: "My resumes", href: "/dashboard/resumes", icon: FileText },
-  { label: "Improve", href: "/dashboard/generate", icon: Sparkles },
-  { label: "Build resume", href: "/dashboard/build", icon: Layers3 },
-  { label: "Interview prep", href: "/dashboard/interview", icon: BriefcaseBusiness },
-  { label: "AI tools", href: "/dashboard/tools", icon: Wand2 },
-  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 }
+  { label: "Improve", href: "/dashboard/generate", icon: Sparkle },
+  { label: "Build resume", href: "/dashboard/build", icon: Stack },
+  { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase },
+  { label: "AI tools", href: "/dashboard/tools", icon: MagicWand },
+  { label: "Analytics", href: "/dashboard/analytics", icon: ChartBar }
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -82,9 +87,9 @@ function AuthenticatedDashboardShell({
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? (
-              <PanelLeftOpen className="h-4 w-4" />
+              <CaretLineRight className="h-4 w-4" weight="regular" />
             ) : (
-              <PanelLeftClose className="h-4 w-4" />
+              <CaretLineLeft className="h-4 w-4" weight="regular" />
             )}
           </button>
         </div>
@@ -100,7 +105,7 @@ function AuthenticatedDashboardShell({
                 pathname === item.href && "bg-muted text-primary"
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-4 w-4" weight="regular" />
               <span className={cn(collapsed && "sr-only")}>{item.label}</span>
             </Link>
           ))}
@@ -147,7 +152,7 @@ function AuthenticatedDashboardShell({
                   pathname === item.href && "border-primary/30 text-primary"
                 )}
               >
-                <item.icon className="h-3.5 w-3.5" />
+                <item.icon className="h-3.5 w-3.5" weight="regular" />
                 {item.label}
               </Link>
             ))}

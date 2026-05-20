@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Download, Eye, MoreHorizontal } from "lucide-react";
+import { DotsThreeOutline, DownloadSimple, Eye } from "@phosphor-icons/react/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -18,7 +18,7 @@ export function ResumeCard({ resume }: { resume: GeneratedResume }) {
           className="rounded-full p-2 text-muted-foreground transition hover:bg-muted hover:text-primary"
           aria-label="Open resume actions"
         >
-          <MoreHorizontal className="h-4 w-4" />
+          <DotsThreeOutline className="h-4 w-4" weight="regular" />
         </button>
       </div>
       <div className="mt-5">
@@ -39,13 +39,13 @@ export function ResumeCard({ resume }: { resume: GeneratedResume }) {
       <div className="mt-5 flex gap-2">
         <Button asChild size="sm" variant="outline" className="flex-1">
           <Link href={`/api/pdf?resumeId=${resume.id}`} target="_blank">
-            <Eye className="h-4 w-4" />
+            <Eye className="h-4 w-4" weight="regular" />
             Preview
           </Link>
         </Button>
         <Button asChild size="sm" className="flex-1">
           <Link href={`/api/pdf?resumeId=${resume.id}`}>
-            <Download className="h-4 w-4" />
+            <DownloadSimple className="h-4 w-4" weight="regular" />
             PDF
           </Link>
         </Button>

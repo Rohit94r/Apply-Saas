@@ -1,4 +1,4 @@
-import { FileText } from "lucide-react";
+import { FileText } from "@phosphor-icons/react/ssr";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ResumeCard } from "@/components/dashboard/resume-card";

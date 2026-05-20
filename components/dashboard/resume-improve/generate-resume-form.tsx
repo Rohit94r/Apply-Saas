@@ -2,17 +2,17 @@
 
 import { useRef, useState } from "react";
 import {
-  CheckCircle2,
-  Download,
-  Edit3,
+  CheckCircle,
+  DownloadSimple,
   Eye,
   FileText,
-  Loader2,
-  Save,
-  Share2,
-  Sparkles,
-  UploadCloud
-} from "lucide-react";
+  FloppyDisk,
+  PencilSimple,
+  ShareNetwork,
+  Sparkle,
+  SpinnerGap,
+  UploadSimple
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -493,7 +493,7 @@ export function GenerateResumeForm({
               </h3>
             </div>
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <FileText className="h-5 w-5" />
+              <FileText className="h-5 w-5" weight="regular" />
             </div>
           </div>
 
@@ -511,9 +511,9 @@ export function GenerateResumeForm({
             className="flex min-h-36 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/55 p-6 text-center transition hover:border-primary/40 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
           >
             {uploading ? (
-              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+              <SpinnerGap className="h-8 w-8 animate-spin text-accent" weight="regular" />
             ) : (
-              <UploadCloud className="h-8 w-8 text-accent" />
+              <UploadSimple className="h-8 w-8 text-accent" weight="regular" />
             )}
             <span className="mt-4 text-sm font-semibold text-foreground">
               {uploading ? "Reading resume..." : "Upload PDF, Word, text, Markdown, or RTF"}
@@ -527,7 +527,7 @@ export function GenerateResumeForm({
             <div className="mt-5 space-y-4">
               <div className="flex flex-wrap gap-2 text-xs font-semibold">
                 <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-3 py-1 text-success">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <CheckCircle className="h-3.5 w-3.5" weight="regular" />
                   Saved
                 </span>
                 {masterResume.sourceName ? (
@@ -537,7 +537,7 @@ export function GenerateResumeForm({
                 ) : null}
               </div>
               <p className="flex items-center gap-2 rounded-xl border border-success/20 bg-success/10 p-3 text-sm font-semibold text-success">
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <CheckCircle className="h-4 w-4 shrink-0" weight="regular" />
                 {uploadMessage(masterResume.sourceName)}
               </p>
               <p className="text-sm leading-6 text-muted-foreground">
@@ -549,7 +549,7 @@ export function GenerateResumeForm({
                 variant="outline"
                 onClick={() => setEditingMaster((value) => !value)}
               >
-                <Edit3 className="h-4 w-4" />
+                <PencilSimple className="h-4 w-4" weight="regular" />
                 {editingMaster ? "Hide text edit" : "Edit imported text"}
               </Button>
             </div>
@@ -590,9 +590,9 @@ export function GenerateResumeForm({
               </label>
               <Button type="submit" disabled={savingMaster}>
                 {savingMaster ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
                 ) : (
-                  <Save className="h-4 w-4" />
+                  <FloppyDisk className="h-4 w-4" weight="regular" />
                 )}
                 {savingMaster ? "Saving..." : "Save resume text"}
               </Button>
@@ -643,9 +643,9 @@ export function GenerateResumeForm({
             </label>
             <Button type="submit" disabled={!canGenerate}>
               {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
               ) : (
-                <Sparkles className="h-4 w-4" />
+                <Sparkle className="h-4 w-4" weight="regular" />
               )}
               {loading ? "Tailoring..." : "Tailor resume"}
             </Button>
@@ -693,9 +693,9 @@ export function GenerateResumeForm({
               onClick={() => setEditingPreview((value) => !value)}
             >
               {editingPreview ? (
-                <Eye className="h-4 w-4" />
+                <Eye className="h-4 w-4" weight="regular" />
               ) : (
-                <Edit3 className="h-4 w-4" />
+                <PencilSimple className="h-4 w-4" weight="regular" />
               )}
               {editingPreview ? "Preview" : "Edit"}
             </Button>
@@ -707,9 +707,9 @@ export function GenerateResumeForm({
               onClick={() => savePreview()}
             >
               {savingPreview ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
               ) : (
-                <Save className="h-4 w-4" />
+                <FloppyDisk className="h-4 w-4" weight="regular" />
               )}
               Save
             </Button>
@@ -720,7 +720,7 @@ export function GenerateResumeForm({
               disabled={!preview || savingPreview}
               onClick={onDownload}
             >
-              <Download className="h-4 w-4" />
+              <DownloadSimple className="h-4 w-4" weight="regular" />
               Download
             </Button>
             <Button
@@ -730,7 +730,7 @@ export function GenerateResumeForm({
               disabled={!preview}
               onClick={onShare}
             >
-              <Share2 className="h-4 w-4" />
+              <ShareNetwork className="h-4 w-4" weight="regular" />
               Share
             </Button>
           </div>
@@ -870,7 +870,7 @@ export function GenerateResumeForm({
           )
         ) : (
           <div className="flex min-h-[520px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/50 p-8 text-center">
-            <Sparkles className="h-8 w-8 text-accent" />
+            <Sparkle className="h-8 w-8 text-accent" weight="regular" />
             <h4 className="mt-4 font-serif text-3xl text-primary">
               Waiting for details
             </h4>
