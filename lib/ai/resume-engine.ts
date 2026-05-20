@@ -479,6 +479,25 @@ function defaultProjectLines(input: BuildResumeInput) {
   ];
 }
 
+function customSectionLines(input: BuildResumeInput) {
+  return input.customSections.flatMap((section) => {
+    const lines = section.content
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    if (!lines.length) {
+      return [];
+    }
+
+    return [
+      section.title.trim().toUpperCase(),
+      ...lines,
+      ""
+    ];
+  });
+}
+
 function buildDeterministicResume(input: BuildResumeInput): BuiltResumeOutput {
   const skills = compactList(input.skills);
   const role = input.targetRole;
@@ -516,7 +535,9 @@ function buildDeterministicResume(input: BuildResumeInput): BuiltResumeOutput {
     "PROJECTS",
     ...defaultProjectLines(input),
     "",
-    ...certificateLines
+    ...certificateLines,
+    ...(certificateLines.length ? [""] : []),
+    ...customSectionLines(input)
   ]
     .filter((line) => line !== undefined)
     .join("\n")
@@ -524,7 +545,9 @@ function buildDeterministicResume(input: BuildResumeInput): BuiltResumeOutput {
     .trim();
   const analysis = analyzeResumeAts({
     resumeText: fullText,
-    jobDescription: `${input.jobType} ${role} ${skills.join(" ")} ${input.prompt ?? ""}`,
+    jobDescription: `${input.jobType} ${role} ${skills.join(" ")} ${input.prompt ?? ""} ${input.customSections
+      .map((section) => `${section.title} ${section.content}`)
+      .join(" ")}`,
     role
   });
 
@@ -561,7 +584,7 @@ export async function buildStudentResume(
       },
       {
         role: "user",
-        content: `Return strict JSON: {"summary":"", "skills":[""], "bullets":[""], "afterText":"complete resume text with headings SUMMARY, EDUCATION, SKILLS, PROJECTS, optional EXPERIENCE and CERTIFICATIONS", "keywords":[""], "atsScore":0}
+        content: `Return strict JSON: {"summary":"", "skills":[""], "bullets":[""], "afterText":"complete resume text with headings SUMMARY, EDUCATION, SKILLS, PROJECTS, optional EXPERIENCE, CERTIFICATIONS, and student custom sections", "keywords":[""], "atsScore":0}
 
 Student details:
 ${JSON.stringify(input, null, 2)}
@@ -569,6 +592,8 @@ ${JSON.stringify(input, null, 2)}
 Rules:
 - Keep it one page.
 - Use the student's selected skills and prompt only.
+- Preserve custom section titles when provided.
+- Write every section heading in uppercase.
 - If details are missing, write beginner-friendly honest language.
 - Do not add fake companies or fake achievements.`
       }
@@ -585,7 +610,9 @@ Rules:
 
   const analysis = analyzeResumeAts({
     resumeText: parsed.afterText,
-    jobDescription: `${input.jobType} ${input.targetRole} ${input.skills.join(" ")} ${input.prompt}`,
+    jobDescription: `${input.jobType} ${input.targetRole} ${input.skills.join(" ")} ${input.prompt} ${input.customSections
+      .map((section) => `${section.title} ${section.content}`)
+      .join(" ")}`,
     role: input.targetRole
   });
 

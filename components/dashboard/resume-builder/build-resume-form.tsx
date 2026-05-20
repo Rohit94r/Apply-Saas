@@ -6,8 +6,10 @@ import {
   Edit3,
   Eye,
   Loader2,
+  Plus,
   Save,
-  Sparkles
+  Sparkles,
+  X
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -37,6 +39,12 @@ type BuiltResume = {
 
 type BuiltResumeResponse = {
   resume: BuiltResume;
+};
+
+type CustomSection = {
+  id: string;
+  title: string;
+  content: string;
 };
 
 const jobTypes = [
@@ -133,6 +141,15 @@ const templates: Array<{ id: TemplateId; title: string; detail: string }> = [
   }
 ];
 
+const locationSuggestions = [
+  "Mumbai",
+  "Pune",
+  "Bengaluru",
+  "Hyderabad",
+  "Delhi NCR",
+  "Remote"
+];
+
 async function readApiJson<T>(response: Response, fallbackMessage: string) {
   const contentType = response.headers.get("content-type") ?? "";
 
@@ -163,6 +180,36 @@ function splitComma(value: string) {
     .filter(Boolean);
 }
 
+function normalizeSkill(value: string) {
+  return value.replace(/\s+/g, " ").replace(/^,+|,+$/g, "").trim();
+}
+
+function uniqueSkills(values: string[]) {
+  const seen = new Set<string>();
+
+  return values
+    .map(normalizeSkill)
+    .filter(Boolean)
+    .filter((skill) => {
+      const key = skill.toLowerCase();
+
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    });
+}
+
+function createSectionId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 function buildPreview(response: BuiltResume) {
   return {
     id: response.id,
@@ -189,6 +236,8 @@ export function BuildResumeForm() {
     "React",
     "Node.js"
   ]);
+  const [skillDraft, setSkillDraft] = useState("");
+  const [customSections, setCustomSections] = useState<CustomSection[]>([]);
   const [hasExperience, setHasExperience] = useState(false);
   const [hasProjects, setHasProjects] = useState(true);
   const [hasCertificates, setHasCertificates] = useState(false);
@@ -224,11 +273,58 @@ export function BuildResumeForm() {
     setForm((current) => ({ ...current, [name]: value }));
   }
 
+  function addSkills(value: string) {
+    const incoming = value
+      .split(",")
+      .map(normalizeSkill)
+      .filter(Boolean);
+
+    if (!incoming.length) {
+      return;
+    }
+
+    setSelectedSkills((current) => uniqueSkills([...current, ...incoming]));
+    setSkillDraft("");
+  }
+
   function toggleSkill(skill: string) {
     setSelectedSkills((current) =>
       current.includes(skill)
         ? current.filter((item) => item !== skill)
-        : [...current, skill]
+        : uniqueSkills([...current, skill])
+    );
+  }
+
+  function removeSkill(skill: string) {
+    setSelectedSkills((current) => current.filter((item) => item !== skill));
+  }
+
+  function addCustomSection() {
+    setCustomSections((current) => [
+      ...current,
+      {
+        id: createSectionId(),
+        title: "",
+        content: ""
+      }
+    ]);
+  }
+
+  function updateCustomSection(
+    id: string,
+    key: "title" | "content",
+    value: string
+  ) {
+    setCustomSections((current) =>
+      current.map((section) =>
+        section.id === id ? { ...section, [key]: value } : section
+      )
+    );
+  }
+
+  function removeCustomSection(id: string) {
+    setCustomSections((current) =>
+      current.filter((section) => section.id !== id)
     );
   }
 
@@ -246,13 +342,19 @@ export function BuildResumeForm() {
           jobType,
           targetRole,
           template,
-          skills: selectedSkills,
+          skills: uniqueSkills(selectedSkills),
           hasExperience,
           hasProjects,
           hasCertificates,
           wantsPhoto,
           projects: hasProjects ? splitLines(form.projects) : [],
-          certificates: hasCertificates ? splitLines(form.certificates) : []
+          certificates: hasCertificates ? splitLines(form.certificates) : [],
+          customSections: customSections
+            .map((section) => ({
+              title: section.title.trim() || "Additional",
+              content: section.content.trim()
+            }))
+            .filter((section) => section.content)
         })
       });
       const data = await readApiJson<BuiltResumeResponse>(
@@ -362,6 +464,18 @@ export function BuildResumeForm() {
                 onChange={(event) => updateField("location", event.target.value)}
                 placeholder="Mumbai"
               />
+              <span className="flex flex-wrap gap-1.5">
+                {locationSuggestions.map((location) => (
+                  <button
+                    key={location}
+                    type="button"
+                    onClick={() => updateField("location", location)}
+                    className="rounded-full border border-border bg-white px-2.5 py-1 text-[11px] font-semibold text-muted-foreground"
+                  >
+                    {location}
+                  </button>
+                ))}
+              </span>
             </label>
             <label className="space-y-2">
               <span className="text-sm font-semibold">LinkedIn</span>
@@ -392,7 +506,9 @@ export function BuildResumeForm() {
                 onClick={() => {
                   setJobType(item);
                   setTargetRole(roleOptions[item][0]);
-                  setSelectedSkills(skillOptions[item].slice(0, 5));
+                  setSelectedSkills((current) =>
+                    uniqueSkills([...current, ...skillOptions[item].slice(0, 4)])
+                  );
                 }}
                 className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
                   jobType === item
@@ -426,6 +542,25 @@ export function BuildResumeForm() {
               />
             </label>
           </div>
+          <div className="mt-4">
+            <p className="fine-label mb-2">Suggested roles</p>
+            <div className="flex flex-wrap gap-2">
+              {roles.map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => setTargetRole(role)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                    targetRole === role
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-white text-muted-foreground"
+                  }`}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
+          </div>
         </Card>
 
         <Card className="p-6">
@@ -451,21 +586,66 @@ export function BuildResumeForm() {
               placeholder="2029"
             />
           </div>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {skills.map((skill) => (
-              <button
-                key={skill}
-                type="button"
-                onClick={() => toggleSkill(skill)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                  selectedSkills.includes(skill)
-                    ? "border-accent bg-accent/10 text-accent"
-                    : "border-border bg-white text-muted-foreground"
-                }`}
-              >
-                {skill}
-              </button>
-            ))}
+          <div className="mt-5 grid gap-3 md:grid-cols-[1fr_auto]">
+            <Input
+              value={skillDraft}
+              onChange={(event) => setSkillDraft(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  addSkills(skillDraft);
+                }
+              }}
+              placeholder="Type your skills, separated by commas"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addSkills(skillDraft)}
+            >
+              <Plus className="h-4 w-4" />
+              Add skills
+            </Button>
+          </div>
+          <div className="mt-4">
+            <p className="fine-label mb-2">Your skills</p>
+            <div className="flex flex-wrap gap-2">
+              {selectedSkills.map((skill) => (
+                <span
+                  key={skill}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-accent bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent"
+                >
+                  {skill}
+                  <button
+                    type="button"
+                    onClick={() => removeSkill(skill)}
+                    aria-label={`Remove ${skill}`}
+                    className="text-accent"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4">
+            <p className="fine-label mb-2">Suggested skills</p>
+            <div className="flex flex-wrap gap-2">
+              {skills.map((skill) => (
+                <button
+                  key={skill}
+                  type="button"
+                  onClick={() => toggleSkill(skill)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                    selectedSkills.includes(skill)
+                      ? "border-accent bg-accent/10 text-accent"
+                      : "border-border bg-white text-muted-foreground"
+                  }`}
+                >
+                  {skill}
+                </button>
+              ))}
+            </div>
           </div>
         </Card>
 
@@ -516,6 +696,49 @@ export function BuildResumeForm() {
               placeholder="One certificate per line"
             />
           ) : null}
+          <div className="mt-5 border-t border-border pt-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="fine-label">Custom sections</p>
+              <Button type="button" variant="outline" onClick={addCustomSection}>
+                <Plus className="h-4 w-4" />
+                Add section
+              </Button>
+            </div>
+            <div className="mt-4 space-y-4">
+              {customSections.map((section, index) => (
+                <div
+                  key={section.id}
+                  className="rounded-lg border border-border bg-white p-4"
+                >
+                  <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                    <Input
+                      value={section.title}
+                      onChange={(event) =>
+                        updateCustomSection(section.id, "title", event.target.value)
+                      }
+                      placeholder={`Section ${index + 1} title`}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => removeCustomSection(section.id)}
+                    >
+                      <X className="h-4 w-4" />
+                      Remove
+                    </Button>
+                  </div>
+                  <Textarea
+                    className="mt-3 min-h-24"
+                    value={section.content}
+                    onChange={(event) =>
+                      updateCustomSection(section.id, "content", event.target.value)
+                    }
+                    placeholder="Achievements, coursework, leadership, languages"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </Card>
 
         <Card className="p-6">

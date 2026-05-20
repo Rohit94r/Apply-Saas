@@ -8,7 +8,7 @@ For users who do not have a resume yet.
 
 1. User answers guided student questions in `/dashboard/build`.
 2. `POST /api/resumes/build` validates input.
-3. `buildStudentResume` creates a one-page resume from role, education, skills, projects, certificates, and optional prompt.
+3. `buildStudentResume` creates a one-page resume from role, education, typed skills, projects, certificates, custom sections, and optional prompt.
 4. Resume is saved as a generated resume with a selected template.
 5. `/api/pdf?resumeId=...` renders the generated text with the selected PDF template.
 

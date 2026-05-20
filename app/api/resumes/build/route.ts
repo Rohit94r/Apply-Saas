@@ -13,7 +13,9 @@ export async function POST(request: Request) {
     const saveInput: GenerateResumeInput = {
       company: "Resume Builder",
       role: input.targetRole,
-      jobDescription: `${input.jobType} ${input.targetRole} ${input.skills.join(" ")}`,
+      jobDescription: `${input.jobType} ${input.targetRole} ${input.skills.join(" ")} ${input.customSections
+        .map((section) => `${section.title} ${section.content}`)
+        .join(" ")}`,
       masterResume: built.afterText
     };
     const resume = await createGeneratedResume(userId, saveInput, {

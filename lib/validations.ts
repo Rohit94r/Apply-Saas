@@ -37,7 +37,15 @@ export const buildResumeSchema = z.object({
   projects: z.array(z.string().trim().min(1)).default([]),
   hasCertificates: z.boolean().default(false),
   certificates: z.array(z.string().trim().min(1)).default([]),
-  wantsPhoto: z.boolean().default(false)
+  wantsPhoto: z.boolean().default(false),
+  customSections: z
+    .array(
+      z.object({
+        title: z.string().trim().min(1).max(60),
+        content: z.string().trim().min(1).max(1200)
+      })
+    )
+    .default([])
 });
 
 export const masterResumeSchema = z.object({
