@@ -9,7 +9,43 @@ const InterviewGuideSchema = new Schema(
     generatedQuestions: [{ type: String }],
     companyAnalysis: { type: String },
     prepNotes: [{ type: String }],
-    technicalTopics: [{ type: String }]
+    technicalTopics: [{ type: String }],
+    roadmap: [
+      {
+        _id: false,
+        week: { type: String },
+        goal: { type: String },
+        tasks: [{ type: String }],
+        output: { type: String }
+      }
+    ],
+    codingQuestions: [
+      {
+        _id: false,
+        title: { type: String },
+        pattern: { type: String },
+        difficulty: { type: String },
+        why: { type: String },
+        link: { type: String }
+      }
+    ],
+    companyQuestions: [{ type: String }],
+    behavioralQuestions: [{ type: String }],
+    mockPlan: [{ type: String }],
+    freeResources: [
+      {
+        _id: false,
+        title: { type: String },
+        provider: { type: String },
+        type: { type: String },
+        url: { type: String },
+        focus: { type: String }
+      }
+    ],
+    focusAreas: [{ type: String }],
+    timeline: { type: String },
+    experienceLevel: { type: String },
+    preferredLanguage: { type: String }
   },
   { timestamps: true }
 );

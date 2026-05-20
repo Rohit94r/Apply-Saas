@@ -69,10 +69,24 @@ export const updateGeneratedResumeSchema = z.object({
 });
 
 export const interviewGuideSchema = z.object({
-  company: z.string().min(2),
-  role: z.string().min(2),
-  jobDescription: z.string().min(80),
-  resumeContent: z.string().min(80)
+  company: z.string().trim().min(2, "Company is required"),
+  role: z.string().trim().min(2, "Role is required"),
+  jobDescription: z
+    .string()
+    .trim()
+    .min(10, "Add a short job description or role requirements"),
+  resumeContent: z
+    .string()
+    .trim()
+    .min(10, "Add a short resume summary, skills, or projects"),
+  experienceLevel: z.string().trim().max(80).default("Student / Fresher"),
+  timeline: z.string().trim().max(40).default("14 days"),
+  preferredLanguage: z.string().trim().max(80).default("JavaScript"),
+  focusAreas: z.array(z.string().trim().min(1)).default([
+    "DSA",
+    "Projects",
+    "HR"
+  ])
 });
 
 export const coverLetterSchema = z.object({

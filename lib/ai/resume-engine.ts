@@ -6,6 +6,7 @@ import type {
   ProfessionalPhotoInput,
   ResumeCritiqueInput
 } from "@/lib/validations";
+import type { InterviewGuide as InterviewGuideType } from "@/types";
 import { getTextAIClient } from "@/lib/ai/openai";
 import {
   coverLetterPrompt,
@@ -49,6 +50,19 @@ type ProfessionalPhotoOutput = {
   crop: string;
   wardrobe: string;
 };
+
+type InterviewGuideOutput = Omit<
+  InterviewGuideType,
+  | "id"
+  | "userId"
+  | "company"
+  | "role"
+  | "createdAt"
+  | "focusAreas"
+  | "timeline"
+  | "experienceLevel"
+  | "preferredLanguage"
+>;
 
 type BuiltResumeOutput = {
   summary: string;
@@ -756,22 +770,551 @@ export async function generateTailoredResume(
   };
 }
 
-export async function generateInterviewGuide(input: InterviewGuideInput) {
-  const textAI = getTextAIClient();
-  const fallback = {
-    companyAnalysis: `${input.company} is hiring for ${input.role}; prepare examples that connect your resume projects to the role requirements.`,
+const codingQuestionBank: NonNullable<InterviewGuideOutput["codingQuestions"]> = [
+  {
+    title: "Two Sum",
+    pattern: "Hash map",
+    difficulty: "Easy",
+    why: "Tests whether you can trade space for faster lookup and explain complexity.",
+    link: "https://leetcode.com/problems/two-sum/"
+  },
+  {
+    title: "Valid Parentheses",
+    pattern: "Stack",
+    difficulty: "Easy",
+    why: "Common screening question for stack usage and edge-case handling.",
+    link: "https://leetcode.com/problems/valid-parentheses/"
+  },
+  {
+    title: "Best Time to Buy and Sell Stock",
+    pattern: "One-pass greedy",
+    difficulty: "Easy",
+    why: "Checks if you can convert brute force into a clean linear solution.",
+    link: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+  },
+  {
+    title: "Longest Substring Without Repeating Characters",
+    pattern: "Sliding window",
+    difficulty: "Medium",
+    why: "Very useful for frontend/backend roles that involve string and state tracking.",
+    link: "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+  },
+  {
+    title: "Product of Array Except Self",
+    pattern: "Prefix and suffix",
+    difficulty: "Medium",
+    why: "Shows array reasoning without division and with O(1) extra space discussion.",
+    link: "https://leetcode.com/problems/product-of-array-except-self/"
+  },
+  {
+    title: "Merge Intervals",
+    pattern: "Sorting intervals",
+    difficulty: "Medium",
+    why: "Appears often in scheduling, calendar, booking, and availability problems.",
+    link: "https://leetcode.com/problems/merge-intervals/"
+  },
+  {
+    title: "Top K Frequent Elements",
+    pattern: "Hash map and heap/bucket",
+    difficulty: "Medium",
+    why: "Good for explaining frequency maps, heap tradeoffs, and large input handling.",
+    link: "https://leetcode.com/problems/top-k-frequent-elements/"
+  },
+  {
+    title: "Number of Islands",
+    pattern: "DFS/BFS graph traversal",
+    difficulty: "Medium",
+    why: "Classic grid traversal problem that tests visited-state discipline.",
+    link: "https://leetcode.com/problems/number-of-islands/"
+  },
+  {
+    title: "Course Schedule",
+    pattern: "Graph topological sort",
+    difficulty: "Medium",
+    why: "Strong signal for dependency reasoning and cycle detection.",
+    link: "https://leetcode.com/problems/course-schedule/"
+  },
+  {
+    title: "LRU Cache",
+    pattern: "Hash map and linked list",
+    difficulty: "Medium",
+    why: "Good senior-style data structure design question even for strong interns.",
+    link: "https://leetcode.com/problems/lru-cache/"
+  },
+  {
+    title: "Coin Change",
+    pattern: "Dynamic programming",
+    difficulty: "Medium",
+    why: "Tests if you can define state, transition, base case, and complexity clearly.",
+    link: "https://leetcode.com/problems/coin-change/"
+  },
+  {
+    title: "Kth Largest Element in an Array",
+    pattern: "Heap or quickselect",
+    difficulty: "Medium",
+    why: "Useful for comparing heap, sorting, and selection algorithm tradeoffs.",
+    link: "https://leetcode.com/problems/kth-largest-element-in-an-array/"
+  }
+];
+
+const freeInterviewResources: NonNullable<InterviewGuideOutput["freeResources"]> = [
+  {
+    title: "Top Interview 150",
+    provider: "LeetCode",
+    type: "Practice set",
+    url: "https://leetcode.com/studyplan/top-interview-150/",
+    focus: "Original interview-style coding questions across core topics."
+  },
+  {
+    title: "Striver A2Z DSA Sheet",
+    provider: "takeUforward",
+    type: "Roadmap + practice",
+    url: "https://takeuforward.org/dsa/strivers-a2z-sheet-learn-dsa-a-to-z",
+    focus: "Structured DSA from basics to advanced with topic order."
+  },
+  {
+    title: "Interview Prep",
+    provider: "Google Tech Dev Guide",
+    type: "Practice + tips",
+    url: "https://techdevguide.withgoogle.com/paths/interview/",
+    focus: "Technical interview tips and former Google-style practice questions."
+  },
+  {
+    title: "Interview Preparation Kit",
+    provider: "HackerRank",
+    type: "Practice kit",
+    url: "https://www.hackerrank.com/interview/interview-preparation-kit",
+    focus: "Arrays, hash maps, sorting, strings, greedy, graphs, trees, and more."
+  },
+  {
+    title: "DSA courses",
+    provider: "freeCodeCamp YouTube",
+    type: "Free video",
+    url: "https://www.youtube.com/@freecodecamp/search?query=data%20structures%20algorithms",
+    focus: "Beginner-friendly long-form DSA and algorithm tutorials."
+  },
+  {
+    title: "NeetCode Roadmap",
+    provider: "NeetCode",
+    type: "Roadmap",
+    url: "https://neetcode.io/roadmap",
+    focus: "Pattern-first route through common coding interview topics."
+  },
+  {
+    title: "Mock interviews",
+    provider: "Pramp",
+    type: "Peer mock",
+    url: "https://www.pramp.com/",
+    focus: "Live peer practice for coding and communication."
+  }
+];
+
+function asStringArray(value: unknown, fallback: string[], limit = 12) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const result = value
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean)
+    .slice(0, limit);
+
+  return result.length ? result : fallback;
+}
+
+function parseTimelineDays(timeline: string) {
+  const match = timeline.match(/\d+/);
+
+  return match ? Number(match[0]) : 14;
+}
+
+function hasFocus(input: InterviewGuideInput, pattern: RegExp) {
+  return pattern.test(
+    `${input.role} ${input.jobDescription} ${input.resumeContent} ${input.focusAreas.join(" ")}`
+  );
+}
+
+function selectCodingQuestions(input: InterviewGuideInput) {
+  const selected = [...codingQuestionBank];
+
+  if (hasFocus(input, /frontend|react|javascript|typescript|ui|web/i)) {
+    selected.unshift(
+      codingQuestionBank.find((question) =>
+        question.title.includes("Longest Substring")
+      ) ?? codingQuestionBank[3]
+    );
+  }
+
+  if (hasFocus(input, /backend|api|database|system|node|server/i)) {
+    selected.unshift(
+      codingQuestionBank.find((question) => question.title === "LRU Cache") ??
+        codingQuestionBank[9]
+    );
+  }
+
+  if (hasFocus(input, /data|machine|analytics|sql|python/i)) {
+    selected.unshift(
+      codingQuestionBank.find((question) =>
+        question.title.includes("Top K")
+      ) ?? codingQuestionBank[6]
+    );
+  }
+
+  const seen = new Set<string>();
+  const limit = parseTimelineDays(input.timeline) <= 7 ? 6 : 10;
+
+  return selected
+    .filter((question) => {
+      if (seen.has(question.title)) {
+        return false;
+      }
+
+      seen.add(question.title);
+      return true;
+    })
+    .slice(0, limit);
+}
+
+function buildRoadmap(input: InterviewGuideInput) {
+  const days = parseTimelineDays(input.timeline);
+  const questions = selectCodingQuestions(input).slice(0, 6);
+  const keywords = extractKeywords(input.jobDescription).slice(0, 6);
+
+  if (days <= 7) {
+    return [
+      {
+        week: "Days 1-2",
+        goal: "Role and resume alignment",
+        tasks: [
+          `Prepare one strong ${input.role} project story from your resume.`,
+          `Review job keywords: ${keywords.join(", ") || "role fundamentals"}.`,
+          "Write a 60-second introduction and a 2-minute project explanation."
+        ],
+        output: "One polished intro, one project story, and one weakness fix."
+      },
+      {
+        week: "Days 3-5",
+        goal: "Coding pattern sprint",
+        tasks: questions.slice(0, 4).map(
+          (question) => `${question.pattern}: solve ${question.title}`
+        ),
+        output: "Four solved problems with complexity notes."
+      },
+      {
+        week: "Days 6-7",
+        goal: "Mock interview and revision",
+        tasks: [
+          "Run one 45-minute coding mock.",
+          "Practice company-style questions out loud.",
+          "Revise mistakes and prepare interviewer questions."
+        ],
+        output: "Final revision sheet and mock feedback list."
+      }
+    ];
+  }
+
+  return [
+    {
+      week: "Week 1",
+      goal: "Build fundamentals and role story",
+      tasks: [
+        "Prepare introduction, resume walkthrough, and top project story.",
+        "Revise arrays, strings, hash maps, stacks, queues, and complexity.",
+        `Solve ${questions
+          .slice(0, 3)
+          .map((question) => question.title)
+          .join(", ")}.`
+      ],
+      output: "Core notes plus 3 solved problems."
+    },
+    {
+      week: "Week 2",
+      goal: "Interview patterns",
+      tasks: [
+        "Practice sliding window, two pointers, intervals, binary search, and trees.",
+        `Solve ${questions
+          .slice(3, 7)
+          .map((question) => question.title)
+          .join(", ")}.`,
+        "Record one solution explanation and check clarity."
+      ],
+      output: "Pattern notebook with mistakes and complexity notes."
+    },
+    {
+      week: days >= 30 ? "Week 3" : "Final 3 days",
+      goal: "Company and project rounds",
+      tasks: [
+        `Prepare ${input.company} product/company research.`,
+        "Practice project deep-dive, tradeoffs, debugging, and teamwork stories.",
+        "Revise role-specific technical topics from the job description."
+      ],
+      output: "Company question answers and project architecture notes."
+    },
+    {
+      week: days >= 30 ? "Week 4" : "Final day",
+      goal: "Mock and final polish",
+      tasks: [
+        "Run one coding mock and one HR/project mock.",
+        "Review only missed patterns and common mistakes.",
+        "Prepare questions to ask the interviewer."
+      ],
+      output: "Final interview sheet ready for the interview day."
+    }
+  ];
+}
+
+function buildCompanyQuestions(input: InterviewGuideInput) {
+  const keywords = extractKeywords(input.jobDescription).slice(0, 5);
+  const strongestKeyword = keywords[0] ?? "the core role requirement";
+
+  return [
+    `[${input.company} style] Walk through the resume project most relevant to ${input.role}. Why did you choose that architecture?`,
+    `[${input.company} style] Solve a ${strongestKeyword} related problem and explain time and space complexity.`,
+    `[${input.company} style] How would you debug a production issue where users report slow response times?`,
+    `[${input.company} style] If your project had 10x more users, what would break first and how would you improve it?`,
+    `[${input.company} style] Explain one technical decision from your resume and one tradeoff you considered.`,
+    `[${input.company} style] What would you learn in the first 30 days to become productive in this team?`
+  ];
+}
+
+function buildBehavioralQuestions(input: InterviewGuideInput) {
+  return [
+    `Why do you want the ${input.role} role at ${input.company}?`,
+    "Tell me about a time you got stuck and how you solved it.",
+    "Describe a project decision you changed after feedback.",
+    "Tell me about a time you had to learn a new tool quickly.",
+    "What is one weakness in your resume, and what are you doing to improve it?"
+  ];
+}
+
+function buildMockPlan(input: InterviewGuideInput) {
+  return [
+    `10 min: ${input.company} and job description research recap.`,
+    `35 min: ${input.preferredLanguage} coding question with verbal explanation.`,
+    "20 min: resume project deep-dive with architecture and tradeoffs.",
+    "15 min: HR questions using situation, action, result.",
+    "10 min: feedback, missed patterns, and next revision target."
+  ];
+}
+
+function buildFallbackInterviewGuide(
+  input: InterviewGuideInput
+): InterviewGuideOutput {
+  const keywords = extractKeywords(input.jobDescription).slice(0, 8);
+  const codingQuestions = selectCodingQuestions(input);
+
+  return {
+    companyAnalysis: `${input.company} interview prep should connect your resume projects to the ${input.role} requirements, especially ${keywords
+      .slice(0, 4)
+      .join(", ") || "core technical fundamentals"}. Treat this as company-style practice based on the public role details and your resume, not private exact PYQs.`,
     generatedQuestions: [
-      "Tell me about a project that best matches this role.",
-      "How do you handle unclear requirements while building software?",
-      "What would you improve in your strongest project if you had another week?"
+      "Tell me about the project on your resume that best matches this job.",
+      "Explain one technical challenge you faced and how you debugged it.",
+      "What would you improve in your strongest project if you had one more week?",
+      "How do you make sure your code is readable, tested, and maintainable?",
+      "Explain the time and space complexity of your coding solution."
     ],
     prepNotes: [
-      "Prepare one project story with problem, action, result, and metric.",
-      "Review the technical keywords from the job description.",
-      "Write down two thoughtful questions for the interviewer."
+      "Prepare one project story using problem, action, result, and learning.",
+      "Write complexity notes for every coding problem you solve.",
+      "Use company-style questions for practice, but avoid claiming any private PYQ is exact.",
+      "After every mock, revise only the top three mistakes."
     ],
-    technicalTopics: extractKeywords(input.jobDescription).slice(0, 6)
+    technicalTopics: keywords.length
+      ? keywords
+      : ["Arrays", "Hash maps", "Strings", "Trees", "Graphs", "Projects"],
+    roadmap: buildRoadmap(input),
+    codingQuestions,
+    companyQuestions: buildCompanyQuestions(input),
+    behavioralQuestions: buildBehavioralQuestions(input),
+    mockPlan: buildMockPlan(input),
+    freeResources: freeInterviewResources
   };
+}
+
+function normalizeCodingQuestions(
+  value: unknown,
+  fallback: NonNullable<InterviewGuideOutput["codingQuestions"]>
+) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const questions = value
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const question = item as Record<string, unknown>;
+      const difficulty = String(question.difficulty ?? "Medium");
+      const normalizedDifficulty: "Easy" | "Medium" | "Hard" =
+        difficulty === "Easy" || difficulty === "Hard" ? difficulty : "Medium";
+
+      return {
+        title: String(question.title ?? "").trim(),
+        pattern: String(question.pattern ?? "").trim(),
+        difficulty: normalizedDifficulty,
+        why: String(question.why ?? "").trim(),
+        link:
+          typeof question.link === "string" && question.link.startsWith("http")
+            ? question.link
+            : undefined
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item?.title))
+    .slice(0, 12);
+
+  return questions.length ? questions : fallback;
+}
+
+function normalizeRoadmap(
+  value: unknown,
+  fallback: NonNullable<InterviewGuideOutput["roadmap"]>
+) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const roadmap = value
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const step = item as Record<string, unknown>;
+
+      return {
+        week: String(step.week ?? "").trim(),
+        goal: String(step.goal ?? "").trim(),
+        tasks: asStringArray(step.tasks, [], 5),
+        output: String(step.output ?? "").trim()
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item?.week))
+    .slice(0, 6);
+
+  return roadmap.length ? roadmap : fallback;
+}
+
+function normalizeResources(
+  value: unknown,
+  fallback: NonNullable<InterviewGuideOutput["freeResources"]>
+) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const resources = value
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const resource = item as Record<string, unknown>;
+      const url = String(resource.url ?? "").trim();
+
+      return {
+        title: String(resource.title ?? "").trim(),
+        provider: String(resource.provider ?? "").trim(),
+        type: String(resource.type ?? "").trim(),
+        url: url.startsWith("http") ? url : "",
+        focus: String(resource.focus ?? "").trim()
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item?.title))
+    .slice(0, 10);
+
+  return resources.length ? resources : fallback;
+}
+
+function mergeCodingQuestions(
+  primary: NonNullable<InterviewGuideOutput["codingQuestions"]>,
+  fallback: NonNullable<InterviewGuideOutput["codingQuestions"]>
+) {
+  const seen = new Set<string>();
+
+  return [...primary, ...fallback]
+    .filter((question) => {
+      const key = question.title.toLowerCase();
+
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 12);
+}
+
+function mergeResources(
+  primary: NonNullable<InterviewGuideOutput["freeResources"]>,
+  fallback: NonNullable<InterviewGuideOutput["freeResources"]>
+) {
+  const seen = new Set<string>();
+
+  return [...primary, ...fallback]
+    .filter((resource) => {
+      const key = `${resource.provider}-${resource.title}`.toLowerCase();
+
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 10);
+}
+
+function normalizeInterviewGuide(
+  parsed: Partial<InterviewGuideOutput>,
+  fallback: InterviewGuideOutput
+): InterviewGuideOutput {
+  const fallbackQuestions = fallback.codingQuestions ?? [];
+  const fallbackResources = fallback.freeResources ?? freeInterviewResources;
+
+  return {
+    companyAnalysis:
+      parsed.companyAnalysis?.trim() || fallback.companyAnalysis,
+    generatedQuestions: asStringArray(
+      parsed.generatedQuestions,
+      fallback.generatedQuestions,
+      12
+    ),
+    prepNotes: asStringArray(parsed.prepNotes, fallback.prepNotes, 10),
+    technicalTopics: asStringArray(
+      parsed.technicalTopics,
+      fallback.technicalTopics,
+      12
+    ),
+    roadmap: normalizeRoadmap(parsed.roadmap, fallback.roadmap ?? []),
+    codingQuestions: mergeCodingQuestions(
+      normalizeCodingQuestions(parsed.codingQuestions, []),
+      fallbackQuestions
+    ),
+    companyQuestions: asStringArray(
+      parsed.companyQuestions,
+      fallback.companyQuestions ?? [],
+      10
+    ),
+    behavioralQuestions: asStringArray(
+      parsed.behavioralQuestions,
+      fallback.behavioralQuestions ?? [],
+      10
+    ),
+    mockPlan: asStringArray(parsed.mockPlan, fallback.mockPlan ?? [], 10),
+    freeResources: mergeResources(
+      normalizeResources(parsed.freeResources, []),
+      fallbackResources
+    )
+  };
+}
+
+export async function generateInterviewGuide(input: InterviewGuideInput) {
+  const fallback = buildFallbackInterviewGuide(input);
+  const textAI = getTextAIClient();
 
   if (!textAI) {
     return fallback;
@@ -782,8 +1325,12 @@ export async function generateInterviewGuide(input: InterviewGuideInput) {
     response_format: { type: "json_object" },
     messages: [{ role: "user", content: interviewGuidePrompt(input) }]
   });
+  const parsed = safeJsonParse<Partial<InterviewGuideOutput>>(
+    completion.choices[0]?.message.content,
+    fallback
+  );
 
-  return safeJsonParse(completion.choices[0]?.message.content, fallback);
+  return normalizeInterviewGuide(parsed, fallback);
 }
 
 export async function generateCoverLetter(input: CoverLetterInput) {

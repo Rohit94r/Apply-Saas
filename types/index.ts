@@ -86,6 +86,33 @@ export type InterviewGuide = {
   generatedQuestions: string[];
   prepNotes: string[];
   technicalTopics: string[];
+  roadmap?: Array<{
+    week: string;
+    goal: string;
+    tasks: string[];
+    output: string;
+  }>;
+  codingQuestions?: Array<{
+    title: string;
+    pattern: string;
+    difficulty: "Easy" | "Medium" | "Hard";
+    why: string;
+    link?: string;
+  }>;
+  companyQuestions?: string[];
+  behavioralQuestions?: string[];
+  mockPlan?: string[];
+  freeResources?: Array<{
+    title: string;
+    provider: string;
+    type: string;
+    url: string;
+    focus: string;
+  }>;
+  focusAreas?: string[];
+  timeline?: string;
+  experienceLevel?: string;
+  preferredLanguage?: string;
   createdAt: string;
 };
 

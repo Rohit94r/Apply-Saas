@@ -87,6 +87,16 @@ type InterviewGuideRecord = {
   generatedQuestions?: string[];
   prepNotes?: string[];
   technicalTopics?: string[];
+  roadmap?: InterviewGuideType["roadmap"];
+  codingQuestions?: InterviewGuideType["codingQuestions"];
+  companyQuestions?: string[];
+  behavioralQuestions?: string[];
+  mockPlan?: string[];
+  freeResources?: InterviewGuideType["freeResources"];
+  focusAreas?: string[];
+  timeline?: string;
+  experienceLevel?: string;
+  preferredLanguage?: string;
   createdAt?: Date;
 };
 
@@ -248,6 +258,16 @@ export function serializeInterviewGuide(
     generatedQuestions: guide.generatedQuestions ?? [],
     prepNotes: guide.prepNotes ?? [],
     technicalTopics: guide.technicalTopics ?? [],
+    roadmap: guide.roadmap ?? [],
+    codingQuestions: guide.codingQuestions ?? [],
+    companyQuestions: guide.companyQuestions ?? [],
+    behavioralQuestions: guide.behavioralQuestions ?? [],
+    mockPlan: guide.mockPlan ?? [],
+    freeResources: guide.freeResources ?? [],
+    focusAreas: guide.focusAreas ?? [],
+    timeline: guide.timeline ?? "",
+    experienceLevel: guide.experienceLevel ?? "",
+    preferredLanguage: guide.preferredLanguage ?? "",
     createdAt: toISOString(guide.createdAt)
   };
 }
@@ -608,7 +628,17 @@ export async function createInterviewGuide(
         companyAnalysis: guide.companyAnalysis,
         generatedQuestions: guide.generatedQuestions,
         prepNotes: guide.prepNotes,
-        technicalTopics: guide.technicalTopics
+        technicalTopics: guide.technicalTopics,
+        roadmap: guide.roadmap,
+        codingQuestions: guide.codingQuestions,
+        companyQuestions: guide.companyQuestions,
+        behavioralQuestions: guide.behavioralQuestions,
+        mockPlan: guide.mockPlan,
+        freeResources: guide.freeResources,
+        focusAreas: input.focusAreas,
+        timeline: input.timeline,
+        experienceLevel: input.experienceLevel,
+        preferredLanguage: input.preferredLanguage
       });
 
       return serializeInterviewGuide(created.toObject() as InterviewGuideRecord);
@@ -624,6 +654,16 @@ export async function createInterviewGuide(
         generatedQuestions: guide.generatedQuestions,
         prepNotes: guide.prepNotes,
         technicalTopics: guide.technicalTopics,
+        roadmap: guide.roadmap,
+        codingQuestions: guide.codingQuestions,
+        companyQuestions: guide.companyQuestions,
+        behavioralQuestions: guide.behavioralQuestions,
+        mockPlan: guide.mockPlan,
+        freeResources: guide.freeResources,
+        focusAreas: input.focusAreas,
+        timeline: input.timeline,
+        experienceLevel: input.experienceLevel,
+        preferredLanguage: input.preferredLanguage,
         createdAt: new Date().toISOString()
       };
 

@@ -52,16 +52,33 @@ Create an interview preparation guide as strict JSON:
   "companyAnalysis": "short analysis",
   "generatedQuestions": ["question"],
   "prepNotes": ["note"],
-  "technicalTopics": ["topic"]
+  "technicalTopics": ["topic"],
+  "roadmap": [{"week":"Week 1","goal":"goal","tasks":["task"],"output":"deliverable"}],
+  "codingQuestions": [{"title":"question title","pattern":"pattern","difficulty":"Easy|Medium|Hard","why":"why this matters","link":"https://leetcode.com/problems/.../"}],
+  "companyQuestions": ["company-style technical or project question"],
+  "behavioralQuestions": ["behavioral question"],
+  "mockPlan": ["mock interview drill"],
+  "freeResources": [{"title":"resource title","provider":"provider","type":"video/course/practice/mock","url":"https://...","focus":"what to use it for"}]
 }
 
 Company: ${input.company}
 Role: ${input.role}
+Experience level: ${input.experienceLevel}
+Preparation time: ${input.timeline}
+Preferred language: ${input.preferredLanguage}
+Focus areas: ${input.focusAreas.join(", ")}
 Job description:
 ${input.jobDescription}
 
 Resume used:
 ${input.resumeContent}
+
+Rules:
+- Make the plan practical for a student or early-career candidate.
+- Include LeetCode-style questions by title and pattern, not copied solutions.
+- Company questions should be realistic company-style practice questions, not claimed exact private questions.
+- Prefer free resources and official/public links.
+- Keep every list concise and high-signal.
 `;
 }
 
