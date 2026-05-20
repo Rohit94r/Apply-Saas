@@ -11,9 +11,9 @@ export default async function InterviewPage() {
     <div>
       <PageHeader
         eyebrow="Interview prep"
-        title="Prepare from the exact resume you submitted."
-        description="Generate company research, likely questions, strengths, weaknesses, and technical topics from each job-specific resume."
-        cta="Generate guide"
+        title="Build a focused interview practice plan."
+        description="Create role-specific roadmap, coding practice, company-style questions, project prep, mock drills, and free learning resources from your resume and job description."
+        cta="Create prep plan"
         href="/dashboard/interview"
       />
       <InterviewGuideForm initialGuide={guides[0] ?? null} />
