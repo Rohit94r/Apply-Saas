@@ -1,4 +1,4 @@
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkle } from "@phosphor-icons/react/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/animations/reveal";
 import { SectionHeading } from "@/components/landing/section-heading";
@@ -44,7 +44,7 @@ export function EngineShowcase() {
           </Reveal>
           <div className="hidden items-center justify-center lg:flex">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-button">
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-5 w-5" weight="regular" />
             </div>
           </div>
           <Reveal delay={0.1}>
@@ -52,7 +52,7 @@ export function EngineShowcase() {
               <div className="mb-5 flex items-center justify-between gap-4">
                 <p className="fine-label">AI Optimized</p>
                 <Badge>
-                  <Sparkles className="mr-1 h-3.5 w-3.5" />
+                  <Sparkle className="mr-1 h-3.5 w-3.5" weight="regular" />
                   ATS 94
                 </Badge>
               </div>

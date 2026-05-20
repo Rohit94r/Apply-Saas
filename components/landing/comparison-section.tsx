@@ -1,16 +1,21 @@
-import { Check, Minus, X } from "lucide-react";
+import { CheckCircle, MinusCircle, XCircle } from "@phosphor-icons/react/ssr";
 import { Reveal } from "@/components/animations/reveal";
 import { SectionHeading } from "@/components/landing/section-heading";
 import { comparisonRows } from "@/lib/constants";
 
 function StatusIcon({ value, best = false }: { value: string; best?: boolean }) {
   if (value === "No") {
-    return <X className="h-4 w-4 text-red-500" />;
+    return <XCircle className="h-4 w-4 text-red-500" weight="regular" />;
   }
   if (value.includes("Manual") || value.includes("Limited") || value.includes("Requires")) {
-    return <Minus className="h-4 w-4 text-warning" />;
+    return <MinusCircle className="h-4 w-4 text-warning" weight="regular" />;
   }
-  return <Check className={best ? "h-4 w-4 text-accent" : "h-4 w-4 text-success"} />;
+  return (
+    <CheckCircle
+      className={best ? "h-4 w-4 text-accent" : "h-4 w-4 text-success"}
+      weight="regular"
+    />
+  );
 }
 
 export function ComparisonSection() {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/landing/logo";
 
@@ -33,7 +33,7 @@ export function Footer() {
           <Button asChild className="mt-8" size="lg">
             <Link href="/dashboard/generate">
               Generate my free resume
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" weight="regular" />
             </Link>
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">

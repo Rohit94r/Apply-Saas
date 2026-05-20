@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { CaretDown } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/animations/reveal";
 
@@ -56,7 +56,7 @@ export function InterviewPrepSection() {
                   <p className="text-sm font-semibold text-primary">{row.title}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{row.detail}</p>
                 </div>
-                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <CaretDown className="h-4 w-4 shrink-0 text-muted-foreground" weight="regular" />
               </div>
             ))}
           </div>

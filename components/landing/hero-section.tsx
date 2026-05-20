@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/animations/reveal";
 import { ResumeFlow } from "@/components/landing/resume-flow";
@@ -22,12 +22,12 @@ export function HeroSection() {
             <Button asChild size="lg">
               <Link href="/dashboard/generate">
                 Upload Resume
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" weight="regular" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link href="#engine">
-                <Play className="h-4 w-4" />
+                <Play className="h-4 w-4" weight="regular" />
                 Try Demo
               </Link>
             </Button>

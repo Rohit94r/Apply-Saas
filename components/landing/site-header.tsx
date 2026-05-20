@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { UserButton, useAuth } from "@clerk/nextjs";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/landing/logo";
 import { clerkIsConfigured } from "@/lib/clerk-config";
@@ -29,7 +29,7 @@ function PublicSiteHeader() {
       <Button asChild size="sm">
         <Link href="/sign-up">
           Start free
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="h-4 w-4" weight="regular" />
         </Link>
       </Button>
     </HeaderShell>
@@ -46,7 +46,7 @@ function ClerkSiteHeader() {
           <Button asChild size="sm">
             <Link href="/dashboard/generate">
               Dashboard
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" weight="regular" />
             </Link>
           </Button>
           <UserButton />
@@ -62,7 +62,7 @@ function ClerkSiteHeader() {
           <Button asChild size="sm">
             <Link href="/sign-up">
               Start free
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" weight="regular" />
             </Link>
           </Button>
         </>

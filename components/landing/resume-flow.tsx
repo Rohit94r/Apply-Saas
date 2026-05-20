@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, FileText, Sparkles } from "lucide-react";
+import { CheckCircle, FileText, Sparkle } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,11 @@ function ResumeMiniCard({
     >
       <div className="mb-4 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f0b45d]/30 text-primary">
-          {optimized ? <Sparkles className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
+          {optimized ? (
+            <Sparkle className="h-5 w-5" weight="regular" />
+          ) : (
+            <FileText className="h-5 w-5" weight="regular" />
+          )}
         </div>
         <div>
           <p className="text-sm font-semibold text-foreground">{title}</p>
@@ -57,7 +61,7 @@ function ResumeMiniCard({
       </div>
       {optimized ? (
         <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-          <Check className="h-3.5 w-3.5" />
+          <CheckCircle className="h-3.5 w-3.5" weight="regular" />
           ATS 94%
         </div>
       ) : null}

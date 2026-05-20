@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { CheckCircle } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/animations/reveal";
 import { SectionHeading } from "@/components/landing/section-heading";
@@ -127,7 +127,7 @@ export function PricingSection() {
                 <ul className="mt-8 space-y-3">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-3 text-sm">
-                      <Check className="h-4 w-4 shrink-0 text-accent" />
+                      <CheckCircle className="h-4 w-4 shrink-0 text-accent" weight="regular" />
                       <span>{feature}</span>
                     </li>
                   ))}
