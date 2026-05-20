@@ -7,10 +7,18 @@ import { InterviewPrepSection } from "@/components/landing/interview-prep-sectio
 import { PricingSection } from "@/components/landing/pricing-section";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Testimonials } from "@/components/landing/testimonials";
+import { organizationJsonLd, softwareJsonLd } from "@/lib/seo";
 
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([organizationJsonLd, softwareJsonLd])
+        }}
+      />
       <SiteHeader />
       <main>
         <HeroSection />

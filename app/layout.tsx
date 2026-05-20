@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { clerkIsConfigured, clerkPublishableKey } from "@/lib/clerk-config";
+import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -20,41 +21,47 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://apply.neexmeet.com"),
+  metadataBase: new URL(seoConfig.url),
   title: {
-    default: "Apply - AI resumes for every job",
+    default: seoConfig.title,
     template: "%s | Apply"
   },
-  description:
-    "Upload your resume once. Generate ATS-optimized resumes, cover letters, and interview prep for every job application.",
-  applicationName: "Apply",
+  description: seoConfig.description,
+  applicationName: seoConfig.name,
+  creator: "Apply",
+  publisher: "Apply",
+  category: "resume builder",
+  alternates: {
+    canonical: absoluteUrl("/")
+  },
   icons: {
     icon: "/symbol.png",
     shortcut: "/symbol.png",
     apple: "/symbol.png"
   },
-  keywords: [
-    "AI resume builder",
-    "ATS resume",
-    "student resume",
-    "job applications",
-    "cover letter generator",
-    "interview preparation"
-  ],
+  keywords: [...seoConfig.keywords],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1
+    }
+  },
   openGraph: {
-    title: "Apply - Stop rewriting resumes",
-    description:
-      "Generate tailored, ATS-optimized resumes for every role from one master profile.",
-    url: "https://apply.neexmeet.com",
-    siteName: "Apply",
+    title: seoConfig.title,
+    description: seoConfig.description,
+    url: seoConfig.url,
+    siteName: seoConfig.name,
     images: [{ url: "/logo.png", width: 1536, height: 1024, alt: "Apply" }],
     type: "website"
   },
   twitter: {
     card: "summary_large_image",
-    title: "Apply - AI resumes for every job",
-    description:
-      "Upload once. Paste a job description. Download a tailored resume instantly.",
+    title: seoConfig.title,
+    description: seoConfig.description,
     images: ["/logo.png"]
   }
 };
