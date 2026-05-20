@@ -94,7 +94,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: "Helvetica-Bold",
     color: "#0f5f6d",
-    marginBottom: 4
+    marginBottom: 4,
+    lineHeight: 1.05
+  },
+  modernLongName: {
+    fontSize: 20
+  },
+  modernExtraLongName: {
+    fontSize: 17
   },
   modernContacts: {
     fontSize: 8.5,
@@ -125,7 +132,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Helvetica-Bold",
     textAlign: "left",
-    marginBottom: 3
+    marginBottom: 3,
+    lineHeight: 1.05
+  },
+  compactLongName: {
+    fontSize: 17
+  },
+  compactExtraLongName: {
+    fontSize: 15
   },
   compactContacts: {
     fontSize: 8,
@@ -146,7 +160,14 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
     textAlign: "center",
     letterSpacing: 0.6,
-    marginBottom: 6
+    marginBottom: 6,
+    lineHeight: 1.05
+  },
+  templateLongName: {
+    fontSize: 21
+  },
+  templateExtraLongName: {
+    fontSize: 18
   },
   templateContacts: {
     textAlign: "center",
@@ -214,7 +235,16 @@ const SECTION_HEADERS = new Set([
   "SKILLS",
   "CERTIFICATE",
   "CERTIFICATES",
-  "CERTIFICATIONS"
+  "CERTIFICATIONS",
+  "ACHIEVEMENTS",
+  "COURSEWORK",
+  "LEADERSHIP",
+  "VOLUNTEERING",
+  "ACTIVITIES",
+  "LANGUAGES",
+  "PUBLICATIONS",
+  "AWARDS",
+  "INTERESTS"
 ]);
 
 type ParsedSection = {
@@ -226,8 +256,26 @@ function cleanLine(value: string) {
   return value.replace(/\s+/g, " ").trim();
 }
 
-function isSectionHeader(value: string) {
+function isKnownSectionHeader(value: string) {
   return SECTION_HEADERS.has(cleanLine(value).toUpperCase());
+}
+
+function isSectionHeader(value: string) {
+  const clean = cleanLine(value);
+  const line = clean.toUpperCase();
+
+  if (isKnownSectionHeader(line)) {
+    return true;
+  }
+
+  return (
+    clean === line &&
+    line.length >= 3 &&
+    line.length <= 42 &&
+    /^[A-Z][A-Z0-9 &/+.-]+$/.test(line) &&
+    !/\d{4}/.test(line) &&
+    !line.includes(",")
+  );
 }
 
 function parseResumeText(value: string) {
@@ -235,7 +283,7 @@ function parseResumeText(value: string) {
     .split(/\r?\n/)
     .map(cleanLine)
     .filter(Boolean);
-  const firstSectionIndex = lines.findIndex(isSectionHeader);
+  const firstSectionIndex = lines.findIndex(isKnownSectionHeader);
   const headerLines =
     firstSectionIndex >= 0 ? lines.slice(0, firstSectionIndex) : lines.slice(0, 2);
   const bodyLines =
@@ -276,6 +324,32 @@ function looksLikeHeading(line: string) {
     !/[.?!]$/.test(line) &&
     (/^[A-Z0-9]/.test(line) || line.includes("—") || line.includes("-"))
   );
+}
+
+function getNameStyle(name: string, template: ResumePdfData["template"]) {
+  const length = cleanLine(name).length;
+
+  if (template === "modern") {
+    return [
+      styles.modernName,
+      ...(length > 26 ? [styles.modernLongName] : []),
+      ...(length > 38 ? [styles.modernExtraLongName] : [])
+    ];
+  }
+
+  if (template === "compact") {
+    return [
+      styles.compactName,
+      ...(length > 24 ? [styles.compactLongName] : []),
+      ...(length > 36 ? [styles.compactExtraLongName] : [])
+    ];
+  }
+
+  return [
+    styles.templateName,
+    ...(length > 24 ? [styles.templateLongName] : []),
+    ...(length > 36 ? [styles.templateExtraLongName] : [])
+  ];
 }
 
 function TemplateSection({
@@ -348,12 +422,6 @@ export function ResumeDocument({ data }: { data: ResumePdfData }) {
         : template === "compact"
           ? styles.compactPage
           : styles.templatePage;
-    const nameStyle =
-      template === "modern"
-        ? styles.modernName
-        : template === "compact"
-          ? styles.compactName
-          : styles.templateName;
     const contactStyle =
       template === "modern"
         ? styles.modernContacts
@@ -364,7 +432,7 @@ export function ResumeDocument({ data }: { data: ResumePdfData }) {
     return (
       <Document title={`${data.name} - ${data.role} Resume`}>
         <Page size="A4" style={pageStyle}>
-          <Text style={nameStyle}>{parsed.name}</Text>
+          <Text style={getNameStyle(parsed.name, template)}>{parsed.name}</Text>
           {parsed.contacts ? (
             <Text style={contactStyle}>{parsed.contacts}</Text>
           ) : null}
