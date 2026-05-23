@@ -2,14 +2,16 @@ export const siteConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: "https://apply.neexmeet.com",
-  tagline: "Stop rewriting resumes. Start applying smarter.",
+  tagline: "Free AI resume builder for Indian students.",
   description:
-    "Upload your resume once. Generate ATS-optimized resumes for every job instantly.",
+    "Upload your resume once. Generate ATS-optimized resumes for internships and fresher jobs instantly.",
   nav: [
-    { label: "How it works", href: "#how-it-works" },
-    { label: "Why Apply", href: "#comparison" },
-    { label: "AI engine", href: "#engine" },
-    { label: "Pricing", href: "#pricing" }
+    { label: "How it works", href: "/#how-it-works" },
+    { label: "Why Apply", href: "/#comparison" },
+    { label: "AI engine", href: "/#engine" },
+    { label: "FAQ", href: "/#faq" },
+    { label: "Blog", href: "/blog" },
+    { label: "Pricing", href: "/#pricing" }
   ]
 } as const;
 

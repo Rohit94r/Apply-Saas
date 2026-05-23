@@ -6,19 +6,42 @@ import { Logo } from "@/components/landing/logo";
 const columns = [
   {
     title: "Product",
-    links: ["How it works", "AI resume engine", "Interview prep", "Pricing"]
+    links: [
+      { label: "How it works", href: "/#how-it-works" },
+      { label: "AI resume engine", href: "/#engine" },
+      { label: "Interview prep", href: "/dashboard/interview" },
+      { label: "Pricing", href: "/#pricing" }
+    ]
   },
   {
-    title: "Company",
-    links: ["About", "Blog", "Contact", "Students"]
+    title: "Guides",
+    links: [
+      { label: "ATS resume tips India", href: "/blog/ats-friendly-resume-india-2026" },
+      {
+        label: "Fresher resume format",
+        href: "/blog/fresher-resume-format-it-companies"
+      },
+      { label: "Internship resume mistakes", href: "/blog/internship-resume-mistakes" },
+      { label: "Blog", href: "/blog" }
+    ]
   },
   {
     title: "Legal",
-    links: ["Privacy", "Terms", "Security", "Data export"]
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Terms", href: "#" },
+      { label: "Security", href: "#" },
+      { label: "Data export", href: "#" }
+    ]
   },
   {
     title: "Social",
-    links: ["LinkedIn", "X", "GitHub", "Community"]
+    links: [
+      { label: "LinkedIn", href: "#" },
+      { label: "X", href: "#" },
+      { label: "GitHub", href: "#" },
+      { label: "Community", href: "#" }
+    ]
   }
 ];
 
@@ -44,8 +67,9 @@ export function Footer() {
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
-              AI resumes, cover letters, interview guides, and professional application tools
-              for students and early-career builders.
+              Free AI resume builder, ATS optimizer, cover letter generator,
+              interview prep, and professional application tools for Indian
+              students and freshers.
             </p>
           </div>
           {columns.map((column) => (
@@ -53,9 +77,9 @@ export function Footer() {
               <p className="fine-label mb-4 text-primary/70">{column.title}</p>
               <ul className="space-y-3">
                 {column.links.map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="text-sm text-muted-foreground transition hover:text-primary">
-                      {link}
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-sm text-muted-foreground transition hover:text-primary">
+                      {link.label}
                     </Link>
                   </li>
                 ))}
