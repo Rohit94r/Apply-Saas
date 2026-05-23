@@ -605,26 +605,24 @@ export function GenerateResumeForm({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="space-y-2">
                 <span className="text-sm font-semibold text-foreground">
-                  Company
+                  Company (optional)
                 </span>
                 <Input
                   name="company"
                   value={companyDraft}
                   onChange={(event) => setCompanyDraft(event.target.value)}
                   placeholder="Company"
-                  required
                 />
               </label>
               <label className="space-y-2">
                 <span className="text-sm font-semibold text-foreground">
-                  Role
+                  Role (optional)
                 </span>
                 <Input
                   name="role"
                   value={roleDraft}
                   onChange={(event) => setRoleDraft(event.target.value)}
                   placeholder="Role"
-                  required
                 />
               </label>
             </div>
@@ -875,8 +873,8 @@ export function GenerateResumeForm({
               Waiting for details
             </h4>
             <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-              Upload a resume, add the company, role, and job details, then
-              review an editable improved resume.
+              Upload a resume and add job details. Company and role can stay
+              blank when you do not have them yet.
             </p>
           </div>
         )}

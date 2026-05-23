@@ -16,7 +16,7 @@ export default async function GeneratePage() {
       <PageHeader
         eyebrow="Improve resume"
         title="Upload. Improve. Compare. Download."
-        description="Upload your resume, add the company, role, and job details, then review small ATS improvements before saving or downloading."
+        description="Upload your resume, add the job details, then review ATS improvements before saving or downloading. Company and role are optional."
       />
       <Card className="mb-6 flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center">
         <div>

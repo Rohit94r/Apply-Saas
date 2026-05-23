@@ -5,6 +5,7 @@ import mammoth from "mammoth";
 import WordExtractor from "word-extractor";
 import { getCurrentUserId } from "@/lib/auth";
 import { upsertMasterResume } from "@/lib/data/resumes";
+import { writableDataPath } from "@/lib/server/storage";
 import type { ResumeSourceLine } from "@/types";
 
 export const runtime = "nodejs";
@@ -20,7 +21,7 @@ const SUPPORTED_EXTENSIONS = new Set([
   "markdown",
   "rtf"
 ]);
-const UPLOAD_DIR = path.join(process.cwd(), ".data", "uploads");
+const UPLOAD_DIR = writableDataPath("uploads");
 
 type ExtractedResume = {
   rawText: string;
@@ -369,8 +370,13 @@ async function saveUploadedPdf(userId: string, file: File, buffer: Buffer) {
   const name = `${safeUser}-${Date.now()}-${safeFileName(file.name) || "resume.pdf"}`;
   const targetPath = path.join(UPLOAD_DIR, name);
 
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  await fs.writeFile(targetPath, buffer);
+  try {
+    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+    await fs.writeFile(targetPath, buffer);
+  } catch (error) {
+    console.warn("Unable to persist uploaded PDF source", error);
+    return undefined;
+  }
 
   return targetPath;
 }

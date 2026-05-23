@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   ArrowSquareOut,
   BookOpenText,
@@ -9,13 +9,15 @@ import {
   CalendarDots,
   CheckCircle,
   Code,
+  FileText,
   GraduationCap,
   Stack,
   SpinnerGap,
   ChatCircleText,
   PlayCircle,
   Sparkle,
-  Target
+  Target,
+  UploadSimple
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { toast } from "sonner";
@@ -23,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { InterviewGuide } from "@/types";
+import type { InterviewGuide, MasterResume } from "@/types";
 
 type ViewId =
   | "roadmap"
@@ -35,6 +37,14 @@ type ViewId =
 type InterviewGuideResponse = {
   guide: InterviewGuide;
 };
+
+type ImportResumeResponse = {
+  masterResume: MasterResume;
+};
+
+const MAX_RESUME_BYTES = 10 * 1024 * 1024;
+const RESUME_ACCEPT =
+  ".pdf,.doc,.docx,.txt,.text,.md,.markdown,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown,application/rtf";
 
 const experienceLevels = [
   "Student / Fresher",
@@ -89,7 +99,10 @@ async function readApiJson<T>(response: Response, fallbackMessage: string) {
     return data;
   }
 
-  throw new Error(fallbackMessage);
+  const body = await response.text().catch(() => "");
+  const htmlTitle = body.match(/<title>(.*?)<\/title>/i)?.[1];
+
+  throw new Error(htmlTitle?.trim() || fallbackMessage);
 }
 
 function defaultFocus(guide: InterviewGuide | null) {
@@ -141,15 +154,22 @@ function shortTextError(value: string, label: string) {
     : "";
 }
 
+function compactResumePreview(value: string) {
+  return value.replace(/\s+/g, " ").trim().slice(0, 260);
+}
+
 export function InterviewGuideForm({
   initialGuide
 }: {
   initialGuide: InterviewGuide | null;
 }) {
   const [loading, setLoading] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [editingResumeText, setEditingResumeText] = useState(false);
   const [activeView, setActiveView] = useState<ViewId>("roadmap");
   const [guide, setGuide] = useState<InterviewGuide | null>(initialGuide);
   const [focusAreas, setFocusAreas] = useState<string[]>(defaultFocus(initialGuide));
+  const [resumeFileName, setResumeFileName] = useState("");
   const [form, setForm] = useState({
     company: initialGuide?.company ?? "",
     role: initialGuide?.role ?? "",
@@ -159,11 +179,13 @@ export function InterviewGuideForm({
     resumeContent: "",
     jobDescription: ""
   });
+  const resumeFileInputRef = useRef<HTMLInputElement>(null);
   const selectedView = useMemo(
     () => views.find((view) => view.id === activeView) ?? views[0],
     [activeView]
   );
   const SelectedIcon = selectedView.icon;
+  const resumePreview = compactResumePreview(form.resumeContent);
 
   function updateField(name: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [name]: value }));
@@ -177,9 +199,56 @@ export function InterviewGuideForm({
     );
   }
 
+  async function onResumeFileSelected(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (file.size > MAX_RESUME_BYTES) {
+      toast.error("Resume upload must be 10MB or smaller");
+      event.target.value = "";
+      return;
+    }
+
+    setUploadingResume(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/resumes/import", {
+        method: "POST",
+        body: formData
+      });
+      const data = await readApiJson<ImportResumeResponse>(
+        response,
+        "Resume import failed"
+      );
+      const rawText = data.masterResume.rawText?.trim() ?? "";
+
+      if (rawText.length < 10) {
+        throw new Error("Could not read enough resume text from this file");
+      }
+
+      updateField("resumeContent", rawText);
+      setResumeFileName(data.masterResume.sourceName ?? file.name);
+      setEditingResumeText(false);
+      toast.success("Current resume imported");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploadingResume(false);
+      event.target.value = "";
+    }
+  }
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const resumeError = shortTextError(form.resumeContent, "Resume content");
+    const resumeError = shortTextError(form.resumeContent, "Current resume");
     const jobError = shortTextError(form.jobDescription, "Job description");
 
     if (resumeError || jobError) {
@@ -219,21 +288,23 @@ export function InterviewGuideForm({
         <form className="space-y-5" onSubmit={onSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-foreground">Company</span>
+              <span className="text-sm font-semibold text-foreground">
+                Company (optional)
+              </span>
               <Input
                 value={form.company}
                 onChange={(event) => updateField("company", event.target.value)}
                 placeholder="Google, TCS, Infosys"
-                required
               />
             </label>
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-foreground">Role</span>
+              <span className="text-sm font-semibold text-foreground">
+                Role (optional)
+              </span>
               <Input
                 value={form.role}
                 onChange={(event) => updateField("role", event.target.value)}
                 placeholder="Software Engineer Intern"
-                required
               />
             </label>
           </div>
@@ -301,23 +372,72 @@ export function InterviewGuideForm({
             </div>
           </div>
 
-          <label className="block space-y-2">
-            <span className="text-sm font-semibold text-foreground">
-              Resume content
-            </span>
-            <Textarea
-              value={form.resumeContent}
-              onChange={(event) =>
-                updateField("resumeContent", event.target.value)
-              }
-              placeholder="Paste your resume content"
-              className="min-h-32"
-              required
+          <div className="space-y-3">
+            <input
+              ref={resumeFileInputRef}
+              type="file"
+              accept={RESUME_ACCEPT}
+              className="hidden"
+              onChange={onResumeFileSelected}
             />
-            <span className="text-xs text-muted-foreground">
-              Short points are okay: skills, project names, and education.
-            </span>
-          </label>
+            <button
+              type="button"
+              onClick={() => resumeFileInputRef.current?.click()}
+              disabled={uploadingResume}
+              className="flex min-h-32 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/55 p-5 text-center transition hover:border-primary/40 hover:bg-white disabled:pointer-events-none disabled:opacity-60"
+            >
+              {uploadingResume ? (
+                <SpinnerGap
+                  className="h-8 w-8 animate-spin text-accent"
+                  weight="regular"
+                />
+              ) : (
+                <UploadSimple className="h-8 w-8 text-accent" weight="regular" />
+              )}
+              <span className="mt-4 text-sm font-semibold text-foreground">
+                {uploadingResume ? "Reading resume..." : "Upload current resume file"}
+              </span>
+              <span className="mt-1 text-xs text-muted-foreground">
+                PDF, Word, text, Markdown, or RTF. Maximum file size 10MB
+              </span>
+            </button>
+
+            {form.resumeContent ? (
+              <div className="space-y-3 rounded-xl border border-success/20 bg-success/10 p-3">
+                <p className="flex items-center gap-2 text-sm font-semibold text-success">
+                  <CheckCircle className="h-4 w-4 shrink-0" weight="regular" />
+                  {resumeFileName || "Current resume imported"}
+                </p>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {resumePreview}
+                  {resumePreview.length >= 260 ? "..." : ""}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingResumeText((value) => !value)}
+                >
+                  <FileText className="h-4 w-4" weight="regular" />
+                  {editingResumeText ? "Hide extracted text" : "Edit extracted text"}
+                </Button>
+              </div>
+            ) : null}
+
+            {editingResumeText ? (
+              <label className="block space-y-2">
+                <span className="text-sm font-semibold text-foreground">
+                  Extracted resume text
+                </span>
+                <Textarea
+                  value={form.resumeContent}
+                  onChange={(event) =>
+                    updateField("resumeContent", event.target.value)
+                  }
+                  className="min-h-32"
+                />
+              </label>
+            ) : null}
+          </div>
           <label className="block space-y-2">
             <span className="text-sm font-semibold text-foreground">
               Job description

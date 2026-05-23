@@ -232,11 +232,15 @@ export function ToolsWorkspace() {
             <form className="space-y-5" onSubmit={onCoverLetter}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-foreground">Company</span>
+                  <span className="text-sm font-semibold text-foreground">
+                    Company (optional)
+                  </span>
                   <Input name="company" placeholder="Company name" />
                 </label>
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-foreground">Role</span>
+                  <span className="text-sm font-semibold text-foreground">
+                    Role (optional)
+                  </span>
                   <Input name="role" placeholder="Target role" />
                 </label>
               </div>

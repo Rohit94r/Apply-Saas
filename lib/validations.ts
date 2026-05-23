@@ -1,8 +1,17 @@
 import { z } from "zod";
 
+const optionalTextWithDefault = (fallback: string, max = 120) =>
+  z.preprocess(
+    (value) =>
+      value == null || (typeof value === "string" && !value.trim())
+        ? undefined
+        : value,
+    z.string().trim().max(max).optional().default(fallback)
+  );
+
 export const generateResumeSchema = z.object({
-  company: z.string().min(2, "Company is required"),
-  role: z.string().min(2, "Role is required"),
+  company: optionalTextWithDefault("Target company"),
+  role: optionalTextWithDefault("Target role"),
   jobDescription: z.string().min(80, "Paste a job description with enough detail"),
   masterResume: z.string().min(80, "Add resume content or upload your master profile")
 });
@@ -69,8 +78,8 @@ export const updateGeneratedResumeSchema = z.object({
 });
 
 export const interviewGuideSchema = z.object({
-  company: z.string().trim().min(2, "Company is required"),
-  role: z.string().trim().min(2, "Role is required"),
+  company: optionalTextWithDefault("Target company"),
+  role: optionalTextWithDefault("Target role"),
   jobDescription: z
     .string()
     .trim()
@@ -90,8 +99,8 @@ export const interviewGuideSchema = z.object({
 });
 
 export const coverLetterSchema = z.object({
-  company: z.string().min(2),
-  role: z.string().min(2),
+  company: optionalTextWithDefault("Hiring team"),
+  role: optionalTextWithDefault("Target role"),
   jobDescription: z.string().min(80),
   resumeContent: z.string().min(80),
   tone: z.enum(["confident", "warm", "concise"]).default("confident")

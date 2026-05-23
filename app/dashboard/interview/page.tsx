@@ -12,7 +12,7 @@ export default async function InterviewPage() {
       <PageHeader
         eyebrow="Interview prep"
         title="Build a focused interview practice plan."
-        description="Create role-specific roadmap, coding practice, company-style questions, project prep, mock drills, and free learning resources from your resume and job description."
+        description="Upload your current resume file and create a roadmap, coding practice, project prep, mock drills, and free learning resources from the extracted text and job description."
         cta="Create prep plan"
         href="/dashboard/interview"
       />

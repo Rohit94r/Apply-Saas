@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { connectToDatabase } from "@/lib/mongodb";
+import { writableDataPath } from "@/lib/server/storage";
 import { GeneratedResume } from "@/models/GeneratedResume";
 import { InterviewGuide } from "@/models/InterviewGuide";
 import { MasterResume as MasterResumeModel } from "@/models/MasterResume";
@@ -102,7 +103,7 @@ type InterviewGuideRecord = {
 
 const localStorePath =
   process.env.RESUME_LOCAL_STORE_PATH ??
-  path.join(process.cwd(), ".data", "resume-store.json");
+  writableDataPath("resume-store.json");
 let databaseUnavailableUntil = 0;
 
 function toISOString(value?: Date) {
