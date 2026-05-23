@@ -1,0 +1,16 @@
+{
+  "homePageSchemas": [
+    "Organization",
+    "WebSite",
+    "SoftwareApplication",
+    "FAQPage"
+  ],
+  "blogSchemas": [
+    "Blog",
+    "BlogPosting"
+  ],
+  "notes": [
+    "The production schema is generated from lib/seo.ts, app/page.tsx, app/blog/page.tsx, and app/blog/[slug]/page.tsx.",
+    "AggregateRating and Review schema are intentionally not included until there are real public reviews to avoid fake structured data."
+  ]
+}
