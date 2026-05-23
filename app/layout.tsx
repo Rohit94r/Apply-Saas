@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   applicationName: seoConfig.name,
   creator: "Apply",
   publisher: "Apply",
-  category: "resume builder",
+  category: "AI resume builder",
   alternates: {
     canonical: absoluteUrl("/")
   },
@@ -50,11 +50,15 @@ export const metadata: Metadata = {
       "max-snippet": -1
     }
   },
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
   openGraph: {
     title: seoConfig.title,
     description: seoConfig.description,
     url: seoConfig.url,
     siteName: seoConfig.name,
+    locale: "en_IN",
     images: [{ url: "/logo.png", width: 1536, height: 1024, alt: "Apply" }],
     type: "website"
   },
