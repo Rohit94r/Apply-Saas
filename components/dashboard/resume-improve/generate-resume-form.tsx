@@ -18,6 +18,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  CompanySearchInput
+} from "@/components/dashboard/company-search-input";
+import type { CompanyProfile } from "@/lib/data/companies";
 import type { MasterResume, ResumeSourceLine } from "@/types";
 
 const MAX_RESUME_BYTES = 10 * 1024 * 1024;
@@ -239,6 +243,36 @@ function normalizeLine(value: string) {
   return value.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
+function buildSuggestedJobDescription(
+  company: CompanyProfile | null,
+  role: string
+) {
+  if (!company && !role.trim()) {
+    return "";
+  }
+
+  const roleLine = role.trim() || company?.commonRoles[0] || "Software Engineer";
+  const companyLine = company?.name ?? "the target company";
+
+  return [
+    `Role: ${roleLine} at ${companyLine}`,
+    "",
+    "Key requirements:",
+    ...(company?.hiringFocus.map((item) => `- ${item}`) ?? [
+      "- Strong problem solving and DSA fundamentals",
+      "- Good communication and teamwork",
+      "- Relevant projects or internship experience"
+    ]),
+    "",
+    company
+      ? `Interview style: ${company.interviewStyle}`
+      : "Paste the full job description below or edit this template.",
+    "",
+    "Additional requirements:",
+    "- Add specific skills, tech stack, or responsibilities from the job posting"
+  ].join("\n");
+}
+
 export function GenerateResumeForm({
   initialMasterResume
 }: {
@@ -262,9 +296,41 @@ export function GenerateResumeForm({
   const [previewMode, setPreviewMode] = useState<PreviewMode>("after");
   const [editingPreview, setEditingPreview] = useState(false);
   const [companyDraft, setCompanyDraft] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState<CompanyProfile | null>(
+    null
+  );
   const [roleDraft, setRoleDraft] = useState("");
   const [jobDescriptionDraft, setJobDescriptionDraft] = useState("");
+  const [jobStep, setJobStep] = useState<1 | 2 | 3>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleCompanySelect(company: CompanyProfile | null) {
+    setSelectedCompany(company);
+    if (company && !roleDraft.trim()) {
+      setRoleDraft(company.commonRoles[0] ?? "");
+    }
+    if (company) {
+      setJobStep(2);
+      if (jobDescriptionDraft.trim().length < 80) {
+        setJobDescriptionDraft(
+          buildSuggestedJobDescription(
+            company,
+            roleDraft || (company.commonRoles[0] ?? "")
+          )
+        );
+      }
+    }
+  }
+
+  function handleRoleSelect(role: string) {
+    setRoleDraft(role);
+    setJobStep(3);
+    if (selectedCompany) {
+      setJobDescriptionDraft(
+        buildSuggestedJobDescription(selectedCompany, role)
+      );
+    }
+  }
 
   async function saveMasterResume(rawText: string, title: string, source: string) {
     const response = await fetch("/api/resumes/master", {
@@ -601,44 +667,88 @@ export function GenerateResumeForm({
         </Card>
 
         <Card className="p-6">
+          <div className="mb-5 flex items-center gap-2">
+            {[1, 2, 3].map((step) => (
+              <span
+                key={step}
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                  jobStep >= step
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {step}
+              </span>
+            ))}
+            <span className="ml-2 text-sm text-muted-foreground">
+              {jobStep === 1
+                ? "Pick company"
+                : jobStep === 2
+                  ? "Choose role"
+                  : "Confirm details"}
+            </span>
+          </div>
+
           <form className="space-y-5" onSubmit={onSubmit}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-2">
-                <span className="text-sm font-semibold text-foreground">
-                  Company (optional)
-                </span>
-                <Input
-                  name="company"
-                  value={companyDraft}
-                  onChange={(event) => setCompanyDraft(event.target.value)}
-                  placeholder="Company"
-                />
-              </label>
-              <label className="space-y-2">
-                <span className="text-sm font-semibold text-foreground">
-                  Role (optional)
-                </span>
+            <div>
+              <p className="fine-label mb-2">Step 1 — Company</p>
+              <CompanySearchInput
+                value={companyDraft}
+                onChange={setCompanyDraft}
+                onSelect={handleCompanySelect}
+                placeholder="Type company name — Google, TCS, Flipkart..."
+              />
+            </div>
+
+            {(selectedCompany || companyDraft.trim()) && jobStep >= 2 ? (
+              <div>
+                <p className="fine-label mb-2">Step 2 — Role</p>
                 <Input
                   name="role"
                   value={roleDraft}
                   onChange={(event) => setRoleDraft(event.target.value)}
-                  placeholder="Role"
+                  placeholder="Software Engineer, SDE Intern..."
                 />
-              </label>
-            </div>
-            <label className="block space-y-2">
-              <span className="text-sm font-semibold text-foreground">
-                Job details
-              </span>
+                {selectedCompany ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {selectedCompany.commonRoles.map((role) => (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() => handleRoleSelect(role)}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                          roleDraft === role
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-white text-muted-foreground"
+                        }`}
+                      >
+                        {role}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div>
+              <p className="fine-label mb-2">Step 3 — Job details</p>
               <Textarea
                 name="jobDescription"
                 value={jobDescriptionDraft}
                 onChange={(event) => setJobDescriptionDraft(event.target.value)}
-                placeholder="Paste the job details here."
-                className="min-h-44"
+                placeholder={
+                  selectedCompany
+                    ? "Edit the auto-filled details or paste the full job posting."
+                    : "Paste job details here. Company info helps but is optional."
+                }
+                className="min-h-36"
                 required
               />
-            </label>
+              <span className="mt-1 block text-xs text-muted-foreground">
+                {jobDescriptionDraft.trim().length}/80 characters minimum
+              </span>
+            </div>
+
             <Button type="submit" disabled={!canGenerate}>
               {loading ? (
                 <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
