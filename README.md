@@ -328,8 +328,9 @@ npm run typecheck  # TypeScript check
 
 ## Pricing placeholder
 
-- **Free:** up to 10 resume generations
-- **Pro:** $4/month or ₹349/month
+- **Free:** up to 5 resume generations (per account + per device)
+- **Pro:** ₹50/month via UPI QR (manual payment, WhatsApp confirm)
+- **Admin:** log in as `rjdhav67@gmail.com` → `/dashboard/admin` to add subscription days after payment
 
 ---
 
