@@ -25,6 +25,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CompanySearchInput } from "@/components/dashboard/company-search-input";
+import {
+  CourseGrid,
+  PlatformLinksGrid,
+  YouTubeVideoGrid
+} from "@/components/dashboard/youtube-video-grid";
+import type { CompanyProfile } from "@/lib/data/companies";
+import {
+  codingPlatforms,
+  interviewPrepCourses,
+  interviewPrepVideos
+} from "@/lib/data/learning-resources";
 import type { InterviewGuide, MasterResume } from "@/types";
 
 type ViewId =
@@ -32,7 +44,8 @@ type ViewId =
   | "coding"
   | "company"
   | "behavioral"
-  | "resources";
+  | "resources"
+  | "videos";
 
 type InterviewGuideResponse = {
   guide: InterviewGuide;
@@ -83,7 +96,8 @@ const views: Array<{
   { id: "coding", label: "Coding", icon: Code },
   { id: "company", label: "Company", icon: Briefcase },
   { id: "behavioral", label: "HR", icon: ChatCircleText },
-  { id: "resources", label: "Resources", icon: PlayCircle }
+  { id: "resources", label: "Resources", icon: BookOpenText },
+  { id: "videos", label: "Videos", icon: PlayCircle }
 ];
 
 async function readApiJson<T>(response: Response, fallbackMessage: string) {
@@ -168,6 +182,9 @@ export function InterviewGuideForm({
   const [editingResumeText, setEditingResumeText] = useState(false);
   const [activeView, setActiveView] = useState<ViewId>("roadmap");
   const [guide, setGuide] = useState<InterviewGuide | null>(initialGuide);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyProfile | null>(
+    null
+  );
   const [focusAreas, setFocusAreas] = useState<string[]>(defaultFocus(initialGuide));
   const [resumeFileName, setResumeFileName] = useState("");
   const [form, setForm] = useState({
@@ -289,23 +306,41 @@ export function InterviewGuideForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
               <span className="text-sm font-semibold text-foreground">
-                Company (optional)
+                Company
               </span>
-              <Input
+              <CompanySearchInput
                 value={form.company}
-                onChange={(event) => updateField("company", event.target.value)}
-                placeholder="Google, TCS, Infosys"
+                onChange={(value) => updateField("company", value)}
+                onSelect={(company) => {
+                  setSelectedCompany(company);
+                  if (company && !form.role.trim()) {
+                    updateField("role", company.commonRoles[0] ?? "");
+                  }
+                }}
+                placeholder="Google, TCS, Flipkart..."
               />
             </label>
             <label className="space-y-2">
-              <span className="text-sm font-semibold text-foreground">
-                Role (optional)
-              </span>
+              <span className="text-sm font-semibold text-foreground">Role</span>
               <Input
                 value={form.role}
                 onChange={(event) => updateField("role", event.target.value)}
                 placeholder="Software Engineer Intern"
               />
+              {selectedCompany ? (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {selectedCompany.commonRoles.slice(0, 4).map((role) => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => updateField("role", role)}
+                      className="rounded-full border border-border bg-white px-2 py-0.5 text-[10px] font-semibold text-muted-foreground"
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </label>
           </div>
 
@@ -698,51 +733,80 @@ export function InterviewGuideForm({
               ) : null}
 
               {activeView === "resources" ? (
-                <div className="grid gap-3 md:grid-cols-2">
-                  {(guide.freeResources ?? []).map((resource) => (
-                    <a
-                      key={`${resource.provider}-${resource.title}`}
-                      href={resource.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="group rounded-lg border border-border bg-[#fbfaf6] p-4 transition hover:border-primary/40 hover:bg-white hover:shadow-soft"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-xs font-bold uppercase text-accent">
-                            {resource.provider}
-                          </p>
-                          <h5 className="mt-1 text-base font-bold text-foreground">
-                            {resource.title}
-                          </h5>
+                <div className="space-y-6">
+                  <PlatformLinksGrid
+                    platforms={codingPlatforms}
+                    title="Practice on these platforms"
+                  />
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {(guide.freeResources ?? []).map((resource) => (
+                      <a
+                        key={`${resource.provider}-${resource.title}`}
+                        href={resource.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group rounded-lg border border-border bg-[#fbfaf6] p-4 transition hover:border-primary/40 hover:bg-white hover:shadow-soft"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-xs font-bold uppercase text-accent">
+                              {resource.provider}
+                            </p>
+                            <h5 className="mt-1 text-base font-bold text-foreground">
+                              {resource.title}
+                            </h5>
+                          </div>
+                          <ArrowSquareOut
+                            className="h-4 w-4 text-muted-foreground transition group-hover:text-primary"
+                            weight="regular"
+                          />
                         </div>
-                        <ArrowSquareOut
-                          className="h-4 w-4 text-muted-foreground transition group-hover:text-primary"
-                          weight="regular"
-                        />
-                      </div>
-                      <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                        {resource.focus}
-                      </p>
-                      <span className="mt-3 inline-flex rounded-full bg-muted px-3 py-1 text-[11px] font-bold text-muted-foreground">
-                        {resource.type}
-                      </span>
-                    </a>
-                  ))}
+                        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                          {resource.focus}
+                        </p>
+                        <span className="mt-3 inline-flex rounded-full bg-muted px-3 py-1 text-[11px] font-bold text-muted-foreground">
+                          {resource.type}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                  <CourseGrid
+                    courses={interviewPrepCourses}
+                    title="Recommended courses (Google, Coursera & more)"
+                  />
+                </div>
+              ) : null}
+
+              {activeView === "videos" ? (
+                <div className="space-y-6">
+                  <YouTubeVideoGrid
+                    videos={interviewPrepVideos}
+                    title="Interview prep videos — click to play"
+                  />
+                  <CourseGrid
+                    courses={interviewPrepCourses}
+                    title="Free courses to pair with video learning"
+                  />
                 </div>
               ) : null}
             </section>
           </div>
         ) : (
-          <div className="m-6 flex min-h-[560px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-white/55 p-8 text-center">
-            <Stack className="h-8 w-8 text-accent" weight="regular" />
-            <h4 className="mt-4 font-serif text-3xl text-primary">
-              Ready to prep
-            </h4>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-              Add the role, resume, and job description to create a focused
-              interview practice plan.
-            </p>
+          <div className="m-6 space-y-6">
+            <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-white/55 p-8 text-center">
+              <Stack className="h-8 w-8 text-accent" weight="regular" />
+              <h4 className="mt-4 font-serif text-3xl text-primary">
+                Ready to prep
+              </h4>
+              <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
+                Add the role, resume, and job description to create a focused
+                interview practice plan.
+              </p>
+            </div>
+            <YouTubeVideoGrid
+              videos={interviewPrepVideos.slice(0, 4)}
+              title="Popular prep videos while you set up"
+            />
           </div>
         )}
       </Card>
