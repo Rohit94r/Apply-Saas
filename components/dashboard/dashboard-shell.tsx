@@ -10,6 +10,7 @@ import {
   CaretLineRight,
   ChartBar,
   FileText,
+  GraduationCap,
   House,
   MagicWand,
   Sparkle,
@@ -29,6 +30,7 @@ const navItems: Array<{
   { label: "My resumes", href: "/dashboard/resumes", icon: FileText },
   { label: "Improve", href: "/dashboard/generate", icon: Sparkle },
   { label: "Build resume", href: "/dashboard/build", icon: Stack },
+  { label: "Learner prep", href: "/dashboard/learners", icon: GraduationCap },
   { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase },
   { label: "AI tools", href: "/dashboard/tools", icon: MagicWand },
   { label: "Analytics", href: "/dashboard/analytics", icon: ChartBar }
