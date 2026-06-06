@@ -4,16 +4,18 @@ import { Reveal } from "@/components/animations/reveal";
 import { SectionHeading } from "@/components/landing/section-heading";
 
 const original = [
-  "Built web apps using React",
-  "Worked with team on APIs",
-  "Made dashboards for college project"
+  "Built web apps using React and Node.js",
+  "Worked with team on REST APIs",
+  "Made full-stack dashboards for college project"
 ];
 
 const optimized = [
-  "Built accessible React dashboards with TypeScript for 700+ student users",
-  "Integrated REST APIs with resilient loading and error states",
-  "Improved dashboard usability through reusable components and analytics views"
+  "Built full-stack React dashboards with TypeScript serving 700+ student users",
+  "Integrated REST APIs with resilient loading states and error handling",
+  "Shipped end-to-end features from database queries to responsive UI components"
 ];
+
+const highlightKeywords = ["React", "TypeScript", "REST", "APIs", "full-stack"];
 
 export function EngineShowcase() {
   return (
@@ -22,13 +24,13 @@ export function EngineShowcase() {
         <Reveal>
           <SectionHeading
             eyebrow="AI Resume Engine"
-            title="See how Apply turns raw experience into role-ready evidence."
-            description="The engine rewrites resume sections, highlights matched keywords, and keeps the result clean enough for applicant tracking systems."
+            title="See how Apply turns student projects into Full Stack evidence."
+            description="The engine rewrites resume sections, highlights matched keywords, and keeps the result clean enough for applicant tracking systems — targeting scores like 94% ATS."
           />
         </Reveal>
         <div className="mt-14 grid gap-6 lg:grid-cols-[0.9fr_0.2fr_0.9fr]">
           <Reveal>
-            <div className="rounded-2xl border border-border bg-[#fbfaf6] p-6">
+            <div className="surface-warm rounded-2xl border border-border p-6">
               <p className="fine-label mb-5">Original Resume</p>
               <div className="space-y-4">
                 {original.map((item) => (
@@ -43,17 +45,17 @@ export function EngineShowcase() {
             </div>
           </Reveal>
           <div className="hidden items-center justify-center lg:flex">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-button">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-button">
               <ArrowRight className="h-5 w-5" weight="regular" />
             </div>
           </div>
           <Reveal delay={0.1}>
-            <div className="rounded-2xl border border-accent/25 bg-[#f6fbf8] p-6 shadow-soft">
+            <div className="surface-accent rounded-2xl border border-accent/25 p-6 shadow-soft">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <p className="fine-label">AI Optimized</p>
-                <Badge>
+                <Badge className="bg-success/12 text-success hover:bg-success/12">
                   <Sparkle className="mr-1 h-3.5 w-3.5" weight="regular" />
-                  ATS 94
+                  ATS 94%
                 </Badge>
               </div>
               <div className="space-y-4">
@@ -63,12 +65,14 @@ export function EngineShowcase() {
                     className="rounded-xl border border-accent/20 bg-white p-4 text-sm leading-6 text-foreground"
                   >
                     {item.split(" ").map((word) => {
-                      const clean = word.replace(/[^a-zA-Z+]/g, "");
-                      const isKeyword = ["React", "TypeScript", "REST", "APIs"].includes(clean);
+                      const clean = word.replace(/[^a-zA-Z+-]/g, "").toLowerCase();
+                      const isKeyword = highlightKeywords.some(
+                        (kw) => clean === kw.toLowerCase() || clean.includes(kw.toLowerCase())
+                      );
                       return (
                         <span
                           key={`${index}-${word}`}
-                          className={isKeyword ? "rounded bg-accent/10 px-1 text-accent" : ""}
+                          className={isKeyword ? "rounded bg-accent/12 px-1 text-accent" : ""}
                         >
                           {word}{" "}
                         </span>

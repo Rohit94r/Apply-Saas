@@ -5,6 +5,7 @@ import { FaqSection } from "@/components/landing/faq-section";
 import { Footer } from "@/components/landing/footer";
 import { HeroSection } from "@/components/landing/hero-section";
 import { HowItWorks } from "@/components/landing/how-it-works";
+import { StudentGatewaySection } from "@/components/landing/student-gateway-section";
 import { InterviewPrepSection } from "@/components/landing/interview-prep-section";
 import { PricingSection } from "@/components/landing/pricing-section";
 import { SiteHeader } from "@/components/landing/site-header";
@@ -34,6 +35,7 @@ export default function Home() {
       <SiteHeader />
       <main>
         <HeroSection />
+        <StudentGatewaySection />
         <HowItWorks />
         <ComparisonSection />
         <EngineShowcase />

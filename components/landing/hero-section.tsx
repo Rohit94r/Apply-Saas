@@ -6,17 +6,18 @@ import { ResumeFlow } from "@/components/landing/resume-flow";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden border-b border-border/70">
+    <section className="hero-glow relative overflow-hidden border-b border-border/70">
       <div className="section-shell pb-20 pt-20 text-center lg:pb-24 lg:pt-24">
         <Reveal>
-          <p className="fine-label mb-5">AI resume generation for modern job searches</p>
+          <p className="fine-label mb-5">Student gateway for internships &amp; fresher roles</p>
           <h1 className="mx-auto max-w-4xl font-serif text-6xl leading-[0.93] tracking-normal text-primary sm:text-7xl lg:text-8xl">
-            Stop rewriting resumes.
-            <span className="block text-accent italic">Start applying smarter.</span>
+            One profile.
+            <span className="block text-accent italic">Every application ready.</span>
           </h1>
           <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
-            Upload your resume once. Generate ATS-optimized resumes for every job
-            instantly.
+            Upload your master resume once. Apply tailors it to each job, finds matching
+            openings, preps you with courses and interview guides — built for CS students
+            and early-career developers in India.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -26,14 +27,15 @@ export function HeroSection() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="#engine">
+              <Link href="#student-gateway">
                 <Play className="h-4 w-4" weight="regular" />
-                Try Demo
+                See how it works
               </Link>
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Your first 10 resume generations are free. No payment setup required.
+            Resume tailoring, job search, learner prep, and interview guides — your first 10
+            generations are free.
           </p>
         </Reveal>
         <Reveal delay={0.12}>

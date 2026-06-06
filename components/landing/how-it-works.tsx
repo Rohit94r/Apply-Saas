@@ -12,19 +12,19 @@ const steps = [
   {
     title: "Upload resume",
     description:
-      "Add your master resume, LinkedIn PDF, or project notes once. Apply turns it into a reusable profile.",
+      "Add your master resume once — projects, skills, education, and internships. Apply builds a profile you reuse for every application.",
     icon: UploadSimple
   },
   {
     title: "Paste job description",
     description:
-      "The AI reads the role, extracts requirements, and maps them to your strongest evidence.",
+      "Drop in any internship or fresher JD. The AI maps React, TypeScript, APIs, and other keywords to your strongest evidence.",
     icon: ClipboardText
   },
   {
     title: "Download tailored resume",
     description:
-      "Get a clean ATS-friendly PDF with rewritten summary, skills, bullets, and keywords.",
+      "Get a clean ATS-friendly PDF with a role title like Full Stack Developer, rewritten bullets, and a keyword score up to 94%.",
     icon: DownloadSimple
   }
 ] satisfies Array<{ title: string; description: string; icon: PhosphorIcon }>;
@@ -37,19 +37,19 @@ export function HowItWorks() {
           <SectionHeading
             eyebrow="How it works"
             title="Three steps from job post to polished PDF."
-            description="Apply is designed for repeat applications: the first setup is careful, and every resume after that is fast."
+            description="Built for students applying to dozens of roles. Set up your profile once — every tailored resume after that takes under a minute."
           />
         </Reveal>
         <div className="mt-14 grid gap-5 md:grid-cols-3">
           {steps.map((step, index) => (
             <Reveal key={step.title} delay={index * 0.08}>
-              <div className="h-full rounded-2xl border border-border bg-[#fbfaf6] p-7">
+              <div className="surface-warm h-full rounded-2xl border border-border p-7">
                 <div className="mb-7 flex items-center justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/12 text-primary">
                     <step.icon className="h-5 w-5" weight="regular" />
                   </div>
                   {index < steps.length - 1 ? (
-                    <ArrowRight className="hidden h-5 w-5 text-border md:block" weight="regular" />
+                    <ArrowRight className="hidden h-5 w-5 text-accent/40 md:block" weight="regular" />
                   ) : null}
                 </div>
                 <p className="mb-3 text-sm font-bold text-accent">

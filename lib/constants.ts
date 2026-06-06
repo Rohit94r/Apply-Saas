@@ -6,6 +6,7 @@ export const siteConfig = {
   description:
     "Upload your resume once. Generate ATS-optimized resumes for internships and fresher jobs instantly.",
   nav: [
+    { label: "Student gateway", href: "/#student-gateway" },
     { label: "How it works", href: "/#how-it-works" },
     { label: "Why Apply", href: "/#comparison" },
     { label: "AI engine", href: "/#engine" },

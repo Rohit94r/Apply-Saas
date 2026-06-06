@@ -40,8 +40,8 @@ const config: Config = {
         sans: ["var(--font-sans)", "Inter", "sans-serif"]
       },
       boxShadow: {
-        soft: "0 18px 60px rgba(20, 35, 50, 0.08)",
-        button: "0 12px 28px rgba(22, 78, 122, 0.22)"
+        soft: "0 18px 60px rgba(16, 42, 68, 0.1)",
+        button: "0 12px 28px rgba(20, 130, 120, 0.28)"
       },
       borderRadius: {
         xl: "1rem",
