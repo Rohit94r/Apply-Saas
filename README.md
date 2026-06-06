@@ -332,6 +332,10 @@ npm run typecheck  # TypeScript check
 - **Pro:** ₹50/month via UPI QR (manual payment, WhatsApp confirm)
 - **Admin:** log in as `rjdhav67@gmail.com` → `/dashboard/admin` to add subscription days after payment
 
+### Vercel deploy blocked?
+
+If you see *“commit author did not have contributing access”* on Hobby + private repo, follow **[docs/vercel-deploy.md](docs/vercel-deploy.md)** — verify `rjdhav67@gmail.com` on GitHub and reconnect Vercel to account **Rohit94r**.
+
 ---
 
 ## License
