@@ -8,10 +8,12 @@ import {
   DashboardHero,
   QuickActionsGrid
 } from "@/components/dashboard/dashboard-overview";
+import { JobMatchesPreview } from "@/features/jobs/components/job-matches-preview";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ResumeCard } from "@/components/dashboard/resume-card";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { getCurrentUserId } from "@/lib/auth";
+import { getJobMatchesForUser } from "@/lib/data/jobs";
 import {
   buildActivityFeed,
   buildDashboardStats,
@@ -22,9 +24,10 @@ import {
 
 export default async function DashboardPage() {
   const userId = await getCurrentUserId();
-  const [resumes, guides] = await Promise.all([
+  const [resumes, guides, jobMatches] = await Promise.all([
     getGeneratedResumes(userId, 6).catch(() => []),
-    getInterviewGuides(userId, 3).catch(() => [])
+    getInterviewGuides(userId, 3).catch(() => []),
+    getJobMatchesForUser(userId, { limit: 6 }).catch(() => null)
   ]);
   const dashboardStats = buildDashboardStats(resumes, guides);
   const readiness = buildReadinessScore(resumes, guides);
@@ -39,6 +42,8 @@ export default async function DashboardPage() {
         description="Track readiness, manage tailored resumes, follow learner roadmaps, and prepare for interviews — all in one workspace."
         cta="Improve resume"
       />
+
+      {jobMatches ? <JobMatchesPreview result={jobMatches} /> : null}
 
       <DashboardHero
         readiness={readiness}

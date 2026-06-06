@@ -8,6 +8,7 @@ import {
   Circle,
   FileText,
   GraduationCap,
+  MagnifyingGlass,
   Sparkle,
   Stack
 } from "@phosphor-icons/react";
@@ -128,6 +129,13 @@ export function DashboardHero({
 export function QuickActionsGrid() {
   const actions = [
     {
+      title: "Job search",
+      description: "Matched jobs from your resume profile",
+      href: "/dashboard/jobs",
+      icon: MagnifyingGlass,
+      accent: "bg-sky-50 text-sky-700"
+    },
+    {
       title: "Improve resume",
       description: "Upload & tailor to any job",
       href: "/dashboard/generate",
@@ -158,7 +166,7 @@ export function QuickActionsGrid() {
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       {actions.map((action) => (
         <Link
           key={action.href}
