@@ -12,10 +12,11 @@ Apply is an AI-powered job-search workspace for Indian students and early-career
 | Student with a resume | Upload PDF/Word and tailor to a job | `/dashboard/generate` |
 | 1st–4th year learner | Follow roadmaps before placement season | `/dashboard/learners` |
 | Interview candidate | Coding, HR, company Qs + video resources | `/dashboard/interview` |
-| Active job seeker | Track ATS scores and activity | `/dashboard/analytics` |
+| Active job seeker | Find jobs matched to resume profile | `/dashboard/jobs` |
+| Job hunter | Track ATS scores and activity | `/dashboard/analytics` |
 | Returning user | See recent resumes and readiness | `/dashboard` |
 
-**Typical flow:** Build or improve resume → pick company + role → create interview prep plan → practice on LeetCode/HackerRank using linked resources → export PDF.
+**Typical flow:** Build or improve resume → **see matched jobs** → apply on LinkedIn/Naukri → create interview prep plan → export PDF.
 
 ---
 
@@ -73,6 +74,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/dashboard/resumes` | All saved resume versions |
 | `/dashboard/build` | Guided resume builder with live side-by-side preview |
 | `/dashboard/generate` | Upload resume + company search + tailor to job |
+| `/dashboard/jobs` | **Job search** — profile-based matches + LinkedIn/Naukri links |
 | `/dashboard/learners` | Student roadmaps (Web Dev, DSA, System Design, AI/ML) |
 | `/dashboard/interview` | Interview prep plan, coding Qs, YouTube videos |
 | `/dashboard/tools` | Cover letter, PDF editing, photo tools |
@@ -86,6 +88,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | Method | Route | Description |
 |--------|-------|-------------|
 | `GET` | `/api/company/lookup?q=` | Company autocomplete and profile lookup |
+| `GET` | `/api/jobs/match` | Job matches from saved resume profile |
+| `GET` | `/api/jobs/profile` | Inferred job seeker profile only |
 | `POST` | `/api/resumes/build` | Build resume from guided form |
 | `POST` | `/api/resumes/generate` | Tailor uploaded resume to job |
 | `POST` | `/api/resumes/import` | Upload and extract resume file |
@@ -116,6 +120,7 @@ Resume-editor/
 │   │   ├── page.tsx              # Overview + readiness
 │   │   ├── build/                # Build resume page
 │   │   ├── generate/             # Improve resume page
+│   │   ├── jobs/                 # Job search page
 │   │   ├── learners/             # Learner preparation page
 │   │   ├── interview/            # Interview prep page
 │   │   ├── analytics/            # Analytics page
@@ -123,6 +128,7 @@ Resume-editor/
 │   │   └── tools/                # AI tools workspace
 │   ├── api/                      # Backend API routes
 │   │   ├── company/lookup/       # Company search API
+│   │   ├── jobs/                 # Job match + profile API
 │   │   ├── resumes/              # Resume CRUD + build + generate
 │   │   ├── interview/            # Interview guide generation
 │   │   ├── pdf/                  # PDF rendering
@@ -142,6 +148,12 @@ Resume-editor/
 │   │   └── resume-improve/       # Improve resume form
 │   └── ui/                       # Shared primitives (Button, Card, Input…)
 │
+├── features/                     # Product modules (preferred for new features)
+│   └── jobs/                     # Job Search — see features/jobs/README.md
+│       ├── types.ts
+│       ├── lib/                  # Profile builder, matcher, platform URLs
+│       └── components/           # Job cards, workspace, dashboard preview
+│
 ├── lib/                          # Business logic — read after app/
 │   ├── ai/                       # AI client, prompts, resume engine
 │   │   ├── openai.ts             # Groq/OpenAI client
@@ -150,6 +162,8 @@ Resume-editor/
 │   ├── data/                     # Data access + static curated content
 │   │   ├── resumes.ts            # MongoDB/local store + dashboard stats
 │   │   ├── companies.ts          # Company profiles for lookup
+│   │   ├── job-listings.ts       # Curated job openings for matching
+│   │   ├── jobs.ts               # Job search service (loads user resume)
 │   │   └── learning-resources.ts # Learner tracks, videos, courses, platforms
 │   ├── pdf/                      # PDF generation and source patching
 │   ├── validations.ts            # Zod schemas for API bodies
@@ -164,6 +178,7 @@ Resume-editor/
 │
 ├── types/index.ts                # Shared TypeScript types
 ├── docs/                         # Internal documentation
+│   ├── folder-guide.md           # Architecture + intern onboarding
 │   ├── system-design.md          # Product flows and architecture
 │   ├── schema-reference.json     # Data shape reference
 │   └── seo-*.md                  # SEO and growth notes
@@ -173,12 +188,12 @@ Resume-editor/
 
 ### Suggested reading order for contributors
 
-1. `docs/system-design.md` — product flows
-2. `types/index.ts` — domain models
-3. `lib/data/resumes.ts` — how data is saved and loaded
-4. `lib/ai/resume-engine.ts` — AI orchestration
-5. `components/dashboard/dashboard-shell.tsx` — navigation map
-6. One feature vertical end-to-end, e.g. `app/dashboard/generate/page.tsx` → `generate-resume-form.tsx` → `app/api/resumes/generate/route.ts`
+1. `docs/folder-guide.md` — architecture and folder conventions
+2. `docs/system-design.md` — product flows
+3. `features/jobs/README.md` — job search feature walkthrough
+4. `types/index.ts` — domain models
+5. `lib/data/resumes.ts` — how data is saved and loaded
+6. One vertical end-to-end, e.g. `app/dashboard/jobs/page.tsx` → `lib/data/jobs.ts` → `features/jobs/lib/match-jobs.ts`
 
 ---
 
@@ -199,6 +214,8 @@ Local fallback path: `RESUME_LOCAL_STORE_PATH` or `.data/resume-store.json` (see
 | Content | File | Used in |
 |---------|------|---------|
 | Company profiles (20+ companies) | `lib/data/companies.ts` | Improve flow, Interview prep, `GET /api/company/lookup` |
+| Job listings (25+ openings) | `lib/data/job-listings.ts` | Job Search matcher, `/dashboard/jobs` |
+| Job seeker profile (derived) | `features/jobs/lib/build-profile.ts` | Built from master/generated resume — not stored separately |
 | Learner tracks & roadmaps | `lib/data/learning-resources.ts` | `/dashboard/learners` |
 | YouTube video IDs & metadata | `lib/data/learning-resources.ts` → `interviewPrepVideos`, per-track `videos` | Interview prep, Learner prep |
 | Course links (Google, Coursera, etc.) | `lib/data/learning-resources.ts` → `interviewPrepCourses`, per-track `courses` | Interview prep, Learner prep |
@@ -265,6 +282,20 @@ Specific video IDs are listed in `interviewPrepVideos` and each `learnerTracks[]
 ### Company reference data
 
 Interview style, hiring focus, and common roles for companies such as Google, Amazon, Microsoft, TCS, Infosys, Wipro, Flipkart, Razorpay, Zoho, Meta, and others — maintained manually in `lib/data/companies.ts`.
+
+### Job board references (Job Search redirects)
+
+Apply deep-links users to search/apply on these platforms (no scraping):
+
+- [LinkedIn Jobs](https://www.linkedin.com/jobs/)
+- [Naukri.com](https://www.naukri.com/)
+- [Indeed India](https://in.indeed.com/)
+- [Glassdoor India](https://www.glassdoor.co.in/)
+- [Instahyre](https://www.instahyre.com/)
+- [Cutshort](https://cutshort.io/)
+- [Wellfound](https://wellfound.com/)
+
+URL builders live in `features/jobs/lib/platform-links.ts`. Curated listings in `lib/data/job-listings.ts`.
 
 ### Documentation references
 
