@@ -714,13 +714,32 @@ export function buildDashboardStats(
     (resume) => resume.status === "downloaded"
   ).length;
 
+  const improvedCount = resumes.filter(
+    (resume) =>
+      resume.generatedContent.beforeAtsScore !== undefined &&
+      resume.atsScore > (resume.generatedContent.beforeAtsScore ?? 0)
+  ).length;
+
+  const avgImprovement = improvedCount
+    ? Math.round(
+        resumes
+          .filter((r) => r.generatedContent.beforeAtsScore !== undefined)
+          .reduce(
+            (total, r) =>
+              total + (r.atsScore - (r.generatedContent.beforeAtsScore ?? 0)),
+            0
+          ) / Math.max(improvedCount, 1)
+      )
+    : 0;
+
   return [
     {
       label: "ATS average",
       value: `${atsAverage}%`,
       detail: resumes.length
         ? `Across ${resumes.length} generated resume${resumes.length === 1 ? "" : "s"}`
-        : "Generate a resume to start tracking score quality"
+        : "Generate a resume to start tracking score quality",
+      trend: avgImprovement > 0 ? `+${avgImprovement}% avg lift` : undefined
     },
     {
       label: "Resumes ready",
@@ -735,8 +754,88 @@ export function buildDashboardStats(
       detail: guides.length
         ? "Prepared from your role-specific resume context"
         : "Create a guide from the interview prep page"
+    },
+    {
+      label: "Tailored versions",
+      value: String(
+        resumes.filter((r) => r.company !== "Resume Builder").length
+      ),
+      detail: "Role-specific resumes tailored to job descriptions"
     }
   ];
+}
+
+export type ActivityItem = {
+  id: string;
+  type: "resume" | "guide" | "build";
+  title: string;
+  subtitle: string;
+  date: string;
+  score?: number;
+};
+
+export function buildActivityFeed(
+  resumes: GeneratedResumeType[],
+  guides: InterviewGuideType[],
+  limit = 6
+): ActivityItem[] {
+  const items: ActivityItem[] = [
+    ...resumes.map((resume) => ({
+      id: resume.id,
+      type: (resume.company === "Resume Builder"
+        ? "build"
+        : "resume") as ActivityItem["type"],
+      title:
+        resume.company === "Resume Builder"
+          ? resume.role
+          : `${resume.role} at ${resume.company}`,
+      subtitle:
+        resume.company === "Resume Builder"
+          ? "Built from guided questions"
+          : "Tailored resume",
+      date: resume.createdAt,
+      score: resume.atsScore
+    })),
+    ...guides.map((guide) => ({
+      id: guide.id,
+      type: "guide" as const,
+      title: guide.role,
+      subtitle: guide.company ? `${guide.company} prep plan` : "Interview prep",
+      date: guide.createdAt
+    }))
+  ];
+
+  return items
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, limit);
+}
+
+export function buildReadinessScore(
+  resumes: GeneratedResumeType[],
+  guides: InterviewGuideType[]
+) {
+  const hasResume = resumes.length > 0;
+  const hasTailored = resumes.some((r) => r.company !== "Resume Builder");
+  const hasGuide = guides.length > 0;
+  const avgAts = resumes.length
+    ? Math.round(
+        resumes.reduce((t, r) => t + r.atsScore, 0) / resumes.length
+      )
+    : 0;
+
+  const steps = [
+    { label: "Create a resume", done: hasResume, weight: 30 },
+    { label: "Tailor to a role", done: hasTailored, weight: 30 },
+    { label: "Interview prep plan", done: hasGuide, weight: 25 },
+    { label: "ATS score 70+", done: avgAts >= 70, weight: 15 }
+  ];
+
+  const score = steps.reduce(
+    (total, step) => total + (step.done ? step.weight : 0),
+    0
+  );
+
+  return { score, steps, avgAts };
 }
 
 export function buildKeywordCoverage(resumes: GeneratedResumeType[]) {
