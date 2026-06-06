@@ -8,17 +8,23 @@
 import {
   buildJobSeekerProfile,
   emptyJobSeekerProfile,
-  matchJobsForProfile,
+  scoreListingsForProfile,
   type JobMatchResult,
   type MatchJobsOptions
 } from "@/features/jobs";
+import {
+  dedupeJobListings,
+  fetchLiveJobs
+} from "@/features/jobs/lib/providers/fetch-live-jobs";
+import { getAllJobListings } from "@/lib/data/job-listings";
 import {
   getGeneratedResumes,
   getLatestMasterResume
 } from "@/lib/data/resumes";
 
 /**
- * Load the signed-in user's latest resume data and return matched jobs.
+ * Load the signed-in user's latest resume data, fetch live API jobs,
+ * merge with curated listings, and return scored matches.
  */
 export async function getJobMatchesForUser(
   userId: string,
@@ -40,5 +46,29 @@ export async function getJobMatchesForUser(
         })
       : emptyJobSeekerProfile(userId);
 
-  return matchJobsForProfile(profile, options);
+  const { listings: liveListings, providerStatus } = await fetchLiveJobs(
+    profile,
+    8
+  );
+
+  const curated = getAllJobListings().map((job) => ({
+    ...job,
+    dataProvider: "curated" as const
+  }));
+
+  const merged = dedupeJobListings([...liveListings, ...curated]);
+
+  return scoreListingsForProfile(profile, merged, {
+    ...options,
+    providerStatus: [
+      ...providerStatus,
+      {
+        id: "curated",
+        label: "Apply curated",
+        configured: true,
+        ok: true,
+        count: curated.length
+      }
+    ]
+  });
 }

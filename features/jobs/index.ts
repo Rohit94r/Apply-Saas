@@ -4,9 +4,12 @@
 
 export type {
   ExperienceBand,
+  JobDataProvider,
   JobListing,
+  JobListingPlatform,
   JobMatchResult,
-  JobPlatform,
+  JobProviderFetchStatus,
+  JobSearchPlatform,
   JobSeekerProfile
 } from "@/features/jobs/types";
 
@@ -18,6 +21,7 @@ export {
 
 export {
   matchJobsForProfile,
+  scoreListingsForProfile,
   type MatchJobsOptions
 } from "@/features/jobs/lib/match-jobs";
 

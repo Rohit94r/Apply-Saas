@@ -5,8 +5,8 @@
  * all import from one place (`@/features/jobs/types`).
  */
 
-/** Supported external job boards we deep-link into. */
-export type JobPlatform =
+/** External job boards we deep-link into (search URLs). */
+export type JobSearchPlatform =
   | "linkedin"
   | "naukri"
   | "indeed"
@@ -14,6 +14,18 @@ export type JobPlatform =
   | "instahyre"
   | "cutshort"
   | "wellfound";
+
+/** Live feed provider that supplied this listing. */
+export type JobDataProvider =
+  | "curated"
+  | "adzuna"
+  | "reed"
+  | "usajobs"
+  | "juju"
+  | "herohunt";
+
+/** Display platform on a job card (search boards + API sources). */
+export type JobListingPlatform = JobSearchPlatform | JobDataProvider;
 
 /** Experience band used for filtering curated listings. */
 export type ExperienceBand =
@@ -60,10 +72,24 @@ export type JobListing = {
   /** Skills/tags used by the matcher. */
   skills: string[];
   salaryHint?: string;
-  platform: JobPlatform;
+  platform: JobListingPlatform;
   /** External apply/search URL on LinkedIn, Naukri, etc. */
   applyUrl: string;
   postedLabel: string;
+  /** Where this row came from — curated DB or a live API. */
+  dataProvider?: JobDataProvider;
+  /** Optional short description from API. */
+  description?: string;
+};
+
+/** Status of each live job API after a fetch attempt. */
+export type JobProviderFetchStatus = {
+  id: JobDataProvider;
+  label: string;
+  configured: boolean;
+  ok: boolean;
+  count: number;
+  message?: string;
 };
 
 /** Result returned to the dashboard and job search page. */
@@ -71,10 +97,12 @@ export type JobMatchResult = {
   profile: JobSeekerProfile;
   matches: Array<JobListing & { matchScore: number; matchReasons: string[] }>;
   platformSearches: Array<{
-    platform: JobPlatform;
+    platform: JobSearchPlatform;
     label: string;
     description: string;
     url: string;
   }>;
   totalListingsScanned: number;
+  /** Live API fetch summary — shown in Job Search overview. */
+  providerStatus?: JobProviderFetchStatus[];
 };

@@ -5,10 +5,10 @@
  * on each platform using their inferred profile (role, skills, location).
  */
 
-import type { ExperienceBand, JobPlatform, JobSeekerProfile } from "@/features/jobs/types";
+import type { ExperienceBand, JobSearchPlatform, JobSeekerProfile } from "@/features/jobs/types";
 
 type PlatformMeta = {
-  platform: JobPlatform;
+  platform: JobSearchPlatform;
   label: string;
   description: string;
 };
@@ -126,7 +126,10 @@ function wellfoundUrl(profile: JobSeekerProfile) {
   return `https://wellfound.com/role/l/${role}/india`;
 }
 
-const urlBuilders: Record<JobPlatform, (profile: JobSeekerProfile) => string> = {
+const urlBuilders: Record<
+  JobSearchPlatform,
+  (profile: JobSeekerProfile) => string
+> = {
   linkedin: linkedInUrl,
   naukri: naukriUrl,
   indeed: indeedUrl,

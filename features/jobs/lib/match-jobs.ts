@@ -1,13 +1,18 @@
 /**
- * Score curated job listings against a job seeker profile.
+ * Score job listings against a job seeker profile.
  *
- * Matching is deterministic (skill overlap + role similarity + experience band).
- * Replace or augment with a jobs API (Adzuna, Remotive, etc.) in production.
+ * Works for curated data (`lib/data/job-listings.ts`) and live API rows
+ * normalized in `features/jobs/lib/providers/*`.
  */
 
 import { getAllJobListings } from "@/lib/data/job-listings";
 import { buildPlatformSearchLinks } from "@/features/jobs/lib/platform-links";
-import type { JobListing, JobMatchResult, JobSeekerProfile } from "@/features/jobs/types";
+import type {
+  JobListing,
+  JobMatchResult,
+  JobProviderFetchStatus,
+  JobSeekerProfile
+} from "@/features/jobs/types";
 
 const EXPERIENCE_COMPAT: Record<
   JobSeekerProfile["experienceBand"],
@@ -42,9 +47,18 @@ function roleSimilarity(profileRoles: string[], jobTitle: string) {
   return 0;
 }
 
+function uniqueReasons(reasons: string[]) {
+  return [...new Set(reasons)];
+}
+
 function scoreJob(profile: JobSeekerProfile, job: JobListing) {
   const reasons: string[] = [];
   let score = 0;
+
+  if (job.dataProvider && job.dataProvider !== "curated") {
+    score += 8;
+    reasons.push(`Live · ${job.dataProvider}`);
+  }
 
   const profileSkills = tokenSet(profile.skills);
   const jobSkills = tokenSet(job.skills);
@@ -62,12 +76,14 @@ function scoreJob(profile: JobSeekerProfile, job: JobListing) {
 
   const skillScore = jobSkills.size
     ? Math.min(50, Math.round((skillHits / jobSkills.size) * 50))
-    : 0;
+    : profileSkills.size
+      ? Math.min(25, skillHits * 8)
+      : 0;
   score += skillScore;
 
   const roleScore = Math.round(roleSimilarity(profile.targetRoles, job.title) * 25);
   if (roleScore > 0) {
-    reasons.push(`Role fit: ${job.title}`);
+    reasons.push(`Role fit: ${job.title.replace(/^Hiring signal · /, "")}`);
   }
   score += roleScore;
 
@@ -96,24 +112,23 @@ function scoreJob(profile: JobSeekerProfile, job: JobListing) {
   };
 }
 
-function uniqueReasons(reasons: string[]) {
-  return [...new Set(reasons)];
-}
-
 export type MatchJobsOptions = {
   limit?: number;
   minScore?: number;
+  /** Extra listings from live APIs (already normalized). */
+  extraListings?: JobListing[];
+  providerStatus?: JobProviderFetchStatus[];
 };
 
 /**
- * Match jobs for a profile and attach external platform search links.
+ * Score an arbitrary listing set — curated + live API merged upstream.
  */
-export function matchJobsForProfile(
+export function scoreListingsForProfile(
   profile: JobSeekerProfile,
+  listings: JobListing[],
   options: MatchJobsOptions = {}
 ): JobMatchResult {
-  const { limit = 12, minScore = 15 } = options;
-  const listings = getAllJobListings();
+  const { limit = 12, minScore = 12, providerStatus } = options;
 
   const matches = listings
     .map((job) => scoreJob(profile, job))
@@ -121,20 +136,37 @@ export function matchJobsForProfile(
     .sort((a, b) => b.matchScore - a.matchScore)
     .slice(0, limit);
 
-  // Fallback: show trending listings if profile is empty or no matches
   const finalMatches =
     matches.length > 0
       ? matches
       : listings.slice(0, 8).map((job) => ({
-          ...job,
-          matchScore: 40,
-          matchReasons: ["Popular opening in the Indian market"]
+          ...scoreJob(profile, job),
+          matchScore: Math.max(35, scoreJob(profile, job).matchScore),
+          matchReasons: ["Trending opening"]
         }));
 
   return {
     profile,
     matches: finalMatches,
     platformSearches: buildPlatformSearchLinks(profile),
-    totalListingsScanned: listings.length
+    totalListingsScanned: listings.length,
+    providerStatus
   };
+}
+
+/**
+ * Curated-only match (sync) — used when live fetch is skipped.
+ */
+export function matchJobsForProfile(
+  profile: JobSeekerProfile,
+  options: MatchJobsOptions = {}
+): JobMatchResult {
+  const curated = getAllJobListings().map((job) => ({
+    ...job,
+    dataProvider: "curated" as const
+  }));
+
+  const listings = [...(options.extraListings ?? []), ...curated];
+
+  return scoreListingsForProfile(profile, listings, options);
 }
