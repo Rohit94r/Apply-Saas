@@ -14,11 +14,14 @@ import {
   House,
   MagicWand,
   MagnifyingGlass,
+  ShieldCheck,
   Sparkle,
   Stack
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/landing/logo";
+import { CreditsBadge } from "@/components/billing/credits-badge";
+import { isAdminEmail } from "@/lib/admin/client";
 import { clerkIsConfigured } from "@/lib/clerk-config";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +38,8 @@ const navItems: Array<{
   { label: "Learner prep", href: "/dashboard/learners", icon: GraduationCap },
   { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase },
   { label: "AI tools", href: "/dashboard/tools", icon: MagicWand },
-  { label: "Analytics", href: "/dashboard/analytics", icon: ChartBar }
+  { label: "Analytics", href: "/dashboard/analytics", icon: ChartBar },
+  { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle }
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -73,6 +77,13 @@ function AuthenticatedDashboardShell({
   const [collapsed, setCollapsed] = useState(false);
   const displayName =
     user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "Apply user";
+  const isAdmin = isAdminEmail(user?.primaryEmailAddress?.emailAddress);
+  const sidebarItems = isAdmin
+    ? [
+        ...navItems,
+        { label: "Admin", href: "/dashboard/admin", icon: ShieldCheck }
+      ]
+    : navItems;
 
   return (
     <div className="min-h-screen bg-[#f7f4ee]">
@@ -98,7 +109,7 @@ function AuthenticatedDashboardShell({
           </button>
         </div>
         <nav className="mt-10 space-y-1">
-          {navItems.map((item) => (
+          {sidebarItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -115,11 +126,8 @@ function AuthenticatedDashboardShell({
           ))}
         </nav>
         {!collapsed ? (
-          <div className="absolute bottom-5 left-4 right-4 rounded-xl border border-accent/20 bg-accent/10 p-4">
-            <p className="text-sm font-semibold text-accent">Free plan</p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              10 resume generations included. Pro is ready for ₹149 or $4 monthly pricing.
-            </p>
+          <div className="absolute bottom-5 left-4 right-4 space-y-3">
+            <CreditsBadge />
           </div>
         ) : null}
       </aside>
@@ -134,8 +142,11 @@ function AuthenticatedDashboardShell({
               <h1 className="text-lg font-semibold text-foreground">Apply dashboard</h1>
             </div>
             <div className="flex items-center gap-3">
-              <div className="hidden rounded-full border border-border bg-white px-4 py-2 text-sm text-muted-foreground sm:block">
-                {displayName}
+              <div className="hidden items-center gap-3 sm:flex">
+                <CreditsBadge compact />
+                <div className="rounded-full border border-border bg-white px-4 py-2 text-sm text-muted-foreground">
+                  {displayName}
+                </div>
               </div>
               <UserButton
                 appearance={{
@@ -147,7 +158,7 @@ function AuthenticatedDashboardShell({
             </div>
           </div>
           <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-            {navItems.map((item) => (
+            {sidebarItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
