@@ -12,20 +12,16 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowSquareOut,
-  Briefcase,
   Globe,
   MagnifyingGlass,
-  MapPin,
-  Sparkle,
   SpinnerGap,
   UploadSimple
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import type { JobMatchResult } from "@/features/jobs/types";
-import { experienceBandLabel } from "@/features/jobs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { JobApiOverview } from "@/features/jobs/components/job-api-overview";
 import { JobMatchCard } from "@/features/jobs/components/job-match-card";
 import { PlatformSearchLinks } from "@/features/jobs/components/platform-search-links";
 import { JobProfileBanner } from "@/features/jobs/components/job-profile-banner";
@@ -37,11 +33,17 @@ const platformLabels: Record<string, string> = {
   glassdoor: "Glassdoor",
   instahyre: "Instahyre",
   cutshort: "Cutshort",
-  wellfound: "Wellfound"
+  wellfound: "Wellfound",
+  adzuna: "Adzuna",
+  reed: "Reed",
+  usajobs: "USAJOBS",
+  juju: "Juju",
+  herohunt: "HeroHunt"
 };
 
 export function JobSearchWorkspace() {
   const [result, setResult] = useState<JobMatchResult | null>(null);
+  const [filter, setFilter] = useState<string>("all");
   const [loading, setLoading] = useState(true);
 
   const loadMatches = useCallback(async () => {
@@ -70,6 +72,21 @@ export function JobSearchWorkspace() {
   const profile = result?.profile;
   const hasProfile = profile?.isComplete;
 
+  const filterOptions = [
+    { id: "all", label: "All feeds" },
+    { id: "adzuna", label: "Adzuna" },
+    { id: "reed", label: "Reed" },
+    { id: "usajobs", label: "USAJOBS" },
+    { id: "juju", label: "Juju" },
+    { id: "herohunt", label: "HeroHunt" },
+    { id: "curated", label: "Curated" }
+  ];
+
+  const visibleMatches =
+    result?.matches.filter((job) =>
+      filter === "all" ? true : job.dataProvider === filter
+    ) ?? [];
+
   return (
     <div className="space-y-6">
       {/* Platform search — always visible at top per product requirement */}
@@ -95,6 +112,10 @@ export function JobSearchWorkspace() {
             <PlatformSearchLinks links={result.platformSearches} />
           </div>
         </Card>
+      ) : null}
+
+      {result?.providerStatus?.length ? (
+        <JobApiOverview providers={result.providerStatus} />
       ) : null}
 
       {/* Profile summary from uploaded resume */}
@@ -139,8 +160,8 @@ export function JobSearchWorkspace() {
             </h3>
             {result ? (
               <p className="mt-1 text-xs text-muted-foreground">
-                Scanned {result.totalListingsScanned} curated listings · showing{" "}
-                {result.matches.length}
+                Scanned {result.totalListingsScanned} listings from live APIs + curated
+                · showing {visibleMatches.length}
               </p>
             ) : null}
           </div>
@@ -160,15 +181,34 @@ export function JobSearchWorkspace() {
           </Button>
         </div>
 
+        {!loading && result?.matches.length ? (
+          <div className="mb-5 flex flex-wrap gap-2">
+            {filterOptions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setFilter(option.id)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                  filter === option.id
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-white text-muted-foreground hover:border-primary/30"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
         {loading ? (
           <div className="grid gap-4 md:grid-cols-2">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-40 animate-pulse rounded-xl bg-muted" />
             ))}
           </div>
-        ) : result?.matches.length ? (
+        ) : visibleMatches.length ? (
           <div className="grid gap-4 md:grid-cols-2">
-            {result.matches.map((job) => (
+            {visibleMatches.map((job) => (
               <JobMatchCard key={job.id} job={job} />
             ))}
           </div>

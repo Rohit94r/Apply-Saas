@@ -18,8 +18,20 @@ const platformBadge: Record<string, string> = {
   glassdoor: "Glassdoor",
   instahyre: "Instahyre",
   cutshort: "Cutshort",
-  wellfound: "Wellfound"
+  wellfound: "Wellfound",
+  adzuna: "Adzuna",
+  reed: "Reed.co.uk",
+  usajobs: "USAJOBS",
+  juju: "Juju",
+  herohunt: "HeroHunt"
 };
+
+function sourceLabel(job: MatchedJob) {
+  if (job.dataProvider && job.dataProvider !== "curated") {
+    return platformBadge[job.dataProvider] ?? job.dataProvider;
+  }
+  return platformBadge[job.platform] ?? job.platform;
+}
 
 export function JobMatchCard({ job }: { job: MatchedJob }) {
   return (
@@ -27,7 +39,8 @@ export function JobMatchCard({ job }: { job: MatchedJob }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase text-accent">
-            {platformBadge[job.platform] ?? job.platform}
+            {sourceLabel(job)}
+            {job.dataProvider && job.dataProvider !== "curated" ? " · Live" : ""}
           </p>
           <h4 className="mt-1 text-base font-bold text-foreground">{job.title}</h4>
           <p className="text-sm font-semibold text-primary">{job.company}</p>
@@ -74,9 +87,15 @@ export function JobMatchCard({ job }: { job: MatchedJob }) {
         ))}
       </div>
 
+      {job.description ? (
+        <p className="mt-3 line-clamp-2 text-xs leading-5 text-muted-foreground">
+          {job.description}
+        </p>
+      ) : null}
+
       <Button asChild className="mt-5 w-full sm:w-auto" size="sm">
         <a href={job.applyUrl} target="_blank" rel="noreferrer">
-          Apply on {platformBadge[job.platform] ?? "job board"}
+          Apply on {sourceLabel(job)}
           <ArrowSquareOut className="h-4 w-4" weight="regular" />
         </a>
       </Button>
