@@ -62,6 +62,13 @@ Open [http://localhost:3000](http://localhost:3000).
 | `OPENAI_API_KEY` | Optional AI fallback |
 | `UPLOADTHING_TOKEN`, `UPLOADTHING_SECRET`, `UPLOADTHING_APP_ID` | Photo uploads |
 | `NEXT_PUBLIC_UMAMI_SRC`, `NEXT_PUBLIC_UMAMI_WEBSITE_ID` | Optional web analytics |
+| `ADZUNA_APP_ID`, `ADZUNA_APP_KEY`, `ADZUNA_COUNTRY` | Live jobs via Adzuna (India default: `in`) |
+| `REED_API_KEY` | UK jobs via Reed.co.uk |
+| `USAJOBS_API_KEY`, `USAJOBS_USER_AGENT` | US federal jobs |
+| `JUJU_PARTNER_ID` | US job aggregator (Juju RSS) |
+| `HEROHUNT_API_KEY` | HeroHunt talent/market signals |
+
+See [docs/job-apis-setup.md](docs/job-apis-setup.md) for registration links and examples.
 
 ---
 
