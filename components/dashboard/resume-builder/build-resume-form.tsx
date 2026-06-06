@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   DownloadSimple,
   Eye,
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { billingRequestHeaders } from "@/lib/device-id";
 
 type TemplateId = "classic" | "modern" | "compact";
 
@@ -287,6 +289,7 @@ function buildLivePreviewText(
 }
 
 export function BuildResumeForm() {
+  const router = useRouter();
   const [jobType, setJobType] = useState("Technology");
   const [targetRole, setTargetRole] = useState("Full Stack Developer");
   const [template, setTemplate] = useState<TemplateId>("classic");
@@ -403,7 +406,7 @@ export function BuildResumeForm() {
     try {
       const response = await fetch("/api/resumes/build", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: billingRequestHeaders(),
         body: JSON.stringify({
           ...form,
           jobType,
@@ -424,6 +427,14 @@ export function BuildResumeForm() {
             .filter((section) => section.content)
         })
       });
+
+      if (response.status === 402) {
+        const limit = (await response.json()) as { error?: string; upgradeUrl?: string };
+        toast.error(limit.error ?? "Free credits finished. Upgrade to Pro for ₹50/month.");
+        router.push(limit.upgradeUrl ?? "/dashboard/upgrade");
+        return;
+      }
+
       const data = await readApiJson<BuiltResumeResponse>(
         response,
         "Resume build failed"

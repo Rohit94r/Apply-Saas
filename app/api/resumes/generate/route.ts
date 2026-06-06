@@ -8,6 +8,13 @@ import {
   type GenerateResumeInput
 } from "@/lib/validations";
 import { getCurrentUserId } from "@/lib/auth";
+import { logFeatureUse } from "@/lib/admin/session";
+import { getDeviceIdFromRequest } from "@/lib/billing/request";
+import {
+  assertCanGenerate,
+  recordGenerationUsage,
+  UsageLimitError
+} from "@/lib/billing/usage";
 import {
   createGeneratedResume,
   getLatestMasterResume,
@@ -461,6 +468,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const requestInput = generateResumeRequestSchema.parse(body);
     const userId = await getCurrentUserId();
+    const deviceId = getDeviceIdFromRequest(request);
+
+    await assertCanGenerate(userId, deviceId);
+
     const savedMasterResume = requestInput.masterResumeId
       ? await getMasterResume(userId, requestInput.masterResumeId)
       : await getLatestMasterResume(userId);
@@ -526,10 +537,19 @@ export async function POST(request: Request) {
       savedMasterResume?.id
     );
 
+    await recordGenerationUsage(userId, deviceId);
+    void logFeatureUse("generate", `${input.company} · ${input.role}`);
+
     return NextResponse.json({
       resume
     });
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return NextResponse.json(
+        { error: error.message, ...error.payload },
+        { status: error.status }
+      );
+    }
     const message =
       error instanceof Error ? error.message : "Unable to generate resume";
     return NextResponse.json({ error: message }, { status: 400 });

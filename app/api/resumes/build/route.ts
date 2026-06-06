@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { buildStudentResume } from "@/lib/ai/resume-engine";
 import { getCurrentUserId } from "@/lib/auth";
+import { logFeatureUse } from "@/lib/admin/session";
+import { getDeviceIdFromRequest } from "@/lib/billing/request";
+import {
+  assertCanGenerate,
+  recordGenerationUsage,
+  UsageLimitError
+} from "@/lib/billing/usage";
 import { createGeneratedResume } from "@/lib/data/resumes";
 import { buildResumeSchema, type GenerateResumeInput } from "@/lib/validations";
 
@@ -9,6 +16,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const input = buildResumeSchema.parse(body);
     const userId = await getCurrentUserId();
+    const deviceId = getDeviceIdFromRequest(request);
+
+    await assertCanGenerate(userId, deviceId);
+
     const built = await buildStudentResume(input);
     const saveInput: GenerateResumeInput = {
       company: "Resume Builder",
@@ -37,8 +48,17 @@ export async function POST(request: Request) {
       atsScore: built.atsScore
     });
 
+    await recordGenerationUsage(userId, deviceId);
+    void logFeatureUse("build", input.targetRole);
+
     return NextResponse.json({ resume });
   } catch (error) {
+    if (error instanceof UsageLimitError) {
+      return NextResponse.json(
+        { error: error.message, ...error.payload },
+        { status: error.status }
+      );
+    }
     const message =
       error instanceof Error ? error.message : "Unable to build resume";
     return NextResponse.json({ error: message }, { status: 400 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CheckCircle,
   DownloadSimple,
@@ -22,6 +23,7 @@ import {
   CompanySearchInput
 } from "@/components/dashboard/company-search-input";
 import type { CompanyProfile } from "@/lib/data/companies";
+import { billingRequestHeaders } from "@/lib/device-id";
 import type { MasterResume, ResumeSourceLine } from "@/types";
 
 const MAX_RESUME_BYTES = 10 * 1024 * 1024;
@@ -278,6 +280,7 @@ export function GenerateResumeForm({
 }: {
   initialMasterResume: MasterResume | null;
 }) {
+  const router = useRouter();
   const initialText = formatMasterResumeText(initialMasterResume);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -435,7 +438,7 @@ export function GenerateResumeForm({
     try {
       const response = await fetch("/api/resumes/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: billingRequestHeaders(),
         body: JSON.stringify({
           company: companyDraft.trim(),
           role: roleDraft.trim(),
@@ -443,6 +446,13 @@ export function GenerateResumeForm({
           jobDescription: jobDescriptionDraft.trim()
         })
       });
+
+      if (response.status === 402) {
+        const limit = (await response.json()) as { error?: string; upgradeUrl?: string };
+        toast.error(limit.error ?? "Free credits finished. Upgrade to Pro for ₹50/month.");
+        router.push(limit.upgradeUrl ?? "/dashboard/upgrade");
+        return;
+      }
 
       const data = await readApiJson<GeneratedResumeResponse>(
         response,

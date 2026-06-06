@@ -21,6 +21,8 @@ export const config = {
     "/api/pdf(.*)",
     "/api/photo(.*)",
     "/api/resumes(.*)",
+    "/api/billing(.*)",
+    "/api/admin(.*)",
     "/api/uploadthing(.*)"
   ]
 };
