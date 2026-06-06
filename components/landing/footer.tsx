@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
+import { FounderSupportCard } from "@/components/billing/founder-support-card";
 import { Logo } from "@/components/landing/logo";
+import { founderLinks } from "@/lib/constants/founder";
 
 const columns = [
   {
@@ -35,12 +37,21 @@ const columns = [
     ]
   },
   {
+    title: "Support",
+    links: [
+      { label: "Upgrade / UPI pay", href: "/dashboard/upgrade" },
+      { label: "DM on Instagram", href: founderLinks.instagram },
+      { label: "Connect on LinkedIn", href: founderLinks.linkedin },
+      { label: "WhatsApp", href: founderLinks.whatsapp }
+    ]
+  },
+  {
     title: "Social",
     links: [
-      { label: "LinkedIn", href: "#" },
-      { label: "X", href: "#" },
-      { label: "GitHub", href: "#" },
-      { label: "Community", href: "#" }
+      { label: "Instagram @dev.by.rohit", href: founderLinks.instagram },
+      { label: "LinkedIn", href: founderLinks.linkedin },
+      { label: "WhatsApp support", href: founderLinks.whatsapp },
+      { label: "Blog", href: "/blog" }
     ]
   }
 ];
@@ -60,17 +71,18 @@ export function Footer() {
             </Link>
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">
-            First 10 resumes are free. No card required.
+            First 5 resumes are free. Pro is ₹50/month via UPI QR.
           </p>
         </div>
         <div className="grid gap-10 border-t border-border pt-12 md:grid-cols-[1.2fr_repeat(4,1fr)]">
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
-              Free AI resume builder, ATS optimizer, cover letter generator,
-              interview prep, and professional application tools for Indian
-              students and freshers.
+              AI resume builder for Indian students. Need help? Message on Instagram or LinkedIn.
             </p>
+            <div className="mt-5">
+              <FounderSupportCard compact />
+            </div>
           </div>
           {columns.map((column) => (
             <div key={column.title}>
@@ -78,7 +90,12 @@ export function Footer() {
               <ul className="space-y-3">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-sm text-muted-foreground transition hover:text-primary">
+                    <Link
+                      href={link.href}
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="text-sm text-muted-foreground transition hover:text-primary"
+                    >
                       {link.label}
                     </Link>
                   </li>

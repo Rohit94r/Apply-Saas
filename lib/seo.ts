@@ -49,7 +49,7 @@ export const seoFaqs = [
   {
     question: "How many resumes can I generate free?",
     answer:
-      "The first 10 resume generations are free, so students can test role-specific resume tailoring before upgrading."
+      "The first 5 resume generations are free per account and per device. Upgrade to Pro for ₹50/month via manual UPI payment."
   }
 ] as const;
 
@@ -59,7 +59,7 @@ export const seoConfig = {
   url: appUrl,
   title: "Free AI Resume Builder for Indian Students | Apply",
   description:
-    "Free AI resume builder for Indian engineering students and freshers. Upload once, generate ATS-optimized resumes for internships and jobs. First 10 free.",
+    "Free AI resume builder for Indian engineering students and freshers. Upload once, generate ATS-optimized resumes for internships and jobs. 5 free, then ₹50/month UPI.",
   keywords: [
     "resume builder for engineering students India",
     "ATS resume optimizer for freshers",

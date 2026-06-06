@@ -34,8 +34,8 @@ export function HeroSection() {
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Resume tailoring, job search, learner prep, and interview guides — your first 10
-            generations are free.
+            Resume tailoring, job search, learner prep, and interview guides — 5 free
+            generations, then ₹50/month via UPI QR.
           </p>
         </Reveal>
         <Reveal delay={0.12}>

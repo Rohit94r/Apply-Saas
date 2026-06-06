@@ -5,7 +5,9 @@ import { useState } from "react";
 import { CheckCircle } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/animations/reveal";
+import { FounderSupportCard } from "@/components/billing/founder-support-card";
 import { SectionHeading } from "@/components/landing/section-heading";
+import { PRO_MONTHLY_PRICE_INR } from "@/lib/billing/constants";
 import { cn } from "@/lib/utils";
 
 const plans = [
@@ -15,9 +17,9 @@ const plans = [
       usd: "$0",
       inr: "₹0"
     },
-    description: "For Indian students and freshers starting an active job search.",
+    description: "For Indian students testing Apply before their placement season.",
     features: [
-      "Up to 10 free resume generations",
+      "5 free resume generations",
       "Master resume upload",
       "ATS keyword scan",
       "PDF export"
@@ -27,19 +29,18 @@ const plans = [
   {
     name: "Pro",
     price: {
-      usd: "$4",
-      inr: "₹349"
+      usd: "$1",
+      inr: `₹${PRO_MONTHLY_PRICE_INR}`
     },
     period: "/month",
-    description: "For students and freshers applying every week across internships and jobs.",
+    description: "Manual UPI via QR — built by a student, for students. Early startup energy.",
     features: [
-      "Unlimited tailored resumes",
+      "Unlimited tailored resumes for 30 days",
+      "Job search + learner prep",
       "Interview prep guides",
-      "AI cover letters",
-      "Prompt-based PDF editing",
-      "Professional photo generation"
+      "Student discounts via DM — no public codes"
     ],
-    cta: "Join waitlist",
+    cta: "Upgrade with UPI",
     highlighted: true
   }
 ];
@@ -53,8 +54,8 @@ export function PricingSection() {
         <Reveal>
           <SectionHeading
             eyebrow="Pricing"
-            title="Start free, upgrade when your search gets serious."
-            description="India-first pricing with both rupee and dollar views. Payments are still a scalable placeholder, ready for subscriptions and usage limits when you switch them on."
+            title="5 free resumes. Then ₹50/month via UPI QR."
+            description="Scan the PhonePe QR, pay ₹50/month manually, confirm on WhatsApp. Need a deal? DM the founder on Instagram or LinkedIn — codes stay private."
           />
         </Reveal>
         <div className="mt-8 flex justify-center">
@@ -103,7 +104,7 @@ export function PricingSection() {
                   </div>
                   {plan.highlighted ? (
                     <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold">
-                      Most useful
+                      UPI QR
                     </span>
                   ) : null}
                 </div>
@@ -113,17 +114,6 @@ export function PricingSection() {
                     <span className="pb-3 text-sm opacity-70">{plan.period}</span>
                   ) : null}
                 </div>
-                {plan.name === "Pro" ? (
-                  <p
-                    className={
-                      plan.highlighted
-                        ? "mt-2 text-xs text-white/65"
-                        : "mt-2 text-xs text-muted-foreground"
-                    }
-                  >
-                    {currency === "inr" ? "Approx. $4/month equivalent" : "India-friendly monthly plan"}
-                  </p>
-                ) : null}
                 <ul className="mt-8 space-y-3">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-3 text-sm">
@@ -137,12 +127,19 @@ export function PricingSection() {
                   className="mt-8 w-full"
                   variant={plan.highlighted ? "subtle" : "default"}
                 >
-                  <Link href="/dashboard/generate">{plan.cta}</Link>
+                  <Link href={plan.highlighted ? "/dashboard/upgrade" : "/dashboard/generate"}>
+                    {plan.cta}
+                  </Link>
                 </Button>
               </div>
             </Reveal>
           ))}
         </div>
+        <Reveal delay={0.15}>
+          <div className="mx-auto mt-12 max-w-2xl">
+            <FounderSupportCard />
+          </div>
+        </Reveal>
       </div>
     </section>
   );
