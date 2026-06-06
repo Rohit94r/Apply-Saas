@@ -225,6 +225,67 @@ function buildPreview(response: BuiltResume) {
   };
 }
 
+function buildLivePreviewText(
+  form: {
+    name: string;
+    email: string;
+    phone: string;
+    location: string;
+    linkedin: string;
+    github: string;
+    degree: string;
+    college: string;
+    graduationYear: string;
+    experience: string;
+    projects: string;
+    certificates: string;
+  },
+  targetRole: string,
+  selectedSkills: string[]
+) {
+  const sections: string[] = [];
+
+  if (form.name.trim()) {
+    sections.push(form.name.trim());
+  }
+
+  const contact = [form.email, form.phone, form.location].filter(Boolean).join(" · ");
+  if (contact) {
+    sections.push(contact);
+  }
+
+  const links = [form.linkedin, form.github].filter(Boolean).join(" · ");
+  if (links) {
+    sections.push(links);
+  }
+
+  if (targetRole.trim()) {
+    sections.push("", `Target role: ${targetRole.trim()}`);
+  }
+
+  if (form.degree.trim() || form.college.trim()) {
+    sections.push("", "EDUCATION", [form.degree, form.college, form.graduationYear].filter(Boolean).join(" · "));
+  }
+
+  if (selectedSkills.length) {
+    sections.push("", "SKILLS", selectedSkills.join(", "));
+  }
+
+  if (form.projects.trim()) {
+    sections.push("", "PROJECTS", form.projects.trim());
+  }
+
+  if (form.experience.trim()) {
+    sections.push("", "EXPERIENCE", form.experience.trim());
+  }
+
+  if (form.certificates.trim()) {
+    sections.push("", "CERTIFICATES", form.certificates.trim());
+  }
+
+  return sections.join("\n");
+}
+
 export function BuildResumeForm() {
   const [jobType, setJobType] = useState("Technology");
   const [targetRole, setTargetRole] = useState("Full Stack Developer");
@@ -263,11 +324,17 @@ export function BuildResumeForm() {
     certificates: "",
     prompt: ""
   });
+
   const roles = roleOptions[jobType] ?? roleOptions.Technology;
   const skills = useMemo(
     () => skillOptions[jobType] ?? skillOptions.Technology,
     [jobType]
   );
+  const livePreviewText = useMemo(
+    () => buildLivePreviewText(form, targetRole, selectedSkills),
+    [form, targetRole, selectedSkills]
+  );
+  const hasLiveContent = Boolean(form.name.trim() || form.degree.trim());
 
   function updateField(name: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [name]: value }));
@@ -363,7 +430,8 @@ export function BuildResumeForm() {
       );
 
       setPreview(buildPreview(data.resume));
-      toast.success("Resume built");
+      setEditing(false);
+      toast.success("Resume built — preview ready");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Resume build failed");
     } finally {
@@ -794,118 +862,130 @@ export function BuildResumeForm() {
       <Card className="min-h-[720px] p-6 xl:sticky xl:top-24 xl:self-start">
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="fine-label mb-2">Live preview</p>
+            <p className="fine-label mb-2">
+              {preview ? "Your resume" : "Live preview"}
+            </p>
             <h3 className="font-serif text-3xl text-primary">
-              {preview?.role ?? "Built resume"}
+              {preview?.role ?? targetRole ?? "Built resume"}
             </h3>
+            {preview ? (
+              <p className="mt-1 text-xs font-semibold text-accent">
+                PDF ready · {preview.atsScore}% ATS readiness
+              </p>
+            ) : hasLiveContent ? (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Updates as you fill the form
+              </p>
+            ) : null}
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              disabled={!preview}
-              onClick={() => setEditing((value) => !value)}
-            >
-              {editing ? (
-                <Eye className="h-4 w-4" weight="regular" />
-              ) : (
-                <PencilSimple className="h-4 w-4" weight="regular" />
-              )}
-              {editing ? "Preview" : "Edit"}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              disabled={!preview || saving}
-              onClick={() => savePreview()}
-            >
-              {saving ? (
-                <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
-              ) : (
-                <FloppyDisk className="h-4 w-4" weight="regular" />
-              )}
-              Save
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              disabled={!preview || saving}
-              onClick={onDownload}
-            >
-              <DownloadSimple className="h-4 w-4" weight="regular" />
-              Download
-            </Button>
-          </div>
+          {preview ? (
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => setEditing((value) => !value)}
+              >
+                {editing ? (
+                  <Eye className="h-4 w-4" weight="regular" />
+                ) : (
+                  <PencilSimple className="h-4 w-4" weight="regular" />
+                )}
+                {editing ? "Preview" : "Edit"}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={saving}
+                onClick={() => savePreview()}
+              >
+                {saving ? (
+                  <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
+                ) : (
+                  <FloppyDisk className="h-4 w-4" weight="regular" />
+                )}
+                Save
+              </Button>
+              <Button type="button" size="sm" disabled={saving} onClick={onDownload}>
+                <DownloadSimple className="h-4 w-4" weight="regular" />
+                Download
+              </Button>
+            </div>
+          ) : null}
         </div>
 
-        {preview ? (
-          editing ? (
-            <div className="space-y-4">
-              <Textarea
-                value={preview.afterText}
-                onChange={(event) =>
-                  setPreview({ ...preview, afterText: event.target.value })
-                }
-                className="min-h-[520px] font-mono text-xs leading-5"
+        {loading ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 rounded-xl border border-accent/20 bg-accent/5 p-4">
+              <SpinnerGap
+                className="h-5 w-5 animate-spin text-accent"
+                weight="regular"
               />
-              <Textarea
-                value={preview.skills.join(", ")}
-                onChange={(event) =>
-                  setPreview({ ...preview, skills: splitComma(event.target.value) })
-                }
-                className="min-h-20"
+              <p className="text-sm font-semibold text-foreground">
+                Building your resume with AI...
+              </p>
+            </div>
+            <div className="h-96 animate-pulse rounded-xl bg-muted" />
+          </div>
+        ) : preview && !editing ? (
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded-xl border border-border bg-white shadow-inner">
+              <iframe
+                title="Built resume PDF preview"
+                src={`/api/pdf?resumeId=${preview.id}&preview=1&template=${preview.template}`}
+                className="h-[720px] w-full bg-white"
               />
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg border border-border bg-white p-3">
-                  <p className="text-[10px] font-semibold uppercase text-muted-foreground">
-                    Readiness
-                  </p>
-                  <p className="mt-1 text-2xl font-bold text-accent">
-                    {preview.atsScore}%
-                  </p>
-                </div>
-                <div className="rounded-lg border border-border bg-white p-3">
-                  <p className="text-[10px] font-semibold uppercase text-muted-foreground">
-                    Template
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-primary">
-                    {templates.find((item) => item.id === preview.template)?.title}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {preview.keywords.slice(0, 10).map((keyword) => (
-                  <span
-                    key={keyword}
-                    className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
-                  >
-                    {keyword}
-                  </span>
-                ))}
-              </div>
-              <div className="overflow-hidden rounded-xl border border-border bg-white shadow-inner">
-                <iframe
-                  title="Built resume PDF preview"
-                  src={`/api/pdf?resumeId=${preview.id}&preview=1&template=${preview.template}`}
-                  className="h-[720px] w-full bg-white"
-                />
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {preview.keywords.slice(0, 8).map((keyword) => (
+                <span
+                  key={keyword}
+                  className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                >
+                  {keyword}
+                </span>
+              ))}
             </div>
-          )
+          </div>
+        ) : preview && editing ? (
+          <div className="space-y-4">
+            <Textarea
+              value={preview.afterText}
+              onChange={(event) =>
+                setPreview({ ...preview, afterText: event.target.value })
+              }
+              className="min-h-[520px] font-mono text-xs leading-5"
+            />
+            <Textarea
+              value={preview.skills.join(", ")}
+              onChange={(event) =>
+                setPreview({ ...preview, skills: splitComma(event.target.value) })
+              }
+              className="min-h-20"
+            />
+          </div>
+        ) : hasLiveContent ? (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-border bg-white p-5 shadow-inner">
+              <pre className="whitespace-pre-wrap font-serif text-sm leading-7 text-foreground">
+                {livePreviewText}
+              </pre>
+            </div>
+            <p className="text-center text-xs text-muted-foreground">
+              Click &quot;Build resume&quot; to generate your polished PDF instantly
+              here.
+            </p>
+          </div>
         ) : (
           <div className="flex min-h-[540px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-white/55 p-8 text-center">
             <Sparkle className="h-8 w-8 text-accent" weight="regular" />
             <h4 className="mt-4 font-serif text-3xl text-primary">
-              Answer and build
+              Side-by-side preview
             </h4>
             <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-              Select role, skills, projects, and a template. Your editable PDF
-              preview appears here.
+              Start filling your details on the left. Your live preview appears
+              here, then your PDF instantly after you submit.
             </p>
           </div>
         )}
