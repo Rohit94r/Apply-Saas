@@ -1,0 +1,80 @@
+/**
+ * Job Search feature — shared types.
+ *
+ * Intern note: keep domain types here so UI, API routes, and matchers
+ * all import from one place (`@/features/jobs/types`).
+ */
+
+/** Supported external job boards we deep-link into. */
+export type JobPlatform =
+  | "linkedin"
+  | "naukri"
+  | "indeed"
+  | "glassdoor"
+  | "instahyre"
+  | "cutshort"
+  | "wellfound";
+
+/** Experience band used for filtering curated listings. */
+export type ExperienceBand =
+  | "student"
+  | "fresher"
+  | "0-1"
+  | "1-3"
+  | "any";
+
+/**
+ * Profile inferred from the user's uploaded or built resume.
+ * Built by `features/jobs/lib/build-profile.ts`.
+ */
+export type JobSeekerProfile = {
+  /** Clerk user id — for logging/analytics only in API responses. */
+  userId: string;
+  /** Human-readable headline shown in the job search banner. */
+  headline: string;
+  /** Primary roles the user likely targets (max 3). */
+  targetRoles: string[];
+  /** Normalized skill tokens extracted from resume. */
+  skills: string[];
+  /** Best-guess location (city or "India"). */
+  location: string;
+  /** student | fresher | junior — drives job filtering. */
+  experienceBand: ExperienceBand;
+  /** Where the profile came from. */
+  source: "master-resume" | "built-resume" | "manual" | "none";
+  /** True when we have enough signal to personalize matches. */
+  isComplete: boolean;
+  /** Optional link back to master resume id. */
+  masterResumeId?: string;
+};
+
+/** A curated market job listing stored in `lib/data/job-listings.ts`. */
+export type JobListing = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  workMode: "remote" | "hybrid" | "onsite";
+  type: "internship" | "full-time" | "contract";
+  experienceBand: ExperienceBand;
+  /** Skills/tags used by the matcher. */
+  skills: string[];
+  salaryHint?: string;
+  platform: JobPlatform;
+  /** External apply/search URL on LinkedIn, Naukri, etc. */
+  applyUrl: string;
+  postedLabel: string;
+};
+
+/** Result returned to the dashboard and job search page. */
+export type JobMatchResult = {
+  profile: JobSeekerProfile;
+  matches: Array<JobListing & { matchScore: number; matchReasons: string[] }>;
+  platformSearches: Array<{
+    platform: JobPlatform;
+    label: string;
+    description: string;
+    url: string;
+  }>;
+  totalListingsScanned: number;
+};
