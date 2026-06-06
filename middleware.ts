@@ -13,6 +13,7 @@ export default clerkMiddleware(async (auth, request) => {
 export const config = {
   matcher: [
     "/dashboard(.*)",
+    "/api/company(.*)",
     "/api/cover-letter(.*)",
     "/api/critique(.*)",
     "/api/interview(.*)",
