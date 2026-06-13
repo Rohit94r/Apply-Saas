@@ -19,9 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { PostTailorActions } from "@/components/dashboard/post-tailor-actions";
 import {
-  CompanySearchInput
-} from "@/components/dashboard/company-search-input";
+  PromptQuickActions,
+  refinePromptSuggestions
+} from "@/components/dashboard/prompt-quick-actions";
+import { CompanySearchInput } from "@/components/dashboard/company-search-input";
 import type { CompanyProfile } from "@/lib/data/companies";
 import { billingRequestHeaders } from "@/lib/device-id";
 import type { MasterResume, ResumeSourceLine } from "@/types";
@@ -276,9 +279,13 @@ function buildSuggestedJobDescription(
 }
 
 export function GenerateResumeForm({
-  initialMasterResume
+  initialMasterResume,
+  initialCompany = "",
+  initialRole = ""
 }: {
   initialMasterResume: MasterResume | null;
+  initialCompany?: string;
+  initialRole?: string;
 }) {
   const router = useRouter();
   const initialText = formatMasterResumeText(initialMasterResume);
@@ -298,13 +305,19 @@ export function GenerateResumeForm({
   const [preview, setPreview] = useState<GeneratedPreview | null>(null);
   const [previewMode, setPreviewMode] = useState<PreviewMode>("after");
   const [editingPreview, setEditingPreview] = useState(false);
-  const [companyDraft, setCompanyDraft] = useState("");
+  const [companyDraft, setCompanyDraft] = useState(initialCompany);
   const [selectedCompany, setSelectedCompany] = useState<CompanyProfile | null>(
     null
   );
-  const [roleDraft, setRoleDraft] = useState("");
+  const [roleDraft, setRoleDraft] = useState(initialRole);
   const [jobDescriptionDraft, setJobDescriptionDraft] = useState("");
-  const [jobStep, setJobStep] = useState<1 | 2 | 3>(1);
+  const [promptDraft, setPromptDraft] = useState("");
+  const [refinePromptDraft, setRefinePromptDraft] = useState("");
+  const [refining, setRefining] = useState(false);
+  const [showRefinePanel, setShowRefinePanel] = useState(false);
+  const [jobStep, setJobStep] = useState<1 | 2 | 3>(
+    initialCompany && initialRole ? 3 : initialCompany ? 2 : 1
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleCompanySelect(company: CompanyProfile | null) {
@@ -443,7 +456,8 @@ export function GenerateResumeForm({
           company: companyDraft.trim(),
           role: roleDraft.trim(),
           masterResumeId: masterResume.id,
-          jobDescription: jobDescriptionDraft.trim()
+          jobDescription: jobDescriptionDraft.trim(),
+          prompt: promptDraft.trim() || undefined
         })
       });
 
@@ -461,11 +475,53 @@ export function GenerateResumeForm({
 
       setPreview(toPreview(data.resume));
       setPreviewMode("after");
+      setShowRefinePanel(false);
       toast.success("Tailored resume ready");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function onRefine() {
+    if (!preview) {
+      return;
+    }
+
+    const prompt = refinePromptDraft.trim();
+
+    if (prompt.length < 8) {
+      toast.error("Add a short refinement instruction");
+      return;
+    }
+
+    setRefining(true);
+
+    try {
+      const response = await fetch("/api/resumes/refine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resumeId: preview.id,
+          prompt,
+          jobDescription: jobDescriptionDraft.trim() || undefined
+        })
+      });
+      const data = await readApiJson<GeneratedResumeResponse>(
+        response,
+        "Resume refinement failed"
+      );
+
+      setPreview(toPreview(data.resume));
+      setPreviewMode("after");
+      setRefinePromptDraft("");
+      setShowRefinePanel(false);
+      toast.success("Refinement applied");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Something went wrong");
+    } finally {
+      setRefining(false);
     }
   }
 
@@ -759,6 +815,21 @@ export function GenerateResumeForm({
               </span>
             </div>
 
+            <div>
+              <p className="fine-label mb-2">AI direction (optional)</p>
+              <Textarea
+                value={promptDraft}
+                onChange={(event) => setPromptDraft(event.target.value)}
+                className="min-h-24"
+                placeholder="Tell AI how to tailor: one page, stronger bullets, keyword focus, company tone..."
+              />
+              <PromptQuickActions
+                value={promptDraft}
+                onChange={setPromptDraft}
+                className="mt-3"
+              />
+            </div>
+
             <Button type="submit" disabled={!canGenerate}>
               {loading ? (
                 <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
@@ -872,6 +943,47 @@ export function GenerateResumeForm({
                 {preview.atsScore}%
               </p>
             </div>
+          </div>
+        ) : null}
+
+        {preview ? (
+          <div className="mb-5 space-y-4">
+            <PostTailorActions
+              resumeId={preview.id}
+              company={preview.company}
+              role={preview.role}
+              onRefineClick={() => setShowRefinePanel((value) => !value)}
+            />
+            {showRefinePanel ? (
+              <div className="rounded-2xl border border-primary/20 bg-white p-4">
+                <p className="fine-label mb-2">Refine with prompt</p>
+                <Textarea
+                  value={refinePromptDraft}
+                  onChange={(event) => setRefinePromptDraft(event.target.value)}
+                  className="min-h-24"
+                  placeholder="Example: shorten summary, add React keywords, make bullets more measurable..."
+                />
+                <PromptQuickActions
+                  value={refinePromptDraft}
+                  onChange={setRefinePromptDraft}
+                  suggestions={refinePromptSuggestions}
+                  className="mt-3"
+                />
+                <Button
+                  type="button"
+                  className="mt-4"
+                  disabled={refining}
+                  onClick={onRefine}
+                >
+                  {refining ? (
+                    <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />
+                  ) : (
+                    <Sparkle className="h-4 w-4" weight="regular" />
+                  )}
+                  {refining ? "Refining..." : "Apply refinement"}
+                </Button>
+              </div>
+            ) : null}
           </div>
         ) : null}
 

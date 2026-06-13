@@ -1,15 +1,10 @@
-import { BuildResumeForm } from "@/components/dashboard/resume-builder/build-resume-form";
-import { PageHeader } from "@/components/dashboard/page-header";
+import { BuildResumeStudio } from "@/components/dashboard/resume-studio/build-resume-studio";
+import { getCurrentUserId } from "@/lib/auth";
+import { getLatestMasterResume } from "@/lib/data/resumes";
 
-export default function BuildResumePage() {
-  return (
-    <div>
-      <PageHeader
-        eyebrow="Build resume"
-        title="No resume yet? Build one fast."
-        description="Answer simple student-friendly questions, choose a proven template, preview the PDF live, edit manually, save, and download."
-      />
-      <BuildResumeForm />
-    </div>
-  );
+export default async function BuildResumePage() {
+  const userId = await getCurrentUserId();
+  const masterResume = await getLatestMasterResume(userId).catch(() => null);
+
+  return <BuildResumeStudio initialMaster={masterResume} />;
 }

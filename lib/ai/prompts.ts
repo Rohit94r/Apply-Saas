@@ -3,6 +3,7 @@ import type {
   GenerateResumeInput,
   InterviewGuideInput,
   ProfessionalPhotoInput,
+  RefineResumeInput,
   ResumeCritiqueInput
 } from "@/lib/validations";
 
@@ -34,6 +35,7 @@ Rules:
 - If a job keyword is not directly proven by the resume, use it only in a target-role context, not as a claimed skill or achievement.
 - changeSummary must explain only the actual edits you made.
 - beforeAtsScore is the score for the original master resume against this job. atsScore is the score after your edits.
+${input.prompt?.trim() ? `\nAdditional user direction (follow when truthful):\n${input.prompt.trim()}` : ""}
 
 Company: ${input.company}
 Role: ${input.role}
@@ -134,5 +136,42 @@ Create a concise professional profile photo improvement plan as strict JSON:
 
 The user uploaded this image URL, if present: ${input.imageUrl ?? "none"}.
 Additional request: ${input.prompt ?? "Create a polished LinkedIn-style profile photo direction."}
+`;
+}
+
+export function refineResumePrompt(input: RefineResumeInput & {
+  company: string;
+  role: string;
+  jobDescription: string;
+  currentResume: string;
+}) {
+  return `
+You are Apply, refining an already tailored resume. Return strict JSON:
+{
+  "summary": "two sentence resume summary",
+  "skills": ["skill"],
+  "bullets": ["impact bullet"],
+  "afterText": "complete resume text after the requested edits",
+  "changeSummary": ["specific change made"],
+  "keywords": ["keyword"],
+  "atsScore": 0
+}
+
+Rules:
+- Apply ONLY the user's refinement request to the current resume text.
+- Keep contact details, section order, employers, project names, dates, and education intact unless the prompt explicitly asks to change them.
+- Do not invent employers, dates, degrees, projects, technologies, or fake metrics.
+- changeSummary must describe the edits you made for this refinement pass.
+
+Company: ${input.company}
+Role: ${input.role}
+Job description:
+${input.jobDescription}
+
+Current tailored resume:
+${input.currentResume}
+
+Refinement request:
+${input.prompt}
 `;
 }

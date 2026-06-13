@@ -6,9 +6,8 @@ import {
   Briefcase,
   CheckCircle,
   Circle,
+  EnvelopeSimple,
   FileText,
-  GraduationCap,
-  MagnifyingGlass,
   Sparkle,
   Stack
 } from "@phosphor-icons/react";
@@ -38,26 +37,26 @@ export function DashboardHero({
         <div className="border-b border-border bg-gradient-to-br from-primary/8 via-accent/5 to-transparent p-6 lg:border-b-0 lg:border-r">
           <p className="fine-label mb-2">Your progress</p>
           <h3 className="font-serif text-3xl text-primary">
-            Job search readiness
+            Application studio readiness
           </h3>
           <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
             {readiness.score >= 80
-              ? "You are well prepared. Keep practicing and applying."
+              ? "Profile, tailoring, and prep are in place. Keep applying."
               : readiness.score >= 40
-                ? "Good start. Complete the steps below to boost your chances."
-                : "Begin with a resume, then tailor it and create an interview plan."}
+                ? "Good start. Finish tailoring and interview prep for your target role."
+                : "Upload a master profile, tailor to a job, then generate cover letter and prep."}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild size="sm">
               <Link href="/dashboard/generate">
                 <Sparkle className="h-4 w-4" weight="regular" />
-                Improve resume
+                Tailor resume
               </Link>
             </Button>
             <Button asChild size="sm" variant="outline">
-              <Link href="/dashboard/learners">
-                <GraduationCap className="h-4 w-4" weight="regular" />
-                Learner prep
+              <Link href="/dashboard/tools?tool=cover">
+                <FileText className="h-4 w-4" weight="regular" />
+                Cover letter
               </Link>
             </Button>
           </div>
@@ -129,39 +128,39 @@ export function DashboardHero({
 export function QuickActionsGrid() {
   const actions = [
     {
-      title: "Job search",
-      description: "Matched jobs from your resume profile",
-      href: "/dashboard/jobs",
-      icon: MagnifyingGlass,
-      accent: "bg-sky-50 text-sky-700"
+      title: "Master profile",
+      description: "Upload once — reuse everywhere",
+      href: "/dashboard/generate",
+      icon: FileText,
+      accent: "bg-primary/10 text-primary"
     },
     {
-      title: "Improve resume",
-      description: "Upload & tailor to any job",
+      title: "Tailor with AI",
+      description: "Prompt + job description → ATS resume",
       href: "/dashboard/generate",
       icon: Sparkle,
       accent: "bg-accent/10 text-accent"
     },
     {
-      title: "Build resume",
-      description: "Answer questions, get PDF",
-      href: "/dashboard/build",
-      icon: Stack,
-      accent: "bg-primary/10 text-primary"
-    },
-    {
-      title: "Learner prep",
-      description: "Roadmaps for 1st–4th year",
-      href: "/dashboard/learners",
-      icon: GraduationCap,
-      accent: "bg-emerald-50 text-emerald-700"
+      title: "Cover letter",
+      description: "Prefilled from your tailored resume",
+      href: "/dashboard/tools?tool=cover",
+      icon: EnvelopeSimple,
+      accent: "bg-sky-50 text-sky-700"
     },
     {
       title: "Interview prep",
-      description: "Coding, HR & company Qs",
+      description: "Roadmap from the same role context",
       href: "/dashboard/interview",
       icon: Briefcase,
-      accent: "bg-sky-50 text-sky-700"
+      accent: "bg-emerald-50 text-emerald-700"
+    },
+    {
+      title: "Build resume",
+      description: "Guided questions → master profile",
+      href: "/dashboard/build",
+      icon: Stack,
+      accent: "bg-primary/10 text-primary"
     }
   ];
 

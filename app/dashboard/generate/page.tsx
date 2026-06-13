@@ -7,25 +7,32 @@ import { Card } from "@/components/ui/card";
 import { getCurrentUserId } from "@/lib/auth";
 import { getLatestMasterResume } from "@/lib/data/resumes";
 
-export default async function GeneratePage() {
+export default async function GeneratePage({
+  searchParams
+}: {
+  searchParams: Promise<{ company?: string; role?: string }>;
+}) {
   const userId = await getCurrentUserId();
-  const masterResume = await getLatestMasterResume(userId).catch(() => null);
+  const [masterResume, params] = await Promise.all([
+    getLatestMasterResume(userId).catch(() => null),
+    searchParams
+  ]);
 
   return (
     <div>
       <PageHeader
-        eyebrow="Improve resume"
-        title="Upload. Improve. Compare. Download."
-        description="Upload your resume, add the job details, then review ATS improvements before saving or downloading. Company and role are optional."
+        eyebrow="Tailor resume"
+        title="Upload once. Tailor with AI prompts. Export and prep."
+        description="Add your master profile, paste a job description, optionally steer AI with a prompt, then refine, cover letter, and interview prep from the same role."
       />
       <Card className="mb-6 flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center">
         <div>
-          <p className="fine-label mb-2">No resume yet</p>
+          <p className="fine-label mb-2">Starting fresh?</p>
           <h3 className="text-lg font-semibold text-foreground">
-            Build a new resume from guided questions
+            Build a master profile from guided questions
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Pick role, skills, education, projects, and a template.
+            Answers sync to your master profile for tailoring, tools, and interview prep.
           </p>
         </div>
         <Button asChild variant="outline">
@@ -35,7 +42,11 @@ export default async function GeneratePage() {
           </Link>
         </Button>
       </Card>
-      <GenerateResumeForm initialMasterResume={masterResume} />
+      <GenerateResumeForm
+        initialMasterResume={masterResume}
+        initialCompany={params.company ?? ""}
+        initialRole={params.role ?? ""}
+      />
     </div>
   );
 }

@@ -13,7 +13,8 @@ export const generateResumeSchema = z.object({
   company: optionalTextWithDefault("Target company"),
   role: optionalTextWithDefault("Target role"),
   jobDescription: z.string().min(80, "Paste a job description with enough detail"),
-  masterResume: z.string().min(80, "Add resume content or upload your master profile")
+  masterResume: z.string().min(80, "Add resume content or upload your master profile"),
+  prompt: z.string().trim().max(2000).optional()
 });
 
 export const generateResumeRequestSchema = generateResumeSchema
@@ -62,6 +63,12 @@ export const masterResumeSchema = z.object({
   sourceName: z.string().trim().max(160).optional(),
   sourceUrl: z.string().url().optional(),
   rawText: z.string().min(80, "Add enough resume content to save")
+});
+
+export const refineResumeSchema = z.object({
+  resumeId: z.string().min(1, "Resume id is required"),
+  prompt: z.string().trim().min(8, "Add a short refinement instruction").max(2000),
+  jobDescription: z.string().trim().min(10).optional()
 });
 
 export const updateGeneratedResumeSchema = z.object({
@@ -120,6 +127,7 @@ export type GenerateResumeInput = z.infer<typeof generateResumeSchema>;
 export type GenerateResumeRequestInput = z.infer<
   typeof generateResumeRequestSchema
 >;
+export type RefineResumeInput = z.infer<typeof refineResumeSchema>;
 export type BuildResumeInput = z.infer<typeof buildResumeSchema>;
 export type ResumeTemplateId = z.infer<typeof resumeTemplateSchema>;
 export type MasterResumeInput = z.infer<typeof masterResumeSchema>;

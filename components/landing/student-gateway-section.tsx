@@ -1,8 +1,7 @@
 import {
   Briefcase,
   ChatsCircle,
-  GraduationCap,
-  MagnifyingGlass,
+  EnvelopeSimple,
   Sparkle
 } from "@phosphor-icons/react/ssr";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
@@ -11,38 +10,38 @@ import { SectionHeading } from "@/components/landing/section-heading";
 
 const pillars = [
   {
-    title: "Master resume",
+    title: "Master profile",
     description:
-      "Upload once. Apply stores Profile, Projects, Skills, and Education as a reusable profile you never retype.",
+      "Upload once or build from guided questions. Apply stores skills, projects, and education as a reusable profile across every application.",
     icon: Sparkle,
     accent: "text-accent"
   },
   {
-    title: "Tailor per job",
+    title: "Tailor with prompts",
     description:
-      "Paste any job description. AI rewrites bullets, matches keywords like React and TypeScript, and scores ATS fit.",
+      "Paste a job description and steer AI: one page, stronger bullets, keyword focus. Compare before/after ATS scores on every version.",
     icon: Briefcase,
     accent: "text-primary"
   },
   {
-    title: "Job search",
+    title: "Refine & export",
     description:
-      "Match roles from your resume with curated listings and live APIs. Open LinkedIn, Indeed, and other job boards in one click.",
-    icon: MagnifyingGlass,
+      "Prompt-edit the tailored version, download a clean ATS PDF, and re-tailor for the next company without re-uploading.",
+    icon: ChatsCircle,
     accent: "text-accent"
   },
   {
-    title: "Learner prep",
+    title: "Cover letter",
     description:
-      "Skill gaps surfaced from each role? Get curated YouTube playlists and courses so you know what to study next.",
-    icon: GraduationCap,
+      "Generate a letter from the same role context — company, job description, and resume text prefilled from your studio profile.",
+    icon: EnvelopeSimple,
     accent: "text-primary"
   },
   {
     title: "Interview prep",
     description:
-      "Guides built from the exact resume you sent — company research, likely questions, and strengths mapped to the role.",
-    icon: ChatsCircle,
+      "Roadmaps, coding drills, and HR questions built from the exact resume you tailored — not a generic ChatGPT thread.",
+    icon: Briefcase,
     accent: "text-accent"
   }
 ] satisfies Array<{
@@ -58,9 +57,9 @@ export function StudentGatewaySection() {
       <div className="section-shell">
         <Reveal>
           <SectionHeading
-            eyebrow="Student gateway"
-            title="Everything between your resume and your offer letter."
-            description="Apply is not just a PDF builder. It is a full student workflow — from tailoring your Full Stack Developer resume to finding jobs, learning gaps, and walking into interviews prepared."
+            eyebrow="Application studio"
+            title="Profile → Tailor → Export → Prep"
+            description="Apply is an AI Resume Studio — not a LaTeX editor. Upload once, tailor every application with prompts, then cover letter and interview prep from the same role."
           />
         </Reveal>
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -86,14 +85,13 @@ export function StudentGatewaySection() {
         </div>
         <Reveal delay={0.2}>
           <div className="surface-accent mt-10 rounded-2xl border border-accent/20 p-6 sm:p-8">
-            <p className="fine-label mb-3">Live example</p>
+            <p className="fine-label mb-3">Live pipeline</p>
             <p className="max-w-3xl text-base leading-8 text-foreground">
-              <span className="font-semibold text-primary">Rohit Jadhav</span> uploads a CS
-              student resume → targets a{" "}
-              <span className="font-semibold text-accent">Full Stack Developer</span> role →
-              gets <span className="font-semibold text-success">94% ATS</span> with matched
-              skills React, TypeScript, APIs → finds roles on LinkedIn &amp; Indeed →
-              studies Node.js gaps → walks in with a role-specific interview guide.
+              Upload a resume → tailor for a{" "}
+              <span className="font-semibold text-accent">Full Stack Developer</span> role with
+              a prompt → hit <span className="font-semibold text-success">94% ATS</span> →
+              refine bullets → export PDF → generate cover letter → open interview prep — all
+              without leaving Apply.
             </p>
           </div>
         </Reveal>

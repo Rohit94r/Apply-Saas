@@ -6,11 +6,18 @@ import {
   View
 } from "@react-pdf/renderer";
 
+export type ResumePdfSection = {
+  title: string;
+  lines: string[];
+};
+
 export type ResumePdfData = {
   name: string;
   role: string;
   email?: string;
   location?: string;
+  contacts?: string[];
+  sections?: ResumePdfSection[];
   fullText?: string;
   template?: "classic" | "modern" | "compact";
   summary: string;
@@ -352,6 +359,25 @@ function getNameStyle(name: string, template: ResumePdfData["template"]) {
   ];
 }
 
+function expandSkillLines(lines: string[]) {
+  return lines.flatMap((line) => {
+    const clean = cleanLine(line);
+
+    if (!clean) {
+      return [];
+    }
+
+    if (clean.includes(",")) {
+      return clean
+        .split(",")
+        .map((skill) => skill.trim())
+        .filter(Boolean);
+    }
+
+    return [clean];
+  });
+}
+
 function TemplateSection({
   section,
   template = "classic"
@@ -361,6 +387,7 @@ function TemplateSection({
 }) {
   const isSkills = section.title === "SKILLS";
   const isSummary = section.title === "SUMMARY";
+  const skillLines = isSkills ? expandSkillLines(section.lines) : section.lines;
   const sectionTitleStyle =
     template === "modern"
       ? styles.modernSectionTitle
@@ -375,7 +402,7 @@ function TemplateSection({
       <Text style={sectionTitleStyle}>{section.title}</Text>
       {isSkills ? (
         <View style={styles.templateSkillGrid}>
-          {section.lines.map((line) => (
+          {skillLines.map((line) => (
             <Text key={line} style={styles.templateSkillItem}>
               {line}
             </Text>
@@ -383,6 +410,10 @@ function TemplateSection({
         </View>
       ) : (
         section.lines.map((line, index) => {
+          if (!line) {
+            return <View key={`spacer-${index}`} style={{ height: 4 }} />;
+          }
+
           const yearRow = splitYear(line);
 
           if (!isSummary && yearRow) {
@@ -412,40 +443,65 @@ function TemplateSection({
   );
 }
 
-export function ResumeDocument({ data }: { data: ResumePdfData }) {
-  if (data.fullText?.trim()) {
-    const parsed = parseResumeText(data.fullText);
-    const template = data.template ?? "classic";
-    const pageStyle =
-      template === "modern"
-        ? styles.modernPage
-        : template === "compact"
-          ? styles.compactPage
-          : styles.templatePage;
-    const contactStyle =
-      template === "modern"
-        ? styles.modernContacts
-        : template === "compact"
-          ? styles.compactContacts
-          : styles.templateContacts;
+function StructuredResumePage({ data }: { data: ResumePdfData }) {
+  const template = data.template ?? "classic";
+  const parsed = data.fullText?.trim() ? parseResumeText(data.fullText) : null;
+  const sections: ParsedSection[] =
+    data.sections?.length
+      ? data.sections.map((section) => ({
+          title: section.title.toUpperCase(),
+          lines: section.lines.map(cleanLine)
+        }))
+      : (parsed?.sections ?? []);
+  const name = cleanLine(data.name) || parsed?.name || "Resume";
+  const contacts =
+    data.contacts?.filter(Boolean).join("  |  ") ||
+    parsed?.contacts ||
+    [data.email, data.location].filter(Boolean).join(" | ");
+  const pageStyle =
+    template === "modern"
+      ? styles.modernPage
+      : template === "compact"
+        ? styles.compactPage
+        : styles.templatePage;
+  const contactStyle =
+    template === "modern"
+      ? styles.modernContacts
+      : template === "compact"
+        ? styles.compactContacts
+        : styles.templateContacts;
+  const roleStyle =
+    template === "modern"
+      ? styles.role
+      : template === "compact"
+        ? { ...styles.compactContacts, marginBottom: 6 }
+        : { ...styles.role, textAlign: "center" as const, marginBottom: 6 };
 
-    return (
-      <Document title={`${data.name} - ${data.role} Resume`}>
-        <Page size="A4" style={pageStyle}>
-          <Text style={getNameStyle(parsed.name, template)}>{parsed.name}</Text>
-          {parsed.contacts ? (
-            <Text style={contactStyle}>{parsed.contacts}</Text>
-          ) : null}
-          {parsed.sections.map((section) => (
-            <TemplateSection
-              key={section.title}
-              section={section}
-              template={template}
-            />
-          ))}
-        </Page>
-      </Document>
-    );
+  if (!sections.length && !name) {
+    return null;
+  }
+
+  return (
+    <Document title={`${name} - ${data.role} Resume`}>
+      <Page size="A4" style={pageStyle}>
+        <Text style={getNameStyle(name, template)}>{name}</Text>
+        {data.role ? <Text style={roleStyle}>{data.role}</Text> : null}
+        {contacts ? <Text style={contactStyle}>{contacts}</Text> : null}
+        {sections.map((section) => (
+          <TemplateSection
+            key={section.title}
+            section={section}
+            template={template}
+          />
+        ))}
+      </Page>
+    </Document>
+  );
+}
+
+export function ResumeDocument({ data }: { data: ResumePdfData }) {
+  if (data.sections?.length || data.fullText?.trim()) {
+    return <StructuredResumePage data={data} />;
   }
 
   return (

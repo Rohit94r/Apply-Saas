@@ -8,7 +8,7 @@ import {
   recordGenerationUsage,
   UsageLimitError
 } from "@/lib/billing/usage";
-import { createGeneratedResume } from "@/lib/data/resumes";
+import { createGeneratedResume, upsertMasterResume } from "@/lib/data/resumes";
 import { buildResumeSchema, type GenerateResumeInput } from "@/lib/validations";
 
 export async function POST(request: Request) {
@@ -46,6 +46,12 @@ export async function POST(request: Request) {
       template: input.template,
       keywords: built.keywords,
       atsScore: built.atsScore
+    });
+
+    await upsertMasterResume(userId, {
+      title: `${input.name.trim()} — master profile`,
+      sourceName: "Resume builder",
+      rawText: built.afterText
     });
 
     await recordGenerationUsage(userId, deviceId);

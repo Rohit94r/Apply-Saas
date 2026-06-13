@@ -486,7 +486,8 @@ export async function POST(request: Request) {
       company: requestInput.company,
       role: requestInput.role,
       jobDescription: requestInput.jobDescription,
-      masterResume
+      masterResume,
+      prompt: requestInput.prompt
     };
     const beforeAnalysis = analyzeResumeAts({
       resumeText: masterResume,

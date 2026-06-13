@@ -2,11 +2,11 @@ export const siteConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: "https://apply.neexmeet.com",
-  tagline: "Free AI resume builder for students worldwide.",
+  tagline: "AI Resume Studio for students and job seekers worldwide.",
   description:
-    "Upload your resume once. Generate ATS-optimized resumes for internships and entry-level roles anywhere in the world.",
+    "Upload once, tailor with AI prompts for every job, export ATS PDFs, and prep interviews from the same profile.",
   nav: [
-    { label: "Student gateway", href: "/#student-gateway" },
+    { label: "Application studio", href: "/#student-gateway" },
     { label: "How it works", href: "/#how-it-works" },
     { label: "Why Apply", href: "/#comparison" },
     { label: "AI engine", href: "/#engine" },
@@ -46,17 +46,24 @@ export const comparisonRows = [
     resumeio: "Included"
   },
   {
+    feature: "Prompt-based tailoring & refine",
+    apply: "Built into tailor flow",
+    chatgpt: "Manual copy and paste",
+    canva: "Manual editing",
+    resumeio: "Limited suggestions"
+  },
+  {
+    feature: "Cover letter from same role",
+    apply: "One click from resume card",
+    chatgpt: "Separate prompt",
+    canva: "No",
+    resumeio: "Add-on"
+  },
+  {
     feature: "Interview prep from submitted resume",
-    apply: "Included",
+    apply: "Prefilled from profile",
     chatgpt: "Separate prompt",
     canva: "No",
     resumeio: "Basic"
-  },
-  {
-    feature: "Prompt-based PDF editing",
-    apply: "Included in Pro",
-    chatgpt: "No PDF layout control",
-    canva: "Manual design edits",
-    resumeio: "Limited"
   }
 ];

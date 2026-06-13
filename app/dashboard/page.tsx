@@ -37,10 +37,10 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="Overview"
-        title="Your job search command center."
-        description="Track readiness, manage tailored resumes, follow learner roadmaps, and prepare for interviews — all in one workspace."
-        cta="Improve resume"
+        eyebrow="AI Resume Studio"
+        title="Profile → Tailor → Export → Prep"
+        description="Upload once, tailor each application with prompts, then cover letter and interview prep from the same role context."
+        cta="Tailor resume"
       />
 
       {jobMatches ? <JobMatchesPreview result={jobMatches} /> : null}

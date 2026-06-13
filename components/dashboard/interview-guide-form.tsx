@@ -173,9 +173,15 @@ function compactResumePreview(value: string) {
 }
 
 export function InterviewGuideForm({
-  initialGuide
+  initialGuide,
+  initialCompany = "",
+  initialRole = "",
+  initialResumeContent = ""
 }: {
   initialGuide: InterviewGuide | null;
+  initialCompany?: string;
+  initialRole?: string;
+  initialResumeContent?: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [uploadingResume, setUploadingResume] = useState(false);
@@ -188,12 +194,12 @@ export function InterviewGuideForm({
   const [focusAreas, setFocusAreas] = useState<string[]>(defaultFocus(initialGuide));
   const [resumeFileName, setResumeFileName] = useState("");
   const [form, setForm] = useState({
-    company: initialGuide?.company ?? "",
-    role: initialGuide?.role ?? "",
+    company: initialGuide?.company ?? initialCompany,
+    role: initialGuide?.role ?? initialRole,
     experienceLevel: initialGuide?.experienceLevel ?? "Student / Fresher",
     timeline: initialGuide?.timeline ?? "14 days",
     preferredLanguage: initialGuide?.preferredLanguage ?? "JavaScript",
-    resumeContent: "",
+    resumeContent: initialResumeContent,
     jobDescription: ""
   });
   const resumeFileInputRef = useRef<HTMLInputElement>(null);

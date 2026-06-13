@@ -95,6 +95,15 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         ) : null}
+        <Script
+          src={
+            process.env.NEXT_PUBLIC_CHATBOT_SRC ?? "https://apnaai.online/chatBot.js"
+          }
+          data-owner-id={
+            process.env.NEXT_PUBLIC_CHATBOT_OWNER_ID ?? "usr_129633093731483650"
+          }
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

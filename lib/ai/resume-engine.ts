@@ -4,6 +4,7 @@ import type {
   GenerateResumeInput,
   InterviewGuideInput,
   ProfessionalPhotoInput,
+  RefineResumeInput,
   ResumeCritiqueInput
 } from "@/lib/validations";
 import type { InterviewGuide as InterviewGuideType } from "@/types";
@@ -12,6 +13,7 @@ import {
   coverLetterPrompt,
   interviewGuidePrompt,
   professionalPhotoPrompt,
+  refineResumePrompt,
   resumeCritiquePrompt,
   resumeTailoringPrompt
 } from "@/lib/ai/prompts";
@@ -767,6 +769,93 @@ export async function generateTailoredResume(
       : fallback.keywords,
     skills: parsed.skills?.length ? parsed.skills : fallback.skills,
     bullets: parsed.bullets?.length ? parsed.bullets : fallback.bullets
+  };
+}
+
+export async function refineGeneratedResume(
+  input: RefineResumeInput & {
+    company: string;
+    role: string;
+    jobDescription: string;
+    currentResume: string;
+  }
+): Promise<Omit<TailoredResumeOutput, "beforeAtsScore">> {
+  const textAI = getTextAIClient();
+  const baseInput: GenerateResumeInput = {
+    company: input.company,
+    role: input.role,
+    jobDescription: input.jobDescription,
+    masterResume: input.currentResume,
+    prompt: input.prompt
+  };
+  const fallback = fallbackResume(baseInput);
+
+  if (!textAI) {
+    return {
+      summary: fallback.summary,
+      skills: fallback.skills,
+      bullets: fallback.bullets,
+      afterText: fallback.afterText,
+      changeSummary: [`Applied refinement: ${input.prompt.slice(0, 80)}`],
+      keywords: fallback.keywords,
+      atsScore: fallback.atsScore
+    };
+  }
+
+  const completion = await textAI.client.chat.completions.create({
+    model: textAI.model,
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content:
+          "You refine truthful, ATS-friendly resumes without inventing experience."
+      },
+      {
+        role: "user",
+        content: refineResumePrompt(input)
+      }
+    ]
+  });
+
+  const parsed = safeJsonParse<Omit<TailoredResumeOutput, "beforeAtsScore">>(
+    completion.choices[0]?.message.content,
+    {
+      summary: fallback.summary,
+      skills: fallback.skills,
+      bullets: fallback.bullets,
+      afterText: fallback.afterText,
+      changeSummary: [`Applied refinement: ${input.prompt.slice(0, 80)}`],
+      keywords: fallback.keywords,
+      atsScore: fallback.atsScore
+    }
+  );
+  const parsedAfterText =
+    parsed.afterText?.trim().length >= 80
+      ? parsed.afterText.trim()
+      : fallback.afterText;
+  const analysis = analyzeResumeAts({
+    resumeText: parsedAfterText,
+    jobDescription: input.jobDescription,
+    role: input.role
+  });
+
+  return {
+    ...fallback,
+    ...parsed,
+    afterText: parsedAfterText,
+    atsScore: analysis.score,
+    summary: parsed.summary?.trim()
+      ? parsed.summary
+      : firstUsefulParagraph(parsedAfterText),
+    keywords: analysis.matchedKeywords.length
+      ? analysis.matchedKeywords.slice(0, 12)
+      : fallback.keywords,
+    skills: parsed.skills?.length ? parsed.skills : fallback.skills,
+    bullets: parsed.bullets?.length ? parsed.bullets : fallback.bullets,
+    changeSummary: parsed.changeSummary?.length
+      ? parsed.changeSummary
+      : [`Applied refinement: ${input.prompt.slice(0, 80)}`]
   };
 }
 

@@ -32,7 +32,7 @@ const navItems: Array<{
 }> = [
   { label: "Overview", href: "/dashboard", icon: House },
   { label: "My resumes", href: "/dashboard/resumes", icon: FileText },
-  { label: "Improve", href: "/dashboard/generate", icon: Sparkle },
+  { label: "Tailor", href: "/dashboard/generate", icon: Sparkle },
   { label: "Job search", href: "/dashboard/jobs", icon: MagnifyingGlass },
   { label: "Build resume", href: "/dashboard/build", icon: Stack },
   { label: "Learner prep", href: "/dashboard/learners", icon: GraduationCap },

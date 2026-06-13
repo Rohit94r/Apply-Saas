@@ -824,10 +824,10 @@ export function buildReadinessScore(
     : 0;
 
   const steps = [
-    { label: "Create a resume", done: hasResume, weight: 30 },
-    { label: "Tailor to a role", done: hasTailored, weight: 30 },
+    { label: "Master profile saved", done: hasResume, weight: 25 },
+    { label: "Tailored to a role", done: hasTailored, weight: 30 },
     { label: "Interview prep plan", done: hasGuide, weight: 25 },
-    { label: "ATS score 70+", done: avgAts >= 70, weight: 15 }
+    { label: "ATS score 70+", done: avgAts >= 70, weight: 20 }
   ];
 
   const score = steps.reduce(

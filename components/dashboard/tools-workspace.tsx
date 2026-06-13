@@ -44,13 +44,27 @@ const tabs = [
   { id: "photo", label: "Photo", icon: Camera }
 ] satisfies { id: Tool; label: string; icon: PhosphorIcon }[];
 
-export function ToolsWorkspace() {
-  const [activeTool, setActiveTool] = useState<Tool>("cover");
+export function ToolsWorkspace({
+  initialTool = "cover",
+  initialCompany = "",
+  initialRole = "",
+  initialResumeContent = ""
+}: {
+  initialTool?: Tool;
+  initialCompany?: string;
+  initialRole?: string;
+  initialResumeContent?: string;
+}) {
+  const [activeTool, setActiveTool] = useState<Tool>(initialTool);
   const [loading, setLoading] = useState(false);
   const [coverLetter, setCoverLetter] = useState("");
   const [critique, setCritique] = useState<Critique | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const [photoPlan, setPhotoPlan] = useState<PhotoPlan | null>(null);
+  const [company, setCompany] = useState(initialCompany);
+  const [role, setRole] = useState(initialRole);
+  const [resumeContent, setResumeContent] = useState(initialResumeContent);
+  const [jobDescription, setJobDescription] = useState("");
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const { startUpload, isUploading } = useUploadThing("photoUploader", {
@@ -106,16 +120,15 @@ export function ToolsWorkspace() {
 
   async function onCoverLetter(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
     setLoading(true);
 
     try {
       const data = await submitJson<{ coverLetter: string }>("/api/cover-letter", {
-        company: formData.get("company"),
-        role: formData.get("role"),
-        tone: formData.get("tone"),
-        resumeContent: formData.get("resumeContent"),
-        jobDescription: formData.get("jobDescription")
+        company,
+        role,
+        tone: "confident",
+        resumeContent,
+        jobDescription
       });
 
       setCoverLetter(data.coverLetter);
@@ -129,13 +142,12 @@ export function ToolsWorkspace() {
 
   async function onCritique(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
     setLoading(true);
 
     try {
       const data = await submitJson<{ critique: Critique }>("/api/critique", {
-        resumeContent: formData.get("resumeContent"),
-        jobDescription: formData.get("jobDescription")
+        resumeContent,
+        jobDescription
       });
 
       setCritique(data.critique);
@@ -235,28 +247,29 @@ export function ToolsWorkspace() {
                   <span className="text-sm font-semibold text-foreground">
                     Company (optional)
                   </span>
-                  <Input name="company" placeholder="Company name" />
+                  <Input
+                    value={company}
+                    onChange={(event) => setCompany(event.target.value)}
+                    placeholder="Company name"
+                  />
                 </label>
                 <label className="space-y-2">
                   <span className="text-sm font-semibold text-foreground">
                     Role (optional)
                   </span>
-                  <Input name="role" placeholder="Target role" />
+                  <Input
+                    value={role}
+                    onChange={(event) => setRole(event.target.value)}
+                    placeholder="Target role"
+                  />
                 </label>
               </div>
-              <label className="block space-y-2">
-                <span className="text-sm font-semibold text-foreground">Tone</span>
-                <select
-                  name="tone"
-                  defaultValue="confident"
-                  className="h-11 w-full rounded-xl border border-input bg-white/70 px-4 text-sm outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/10"
-                >
-                  <option value="confident">Confident</option>
-                  <option value="warm">Warm</option>
-                  <option value="concise">Concise</option>
-                </select>
-              </label>
-              <TextInputs />
+              <TextInputs
+                resumeContent={resumeContent}
+                jobDescription={jobDescription}
+                onResumeContentChange={setResumeContent}
+                onJobDescriptionChange={setJobDescription}
+              />
               <SubmitButton loading={loading} label="Generate cover letter" />
             </form>
           </Card>
@@ -278,7 +291,12 @@ export function ToolsWorkspace() {
         <div className="grid gap-6 xl:grid-cols-[0.9fr_1fr]">
           <Card className="p-6">
             <form className="space-y-5" onSubmit={onCritique}>
-              <TextInputs />
+              <TextInputs
+                resumeContent={resumeContent}
+                jobDescription={jobDescription}
+                onResumeContentChange={setResumeContent}
+                onJobDescriptionChange={setJobDescription}
+              />
               <SubmitButton loading={loading} label="Critique resume" />
             </form>
           </Card>
@@ -423,13 +441,24 @@ export function ToolsWorkspace() {
   );
 }
 
-function TextInputs() {
+function TextInputs({
+  resumeContent,
+  jobDescription,
+  onResumeContentChange,
+  onJobDescriptionChange
+}: {
+  resumeContent: string;
+  jobDescription: string;
+  onResumeContentChange: (value: string) => void;
+  onJobDescriptionChange: (value: string) => void;
+}) {
   return (
     <>
       <label className="block space-y-2">
         <span className="text-sm font-semibold text-foreground">Resume content</span>
         <Textarea
-          name="resumeContent"
+          value={resumeContent}
+          onChange={(event) => onResumeContentChange(event.target.value)}
           placeholder="Paste resume content here."
           className="min-h-36"
         />
@@ -437,7 +466,8 @@ function TextInputs() {
       <label className="block space-y-2">
         <span className="text-sm font-semibold text-foreground">Job description</span>
         <Textarea
-          name="jobDescription"
+          value={jobDescription}
+          onChange={(event) => onJobDescriptionChange(event.target.value)}
           placeholder="Paste the job description here."
           className="min-h-44"
         />
