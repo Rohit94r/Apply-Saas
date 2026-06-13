@@ -76,7 +76,7 @@ export function CreditsBadge({ compact = false }: { compact?: boolean }) {
               href="/dashboard/upgrade"
               className="mt-3 inline-flex text-xs font-semibold text-accent underline"
             >
-              Renew Pro — ₹50/month
+              Renew Pro
             </Link>
           </>
         ) : null}
@@ -106,7 +106,7 @@ export function CreditsBadge({ compact = false }: { compact?: boolean }) {
               href="/dashboard/upgrade"
               className="mt-3 inline-flex text-xs font-semibold text-accent underline"
             >
-              Upgrade for ₹50/month
+              Upgrade to Pro
             </Link>
           ) : null}
         </>

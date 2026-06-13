@@ -7,9 +7,9 @@ export const seoFaqs = [
       "Apply reads the job description, extracts role keywords, compares them with your resume, and rewrites supported summaries, skills, and bullets while keeping your experience truthful."
   },
   {
-    question: "Is Apply useful for Indian engineering students and freshers?",
+    question: "Who is Apply for?",
     answer:
-      "Yes. Apply is written for Indian engineering students, CS freshers, internship seekers, and early-career applicants preparing resumes for IT services, startups, and product companies."
+      "Apply is built for students, interns, and early-career applicants anywhere in the world — especially CS, engineering, and tech roles where ATS screening is common."
   },
   {
     question: "Can I upload my current resume instead of pasting content?",
@@ -19,7 +19,7 @@ export const seoFaqs = [
   {
     question: "Does Apply create a different resume for every job description?",
     answer:
-      "Yes. You upload your resume once, then generate a role-specific version for each job description, internship, or fresher opening."
+      "Yes. You upload your resume once, then generate a role-specific version for each job description, internship, or entry-level opening."
   },
   {
     question: "Will Apply invent fake experience or metrics?",
@@ -42,14 +42,14 @@ export const seoFaqs = [
       "No. Company and role are optional. If you do not have them yet, Apply can still work from the job description and your resume."
   },
   {
-    question: "Which cities and hiring markets is Apply built around?",
+    question: "Which job markets does Apply support?",
     answer:
-      "Apply is relevant for students applying to internships and fresher roles across Bangalore, Hyderabad, Mumbai, Delhi NCR, Pune, Chennai, and remote openings."
+      "Apply works globally. Job search links cover LinkedIn, Indeed, Reed, USAJOBS, and other boards depending on your profile and location."
   },
   {
     question: "How many resumes can I generate free?",
     answer:
-      "The first 5 resume generations are free per account and per device. Upgrade to Pro for ₹50/month via manual UPI payment."
+      "The first 5 resume generations are free worldwide — per account and per device. Upgrade to Pro for unlimited tailored resumes."
   }
 ] as const;
 
@@ -57,22 +57,22 @@ export const seoConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: appUrl,
-  title: "Free AI Resume Builder for Indian Students | Apply",
+  title: "Free AI Resume Builder for Students Worldwide | Apply",
   description:
-    "Free AI resume builder for Indian engineering students and freshers. Upload once, generate ATS-optimized resumes for internships and jobs. 5 free, then ₹50/month UPI.",
+    "Free AI resume builder for students and early-career applicants globally. Upload once, generate ATS-optimized resumes for any job. 5 free generations, then affordable Pro.",
   keywords: [
-    "resume builder for engineering students India",
-    "ATS resume optimizer for freshers",
+    "free resume builder for students",
+    "ATS resume optimizer",
     "internship resume builder free",
-    "resume tailoring tool for students",
-    "AI resume builder for Indian students",
-    "how to optimize resume for ATS India",
+    "resume tailoring tool",
+    "AI resume builder",
+    "how to optimize resume for ATS",
     "student resume generator with job description",
-    "fresher resume for IT companies India",
+    "entry level resume builder",
     "college student resume builder",
     "engineering internship resume tips",
-    "cover letter generator for freshers",
-    "interview preparation for freshers"
+    "cover letter generator",
+    "interview preparation for students"
   ],
   publicRoutes: [
     "/",
@@ -102,7 +102,7 @@ export const websiteJsonLd = {
   publisher: {
     "@id": absoluteUrl("/#organization")
   },
-  inLanguage: "en-IN"
+  inLanguage: "en"
 };
 
 export const softwareJsonLd = {
@@ -116,11 +116,11 @@ export const softwareJsonLd = {
   description: seoConfig.description,
   audience: {
     "@type": "Audience",
-    audienceType: "Indian engineering students, freshers, and internship seekers"
+    audienceType: "Students, interns, and early-career job seekers worldwide"
   },
   areaServed: {
-    "@type": "Country",
-    name: "India"
+    "@type": "Place",
+    name: "Worldwide"
   },
   featureList: [
     "ATS resume optimization",
@@ -132,7 +132,7 @@ export const softwareJsonLd = {
   offers: {
     "@type": "Offer",
     price: "0",
-    priceCurrency: "INR"
+    priceCurrency: "USD"
   }
 };
 

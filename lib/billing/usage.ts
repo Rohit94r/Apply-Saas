@@ -111,7 +111,7 @@ export async function getBillingStatus(
     message =
       "This device already used all 5 free credits (even with a new email). Upgrade to Pro to continue.";
   } else if (userCreditsLeft <= 0) {
-    message = "You used all 5 free resumes. Upgrade to Pro for ₹50/month.";
+    message = "You used all 5 free resumes. Upgrade to Pro for unlimited access.";
   }
 
   return {

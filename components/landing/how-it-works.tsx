@@ -18,7 +18,7 @@ const steps = [
   {
     title: "Paste job description",
     description:
-      "Drop in any internship or fresher JD. The AI maps React, TypeScript, APIs, and other keywords to your strongest evidence.",
+      "Drop in any job description. The AI maps React, TypeScript, APIs, and other keywords to your strongest evidence.",
     icon: ClipboardText
   },
   {

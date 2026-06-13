@@ -17,7 +17,7 @@ const plans = [
       usd: "$0",
       inr: "₹0"
     },
-    description: "For Indian students testing Apply before their placement season.",
+    description: "Start free — 5 tailored resumes for students and job seekers anywhere.",
     features: [
       "5 free resume generations",
       "Master resume upload",
@@ -33,14 +33,14 @@ const plans = [
       inr: `₹${PRO_MONTHLY_PRICE_INR}`
     },
     period: "/month",
-    description: "Manual UPI via QR — built by a student, for students. Early startup energy.",
+    description: "Unlimited tailored resumes for 30 days. Pay in INR or USD — upgrade when you are ready.",
     features: [
       "Unlimited tailored resumes for 30 days",
       "Job search + learner prep",
       "Interview prep guides",
-      "Student discounts via DM — no public codes"
+      "Private discounts via DM — no public codes"
     ],
-    cta: "Upgrade with UPI",
+    cta: "Upgrade to Pro",
     highlighted: true
   }
 ];
@@ -54,8 +54,8 @@ export function PricingSection() {
         <Reveal>
           <SectionHeading
             eyebrow="Pricing"
-            title="5 free resumes. Then ₹50/month via UPI QR."
-            description="Scan the PhonePe QR, pay ₹50/month manually, confirm on WhatsApp. Need a deal? DM the founder on Instagram or LinkedIn — codes stay private."
+            title="5 free resumes worldwide. Pro when you need more."
+            description="Free for everyone — students and early-career applicants in any country. Upgrade supports INR (UPI) and USD pricing."
           />
         </Reveal>
         <div className="mt-8 flex justify-center">
@@ -104,7 +104,7 @@ export function PricingSection() {
                   </div>
                   {plan.highlighted ? (
                     <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold">
-                      UPI QR
+                      Pro
                     </span>
                   ) : null}
                 </div>

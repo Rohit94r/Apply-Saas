@@ -18,9 +18,9 @@ const columns = [
   {
     title: "Guides",
     links: [
-      { label: "ATS resume tips India", href: "/blog/ats-friendly-resume-india-2026" },
+      { label: "ATS resume tips", href: "/blog/ats-friendly-resume-india-2026" },
       {
-        label: "Fresher resume format",
+        label: "Entry-level resume format",
         href: "/blog/fresher-resume-format-it-companies"
       },
       { label: "Internship resume mistakes", href: "/blog/internship-resume-mistakes" },
@@ -71,14 +71,14 @@ export function Footer() {
             </Link>
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">
-            First 5 resumes are free. Pro is ₹50/month via UPI QR.
+            First 5 resumes are free worldwide. Pro available when you need unlimited access.
           </p>
         </div>
         <div className="grid gap-10 border-t border-border pt-12 md:grid-cols-[1.2fr_repeat(4,1fr)]">
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
-              AI resume builder for Indian students. Need help? Message on Instagram or LinkedIn.
+              Free AI resume builder for students worldwide. Need help? Message on Instagram or LinkedIn.
             </p>
             <div className="mt-5">
               <FounderSupportCard compact />

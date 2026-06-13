@@ -10,7 +10,7 @@ export function FaqSection() {
           <SectionHeading
             eyebrow="FAQ"
             title="Answers before students upload a resume."
-            description="Clear details for Indian engineering students, CS freshers, and internship seekers comparing resume builders and ATS tools."
+            description="Clear details for students and early-career applicants comparing resume builders and ATS tools — free to use worldwide."
           />
         </Reveal>
         <div className="mt-12 grid gap-4 md:grid-cols-2">

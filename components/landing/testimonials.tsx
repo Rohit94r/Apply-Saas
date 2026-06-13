@@ -12,7 +12,7 @@ const testimonials = [
     quote:
       "The keyword matching helped me understand what the job post actually wanted. My resume finally looked like it belonged to the role.",
     name: "Dev P.",
-    role: "Frontend fresher"
+    role: "Early-career developer"
   },
   {
     quote:

@@ -449,7 +449,7 @@ export function GenerateResumeForm({
 
       if (response.status === 402) {
         const limit = (await response.json()) as { error?: string; upgradeUrl?: string };
-        toast.error(limit.error ?? "Free credits finished. Upgrade to Pro for ₹50/month.");
+        toast.error(limit.error ?? "Free credits finished. Upgrade to Pro for unlimited access.");
         router.push(limit.upgradeUrl ?? "/dashboard/upgrade");
         return;
       }

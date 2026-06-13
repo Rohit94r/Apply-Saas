@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     description: seoConfig.description,
     url: seoConfig.url,
     siteName: seoConfig.name,
-    locale: "en_IN",
+    locale: "en_US",
     images: [{ url: "/logo.png", width: 1536, height: 1024, alt: "Apply" }],
     type: "website"
   },

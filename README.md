@@ -1,6 +1,6 @@
 # Apply
 
-Apply is an AI-powered job-search workspace for Indian students and early-career developers. Upload or build a resume, tailor it to any role, follow learner roadmaps, prepare for interviews, and track readiness from one dashboard.
+Apply is an AI-powered job-search workspace for **students and early-career developers worldwide**. Upload or build a resume, tailor it to any role, follow learner roadmaps, prepare for interviews, and track readiness from one dashboard.
 
 ---
 
@@ -328,8 +328,8 @@ npm run typecheck  # TypeScript check
 
 ## Pricing placeholder
 
-- **Free:** up to 5 resume generations (per account + per device)
-- **Pro:** ₹50/month via UPI QR (manual payment, WhatsApp confirm)
+- **Free:** up to 5 resume generations worldwide (per account + per device)
+- **Pro:** affordable monthly plan — UPI for INR, contact support for other regions
 - **Admin:** log in as `rjdhav67@gmail.com` → `/dashboard/admin` to add subscription days after payment
 
 ### Vercel deploy blocked?

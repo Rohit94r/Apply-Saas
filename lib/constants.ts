@@ -2,9 +2,9 @@ export const siteConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: "https://apply.neexmeet.com",
-  tagline: "Free AI resume builder for Indian students.",
+  tagline: "Free AI resume builder for students worldwide.",
   description:
-    "Upload your resume once. Generate ATS-optimized resumes for internships and fresher jobs instantly.",
+    "Upload your resume once. Generate ATS-optimized resumes for internships and entry-level roles anywhere in the world.",
   nav: [
     { label: "Student gateway", href: "/#student-gateway" },
     { label: "How it works", href: "/#how-it-works" },

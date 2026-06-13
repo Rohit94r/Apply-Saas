@@ -9,7 +9,7 @@ export default function UpgradePage() {
       <PageHeader
         eyebrow="Billing"
         title="Upgrade to Apply Pro"
-        description="5 free resumes per account and per device. After that, ₹50/month via UPI QR — need a discount? DM Rohit on Instagram or LinkedIn."
+        description="5 free resumes per account and per device — free worldwide. Upgrade to Pro for unlimited access. Need a discount? DM on Instagram or LinkedIn."
       />
       <CreditsBadge />
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-muted" />}>

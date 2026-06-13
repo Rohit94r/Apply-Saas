@@ -100,11 +100,12 @@ export function UpgradeCheckout() {
     <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
       <div className="space-y-6">
         <div className="rounded-2xl border border-border bg-white p-6 shadow-soft">
-          <p className="fine-label mb-2">UPI payment</p>
-          <h2 className="font-serif text-3xl text-primary">Apply Pro — ₹50/month</h2>
+          <p className="fine-label mb-2">Upgrade to Pro</p>
+          <h2 className="font-serif text-3xl text-primary">Unlimited resumes worldwide</h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            Scan the QR, pay the amount shown, then tap <strong>Payment done</strong>.
-            WhatsApp opens with your details. Pro activates after admin confirms payment.
+            Pay via UPI QR (INR) or contact support for other regions. Scan, pay the amount
+            shown, then tap <strong>Payment done</strong>. WhatsApp opens with your details.
+            Pro activates after payment is confirmed.
           </p>
 
           <FounderSupportCard compact />

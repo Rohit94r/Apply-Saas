@@ -7,16 +7,16 @@ import { blogPostUrl, blogPosts } from "@/lib/blog";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Resume and ATS Guides for Indian Students",
+  title: "Resume and ATS Guides for Students",
   description:
-    "Practical resume guides for Indian engineering students, CS freshers, internship seekers, ATS optimization, and job-specific resume tailoring.",
+    "Practical resume guides for students and early-career applicants — ATS optimization, internship tips, and job-specific resume tailoring.",
   alternates: {
     canonical: absoluteUrl("/blog")
   },
   openGraph: {
-    title: "Resume and ATS Guides for Indian Students",
+    title: "Resume and ATS Guides for Students",
     description:
-      "Practical resume guides for Indian engineering students, CS freshers, internship seekers, ATS optimization, and job-specific resume tailoring.",
+      "Practical resume guides for students and early-career applicants — ATS optimization, internship tips, and job-specific resume tailoring.",
     url: absoluteUrl("/blog"),
     siteName: seoConfig.name,
     type: "website"
@@ -28,7 +28,7 @@ const blogJsonLd = {
   "@type": "Blog",
   name: "Apply Resume Guides",
   url: absoluteUrl("/blog"),
-  inLanguage: "en-IN",
+  inLanguage: "en",
   publisher: {
     "@id": absoluteUrl("/#organization")
   },
@@ -56,12 +56,11 @@ export default function BlogPage() {
           <div className="section-shell">
             <p className="fine-label mb-5">Resume guides</p>
             <h1 className="max-w-4xl font-serif text-5xl leading-[1.02] text-primary sm:text-6xl">
-              Resume and ATS guides for Indian students.
+              Resume and ATS guides for students worldwide.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground">
-              Practical advice for engineering students, CS freshers, internship
-              seekers, and campus placement applicants who want cleaner,
-              ATS-friendly resumes.
+              Practical advice for engineering students, interns, and early-career
+              applicants who want cleaner, ATS-friendly resumes — wherever you are applying.
             </p>
           </div>
         </section>

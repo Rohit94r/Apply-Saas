@@ -20,14 +20,14 @@ const pillars = [
   {
     title: "Tailor per job",
     description:
-      "Paste any internship or fresher JD. AI rewrites bullets, matches keywords like React and TypeScript, and scores ATS fit.",
+      "Paste any job description. AI rewrites bullets, matches keywords like React and TypeScript, and scores ATS fit.",
     icon: Briefcase,
     accent: "text-primary"
   },
   {
     title: "Job search",
     description:
-      "Match roles from your resume with curated listings and live APIs. Open LinkedIn, Naukri, and other platforms in one click.",
+      "Match roles from your resume with curated listings and live APIs. Open LinkedIn, Indeed, and other job boards in one click.",
     icon: MagnifyingGlass,
     accent: "text-accent"
   },
@@ -92,7 +92,7 @@ export function StudentGatewaySection() {
               student resume → targets a{" "}
               <span className="font-semibold text-accent">Full Stack Developer</span> role →
               gets <span className="font-semibold text-success">94% ATS</span> with matched
-              skills React, TypeScript, APIs → finds internships on Naukri &amp; LinkedIn →
+              skills React, TypeScript, APIs → finds roles on LinkedIn &amp; Indeed →
               studies Node.js gaps → walks in with a role-specific interview guide.
             </p>
           </div>

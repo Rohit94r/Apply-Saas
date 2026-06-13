@@ -12,8 +12,8 @@ export function BlogPreviewSection() {
           <Reveal>
             <SectionHeading
               eyebrow="Resume guides"
-              title="SEO-ready advice for fresher resumes and internships."
-              description="Guides for ATS resumes, Indian IT company fresher formats, internship mistakes, and job-specific tailoring."
+              title="Practical advice for student resumes and internships."
+              description="Guides for ATS resumes, entry-level formats, internship mistakes, and job-specific tailoring."
             />
           </Reveal>
           <Reveal delay={0.08}>
