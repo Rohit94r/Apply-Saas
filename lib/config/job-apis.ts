@@ -8,6 +8,8 @@
  * - USAJOBS: https://developer.usajobs.gov/API-Request/
  * - Juju: https://www.juju.com/publisher/signup
  * - HeroHunt: https://www.herohunt.ai/people-search-api
+ * - Remotive: https://remotive.com/api/remote-jobs (free, no key)
+ * - TheMuse: https://www.themuse.com/developers/api/v2 (free, no key)
  */
 
 export type JobApiProviderId =
@@ -16,6 +18,8 @@ export type JobApiProviderId =
   | "usajobs"
   | "juju"
   | "herohunt"
+  | "remotive"
+  | "themuse"
   | "curated";
 
 export type JobApiProviderConfig = {
@@ -106,6 +110,22 @@ export function getJobApiProviderStatus(): JobApiProviderConfig[] {
       description: "AI talent market signals (natural language search)",
       docsUrl: "https://www.herohunt.ai/people-search-api",
       configured: hasValue(secrets.herohunt.apiKey),
+      market: "Global"
+    },
+    {
+      id: "remotive",
+      label: "Remotive",
+      description: "Free remote jobs API — worldwide remote roles",
+      docsUrl: "https://remotive.com/api/remote-jobs",
+      configured: true,
+      market: "Remote"
+    },
+    {
+      id: "themuse",
+      label: "The Muse",
+      description: "Free company-curated jobs API — global",
+      docsUrl: "https://www.themuse.com/developers/api/v2",
+      configured: true,
       market: "Global"
     },
     {

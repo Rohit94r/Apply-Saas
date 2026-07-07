@@ -22,7 +22,9 @@ export type JobDataProvider =
   | "reed"
   | "usajobs"
   | "juju"
-  | "herohunt";
+  | "herohunt"
+  | "remotive"
+  | "themuse";
 
 /** Display platform on a job card (search boards + API sources). */
 export type JobListingPlatform = JobSearchPlatform | JobDataProvider;
@@ -105,4 +107,6 @@ export type JobMatchResult = {
   totalListingsScanned: number;
   /** Live API fetch summary — shown in Job Search overview. */
   providerStatus?: JobProviderFetchStatus[];
+  /** Country/region the search ran in (e.g. "in", "us", "remote"). */
+  country?: string;
 };
