@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { DashboardActivityTracker } from "@/components/dashboard/activity-tracker";
 import { trackDashboardSession } from "@/lib/admin/session";
 
 export const metadata: Metadata = {
@@ -24,5 +25,10 @@ export default async function DashboardLayout({
     // Ignore tracking errors so dashboard still loads
   }
 
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <DashboardShell>
+      <DashboardActivityTracker />
+      {children}
+    </DashboardShell>
+  );
 }

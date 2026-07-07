@@ -2,10 +2,12 @@ import { Schema, model, models, type InferSchemaType } from "mongoose";
 
 const ACTIVITY_ACTIONS = [
   "login",
+  "page_view",
   "generate",
   "build",
   "interview",
   "jobs",
+  "freelance",
   "tools",
   "upgrade",
   "payment"
