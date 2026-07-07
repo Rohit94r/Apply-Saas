@@ -7,13 +7,13 @@ Use this after deploying `https://apply.neexmeet.com`.
 3. The app emits this meta tag from `app/layout.tsx`:
 
 ```html
-<meta name="google-site-verification" content="nU5T7VdGh6uSoqPIE8PAB9axTn3enk72btXnj_q-3Pg" />
+<meta name="google-site-verification" content="aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I" />
 ```
 
 Optional env override (already set in production defaults):
 
 ```bash
-NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=nU5T7VdGh6uSoqPIE8PAB9axTn3enk72btXnj_q-3Pg
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I
 ```
 
 4. Deploy to Vercel, then click **Verify** in Search Console.

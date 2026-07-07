@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   verification: {
     google:
       process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ??
-      "nU5T7VdGh6uSoqPIE8PAB9axTn3enk72btXnj_q-3Pg"
+      "aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I"
   },
   openGraph: {
     title: seoConfig.title,
