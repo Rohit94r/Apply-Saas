@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { SectionBlock } from "@/components/dashboard/resume-studio/editor/section-block";
@@ -84,19 +85,9 @@ export function ResumeEditor({
         onImprove={onImproveSection}
         improving={improvingSection === "skills"}
       >
-        <Textarea
-          value={document.skills.join(", ")}
-          onChange={(event) =>
-            onChange({
-              ...document,
-              skills: event.target.value
-                .split(",")
-                .map((skill) => skill.trim())
-                .filter(Boolean)
-            })
-          }
-          className="min-h-24"
-          placeholder="React, TypeScript, Node.js, REST APIs..."
+        <SkillsField
+          value={document.skills}
+          onChange={(skills) => onChange({ ...document, skills })}
         />
       </SectionBlock>
 
@@ -145,5 +136,63 @@ function Field({
       <span className="text-xs font-semibold text-muted-foreground">{label}</span>
       <Input value={value} onChange={(event) => onChange(event.target.value)} />
     </label>
+  );
+}
+
+/**
+ * Skills editor with a local text buffer. Editing a comma-separated list
+ * directly into the document (parsing on every keystroke) trims the trailing
+ * comma/space being typed and yanks the cursor — so we keep a local string and
+ * only push the parsed array up, re-syncing from props when an external change
+ * (e.g. AI refine) replaces the skills set.
+ */
+function SkillsField({
+  value,
+  onChange
+}: {
+  value: string[];
+  onChange: (skills: string[]) => void;
+}) {
+  const [text, setText] = useState(value.join(", "));
+
+  useEffect(() => {
+    const externalJoined = value.join(", ");
+    if (externalJoined === text) {
+      return;
+    }
+
+    const external = new Set(value.map((s) => s.toLowerCase().trim()));
+    const local = text
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    const sameSet =
+      external.size === local.length && local.every((s) => external.has(s));
+
+    // Only overwrite the buffer if the two represent different skill sets —
+    // otherwise the user is mid-typing a comma/space and we'd clobber it.
+    if (!sameSet) {
+      setText(externalJoined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return (
+    <Textarea
+      value={text}
+      onChange={(event) => {
+        const next = event.target.value;
+        setText(next);
+        onChange(
+          next
+            .split(",")
+            .map((skill) => skill.trim())
+            .filter(Boolean)
+        );
+      }}
+      className="min-h-24"
+      placeholder="React, TypeScript, Node.js, REST APIs..."
+    />
   );
 }

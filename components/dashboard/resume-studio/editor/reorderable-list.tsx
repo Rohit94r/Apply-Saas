@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { DotsSixVertical, Plus, Trash } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +16,11 @@ export function ReorderableList({
   onChange: (items: EditorItem[]) => void;
   placeholder: string;
 }) {
-  const visibleItems = items.length ? items : [createItem()];
+  // Stable placeholder item so the empty-state textarea keeps focus across
+  // re-renders (preview refresh / auto-save fire frequently and would otherwise
+  // regenerate a new id and remount the input).
+  const [placeholderItem] = useState(() => createItem());
+  const visibleItems = items.length ? items : [placeholderItem];
 
   function updateItem(id: string, text: string) {
     onChange(visibleItems.map((item) => (item.id === id ? { ...item, text } : item)));

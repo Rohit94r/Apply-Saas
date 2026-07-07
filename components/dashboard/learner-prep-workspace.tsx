@@ -32,11 +32,23 @@ const categoryIcons: Record<string, PhosphorIcon> = {
   sparkle: Sparkle
 };
 
+const difficultyRank: Record<string, number> = {
+  Beginner: 0,
+  Intermediate: 1,
+  Advanced: 2
+};
+
 export function LearnerPrepWorkspace() {
   const [category, setCategory] = useState<string>("web-dev");
   const [trackId, setTrackId] = useState<string>("frontend");
 
-  const tracks = useMemo(() => getTracksByCategory(category), [category]);
+  const tracks = useMemo(
+    () =>
+      getTracksByCategory(category).sort(
+        (a, b) => (difficultyRank[a.difficulty] ?? 99) - (difficultyRank[b.difficulty] ?? 99)
+      ),
+    [category]
+  );
   const activeTrack = useMemo(
     () => getTrackById(trackId) ?? tracks[0] ?? null,
     [trackId, tracks]
@@ -44,7 +56,9 @@ export function LearnerPrepWorkspace() {
 
   function selectCategory(next: string) {
     setCategory(next);
-    const first = getTracksByCategory(next)[0];
+    const first = getTracksByCategory(next).sort(
+      (a, b) => (difficultyRank[a.difficulty] ?? 99) - (difficultyRank[b.difficulty] ?? 99)
+    )[0];
     if (first) {
       setTrackId(first.id);
     }

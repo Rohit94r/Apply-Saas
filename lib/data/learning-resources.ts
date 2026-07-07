@@ -643,6 +643,316 @@ export const learnerTracks: LearnerTrack[] = [
         free: true
       }
     ]
+  },
+  {
+    id: "frontend-advanced",
+    category: "web-dev",
+    subTrack: "Adv. Frontend",
+    label: "Senior Frontend Engineer",
+    description: "Performance, architecture, SSR and design systems — for senior frontend roles.",
+    yearRange: "3rd – 4th year / 1+ YOE",
+    difficulty: "Advanced",
+    roadmap: [
+      {
+        phase: "Month 1–2",
+        title: "Performance & profiling",
+        duration: "8 weeks",
+        tasks: [
+          "Core Web Vitals, Lighthouse, Chrome DevTools performance tab",
+          "Code-splitting, lazy loading, bundle analysis",
+          "Render performance, virtualization for long lists"
+        ],
+        resources: ["web.dev/learn/performance", "Chrome DevTools docs"]
+      },
+      {
+        phase: "Month 3–4",
+        title: "Architecture & SSR",
+        duration: "8 weeks",
+        tasks: [
+          "Next.js App Router, RSC, streaming, caching",
+          "State architecture: server state vs client state (Zustand/Redux)",
+          "Monorepo setup with Turborepo + shared UI"
+        ],
+        resources: ["Next.js docs", "Turborepo docs"]
+      },
+      {
+        phase: "Month 5+",
+        title: "Design systems & interviews",
+        duration: "Ongoing",
+        tasks: [
+          "Build a component library with Storybook + tests",
+          "Accessibility (WCAG, ARIA, keyboard nav)",
+          "Frontend system design mocks (design Twitter feed UI)"
+        ],
+        resources: ["GreatFrontEnd", "Storybook docs"]
+      }
+    ],
+    platforms: codingPlatforms.slice(0, 4),
+    videos: [
+      yt("F8AnRiMNJPg", "Next.js App Router Deep Dive", "Lee Robinson", "1 hr", "Next.js"),
+      yt("0fYiM4qZHuo", "Web Performance 101", "web.dev", "20 min", "Perf"),
+      yt("j59xQhXjf8g", "Design Systems Explained", "VSchool", "14 min", "Design systems")
+    ],
+    courses: [
+      {
+        title: "Frontend System Design",
+        provider: "GreatFrontEnd",
+        url: "https://www.greatfrontend.com/system-design",
+        focus: "Frontend system design interviews",
+        free: false
+      }
+    ]
+  },
+  {
+    id: "dsa-beginner",
+    category: "dsa",
+    subTrack: "DSA Basics",
+    label: "DSA Foundations",
+    description: "First steps in Data Structures & Algorithms — start here before NeetCode Blind 75.",
+    yearRange: "1st – 2nd year",
+    difficulty: "Beginner",
+    roadmap: [
+      {
+        phase: "Month 1–2",
+        title: "Language + complexity",
+        duration: "8 weeks",
+        tasks: [
+          "Pick one language (C++/Java/Python) and master I/O",
+          "Big-O notation, time vs space complexity",
+          "Built-in data structures: arrays, strings, hash maps"
+        ],
+        resources: ["HackerRank tutorial", "Big-O cheatsheet on bigocheatsheet.com"]
+      },
+      {
+        phase: "Month 3–4",
+        title: "Basic data structures",
+        duration: "8 weeks",
+        tasks: [
+          "Stacks, queues, linked lists, sets",
+          "Sorting (bubble, selection, merge) and binary search",
+          "Solve 40 easy problems on LeetCode/HackerRank"
+        ],
+        resources: ["GeeksforGeeks DSA roadmap", "NeetCode starters"]
+      },
+      {
+        phase: "Month 5+",
+        title: "Patterns before hard problems",
+        duration: "Ongoing",
+        tasks: [
+          "Two pointers and sliding window patterns",
+          "Prefix sums and counting",
+          "Graduate to the DSA (Intermediate) track"
+        ],
+        resources: ["NeetCode pattern list", "Structy.net"]
+      }
+    ],
+    platforms: codingPlatforms.slice(0, 4),
+    videos: [
+      yt("8hly31xKEb4", "Intro to Big O Notation", "CS50", "10 min", "Complexity"),
+      yt("B31LxS2XkFg", "Data Structures for Beginners", "freeCodeCamp", "2 hr", "Basics"),
+      yt("oL8fHVZR4vM", "Sliding Window Pattern", "NeetCode", "12 min", "Pattern")
+    ],
+    courses: [
+      {
+        title: "Data Structures & Algorithms in Python",
+        provider: "Google / Coursera",
+        url: "https://www.coursera.org/specializations/data-structures-algorithms",
+        focus: "Gentle first DSA course",
+        free: true
+      }
+    ]
+  },
+  {
+    id: "dsa-advanced",
+    category: "dsa",
+    subTrack: "Adv. DSA",
+    label: "Advanced DSA & CP",
+    description: "Graphs, DP mastery, trees and competitive programming for FAANG-level rounds.",
+    yearRange: "3rd – 4th year",
+    difficulty: "Advanced",
+    roadmap: [
+      {
+        phase: "Month 1–2",
+        title: "Graphs & trees deep dive",
+        duration: "8 weeks",
+        tasks: [
+          "BFS/DFS, Dijkstra, topological sort, union-find",
+          "Tries, segment trees, binary indexed trees",
+          "Solve 30 hard graph problems"
+        ],
+        resources: ["CP-Algorithms", "NeetCode Graphs"]
+      },
+      {
+        phase: "Month 3–4",
+        title: "DP mastery",
+        duration: "8 weeks",
+        tasks: [
+          "1D/2D DP, bitmask DP, DP on trees",
+          "Classical problems: LIS, LCS, knapsack, matrix chain",
+          "Weekly Codeforces div 2 contests"
+        ],
+        resources: ["USACO Guide", "AtCoder DP editorial"]
+      },
+      {
+        phase: "Month 5+",
+        title: "Contest + company prep",
+        duration: "Ongoing",
+        tasks: [
+          "Maintain a notebook of patterns and mistakes",
+          "Company-tagged question lists (Google, Amazon, Microsoft)",
+          "Timed virtual contests and mocks"
+        ],
+        resources: ["InterviewBit company tags", "LeetCode contests"]
+      }
+    ],
+    platforms: codingPlatforms,
+    videos: [
+      yt("tRpnUqA1yxw", "Graph Algorithms for CP", "Errichto", "1 hr", "Graphs CP"),
+      yt("XtOLeR3MS_A", "Dynamic Programming Patterns", "NeetCode", "Playlist", "DP"),
+      yt("G99X2cuQpqA", "Segment Trees Explained", "codeNcode", "20 min", "Segment tree")
+    ],
+    courses: [
+      {
+        title: "USACO Guide",
+        provider: "USACO",
+        url: "https://usaco.guide/",
+        focus: "Competitive programming curriculum",
+        free: true
+      }
+    ]
+  },
+  {
+    id: "system-design-intro",
+    category: "system-design",
+    subTrack: "Systems Basics",
+    label: "Systems & Architecture Basics",
+    description: "The stepping stone before hard system design — servers, scaling, caching, DBs.",
+    yearRange: "2nd – 3rd year",
+    difficulty: "Intermediate",
+    roadmap: [
+      {
+        phase: "Month 1–2",
+        title: "How the web works",
+        duration: "8 weeks",
+        tasks: [
+          "DNS, HTTP/HTTPS, TCP/IP, TLS basics",
+          "Servers, load balancers, reverse proxies, CDNs",
+          "Draw the request lifecycle from client to DB"
+        ],
+        resources: ["How DNS works (Mozilla)", "ByteByteGo YouTube"]
+      },
+      {
+        phase: "Month 3–4",
+        title: "Scaling & storage",
+        duration: "8 weeks",
+        tasks: [
+          "Vertical vs horizontal scaling, statelessness",
+          "Caching layers (browser, CDN, app, Redis)",
+          "SQL vs NoSQL, replication, sharding intuition"
+        ],
+        resources: ["System Design Primer", "Gaurav Sen playlist"]
+      },
+      {
+        phase: "Month 5+",
+        title: "First designs",
+        duration: "Ongoing",
+        tasks: [
+          "Design a URL shortener and a paste bin end-to-end",
+          "Estimate capacity (QPS, storage, bandwidth)",
+          "Move to the Advanced System Design track"
+        ],
+        resources: ["Grokking System Design", "InterviewReady"]
+      }
+    ],
+    platforms: codingPlatforms.slice(0, 3),
+    videos: [
+      yt("bUHF4ZM1WvU", "System Design Basics", "Gaurav Sen", "12 min", "Intro"),
+      yt("i53GVGYaQSM", "How the Web Works", "Lex", "10 min", "Networking"),
+      yt("DLW82PSZQdQ", "Caching Explained", "Hussein Nasser", "18 min", "Caching")
+    ],
+    courses: [
+      {
+        title: "System Design Primer",
+        provider: "Open source (GitHub)",
+        url: "https://github.com/donnemartin/system-design-primer",
+        focus: "Free structured notes",
+        free: true
+      }
+    ]
+  },
+  {
+    id: "ai-ml-beginner",
+    category: "ai-ml",
+    subTrack: "AI / ML Basics",
+    label: "AI & ML Foundations",
+    description: "Python, data, and your first ML model — the beginner path before deep learning.",
+    yearRange: "2nd – 3rd year",
+    difficulty: "Beginner",
+    roadmap: [
+      {
+        phase: "Month 1–2",
+        title: "Python for data",
+        duration: "8 weeks",
+        tasks: [
+          "Python basics + Jupyter notebooks",
+          "NumPy arrays, Pandas DataFrames, Matplotlib",
+          "Load a CSV, clean it, plot insights"
+        ],
+        resources: ["Kaggle Learn Python", "pandas getting started"]
+      },
+      {
+        phase: "Month 3–4",
+        title: "First ML models",
+        duration: "8 weeks",
+        tasks: [
+          "Train/test split, overfitting, evaluation metrics",
+          "Linear regression + logistic regression with scikit-learn",
+          "Submit to a Kaggle beginner competition (Titanic)"
+        ],
+        resources: ["Google ML Crash Course", "Kaggle Learn Intro ML"]
+      },
+      {
+        phase: "Month 5+",
+        title: "Project + next step",
+        duration: "Ongoing",
+        tasks: [
+          "Build an end-to-end ML project with a README",
+          "Deploy a simple model with Streamlit or FastAPI",
+          "Move to the Advanced AI/ML/LLM track"
+        ],
+        resources: ["Streamlit docs", "Hugging Face Spaces"]
+      }
+    ],
+    platforms: [
+      {
+        name: "Kaggle",
+        url: "https://www.kaggle.com/learn",
+        description: "Free micro-courses + datasets",
+        icon: "KG"
+      },
+      ...codingPlatforms.slice(0, 2)
+    ],
+    videos: [
+      yt("kqtD5U9bJTU", "Python for Beginners", "freeCodeCamp", "4 hr", "Python"),
+      yt("fUlL6wl2kiY", "Pandas in 10 minutes", "CodeBank", "10 min", "Pandas"),
+      yt("oWf6F8N0yIo", "First ML Model with scikit-learn", "Google", "6 min", "ML")
+    ],
+    courses: [
+      {
+        title: "Intro to Machine Learning",
+        provider: "Kaggle Learn",
+        url: "https://www.kaggle.com/learn/intro-to-machine-learning",
+        focus: "Hands-on first ML course",
+        free: true
+      },
+      {
+        title: "Machine Learning Crash Course",
+        provider: "Google",
+        url: "https://developers.google.com/machine-learning/crash-course",
+        focus: "ML fundamentals with TF",
+        free: true
+      }
+    ]
   }
 ];
 

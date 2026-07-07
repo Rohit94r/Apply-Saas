@@ -65,20 +65,28 @@ export function PreviewPanel({
 
       <div className="flex-1 overflow-auto p-4">
         <div className="sticky top-0 mx-auto max-w-[520px]">
-          {loading ? (
+          {previewUrl ? (
+            <div className="relative">
+              <div
+                className="origin-top transition-transform"
+                style={{ transform: `scale(${zoom / 100})` }}
+              >
+                <iframe
+                  title="Resume preview"
+                  src={previewUrl}
+                  className="h-[760px] w-full rounded-xl border border-border bg-white shadow-soft"
+                />
+              </div>
+              {loading ? (
+                <div className="pointer-events-none absolute right-3 top-3 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-muted-foreground shadow-soft">
+                  <SpinnerGap className="h-3.5 w-3.5 animate-spin text-accent" weight="regular" />
+                  Updating…
+                </div>
+              ) : null}
+            </div>
+          ) : loading ? (
             <div className="flex min-h-[640px] items-center justify-center rounded-xl border border-border bg-white">
               <SpinnerGap className="h-8 w-8 animate-spin text-accent" weight="regular" />
-            </div>
-          ) : previewUrl ? (
-            <div
-              className="origin-top transition-transform"
-              style={{ transform: `scale(${zoom / 100})` }}
-            >
-              <iframe
-                title="Resume preview"
-                src={previewUrl}
-                className="h-[760px] w-full rounded-xl border border-border bg-white shadow-soft"
-              />
             </div>
           ) : (
             <div className="flex min-h-[640px] items-center justify-center rounded-xl border border-dashed border-border bg-white text-sm text-muted-foreground">
