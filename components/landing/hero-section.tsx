@@ -11,13 +11,14 @@ export function HeroSection() {
         <Reveal>
           <p className="fine-label mb-5">Free for students worldwide</p>
           <h1 className="mx-auto max-w-4xl font-serif text-6xl leading-[0.93] tracking-normal text-primary sm:text-7xl lg:text-8xl">
-            One profile.
-            <span className="block text-accent italic">Every application ready.</span>
+            Learning. Earning.
+            <span className="block text-accent italic">Interview prep — one platform.</span>
           </h1>
           <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg">
-            Upload your master resume once. Apply tailors it to each job, finds matching
-            openings, preps you with courses and interview guides — for students and
-            early-career developers everywhere.
+            Build resumes, find matching jobs, start freelancing in your city, and
+            prep for interviews — all in one place. Apply tailors your resume to each
+            role, surfaces real openings, and hands you a freelance client-finder so
+            you can earn while you learn.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -27,9 +28,9 @@ export function HeroSection() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="#student-gateway">
+              <Link href="/dashboard/freelancing">
                 <Play className="h-4 w-4" weight="regular" />
-                See how it works
+                Find freelance work
               </Link>
             </Button>
           </div>

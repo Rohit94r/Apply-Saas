@@ -3,6 +3,7 @@ import { ComparisonSection } from "@/components/landing/comparison-section";
 import { EngineShowcase } from "@/components/landing/engine-showcase";
 import { FaqSection } from "@/components/landing/faq-section";
 import { Footer } from "@/components/landing/footer";
+import { FreelancingSection } from "@/components/landing/freelancing-section";
 import { HeroSection } from "@/components/landing/hero-section";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { StudentGatewaySection } from "@/components/landing/student-gateway-section";
@@ -40,6 +41,7 @@ export default function Home() {
         <ComparisonSection />
         <EngineShowcase />
         <InterviewPrepSection />
+        <FreelancingSection />
         <Testimonials />
         <FaqSection />
         <BlogPreviewSection />

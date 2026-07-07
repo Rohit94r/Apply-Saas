@@ -11,6 +11,7 @@ const columns = [
     links: [
       { label: "How it works", href: "/#how-it-works" },
       { label: "AI resume engine", href: "/#engine" },
+      { label: "Freelancing", href: "/dashboard/freelancing" },
       { label: "Interview prep", href: "/dashboard/interview" },
       { label: "Pricing", href: "/#pricing" }
     ]
@@ -62,7 +63,7 @@ export function Footer() {
       <div className="section-shell py-20">
         <div className="mb-16 text-center">
           <h2 className="mx-auto max-w-3xl font-serif text-5xl leading-[1.02] text-primary sm:text-6xl">
-            Ready to stop rewriting and start applying?
+            Learning, earning &amp; interview prep — all in one place.
           </h2>
           <Button asChild className="mt-8" size="lg">
             <Link href="/dashboard/generate">
@@ -78,7 +79,8 @@ export function Footer() {
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
-              Free AI resume builder for students worldwide. Need help? Message on Instagram or LinkedIn.
+              Learning, earning and interview prep on one platform — for students and
+              early-career developers. Need help? Message on Instagram or LinkedIn.
             </p>
             <div className="mt-5">
               <FounderSupportCard compact />
