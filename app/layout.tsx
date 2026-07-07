@@ -51,9 +51,7 @@ export const metadata: Metadata = {
     }
   },
   verification: {
-    google:
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ??
-      "aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I"
+    google: "aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I"
   },
   openGraph: {
     title: seoConfig.title,

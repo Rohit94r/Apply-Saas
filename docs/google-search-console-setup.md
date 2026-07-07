@@ -4,19 +4,22 @@ Use this after deploying `https://apply.neexmeet.com`.
 
 1. Open Google Search Console and add the property `https://apply.neexmeet.com`.
 2. Choose **HTML tag** verification (recommended on Vercel — avoids DNS CNAME conflicts).
-3. The app emits this meta tag from `app/layout.tsx`:
+3. The app emits this meta tag from `app/layout.tsx` (hardcoded — do not override via env):
 
 ```html
 <meta name="google-site-verification" content="aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I" />
 ```
 
-Optional env override (already set in production defaults):
+**If verification fails with the old token:** Vercel may still have `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` set to an old value. **Delete that env var** in Vercel → Settings → Environment Variables, then redeploy.
+
+4. Push to GitHub and wait for Vercel deploy to finish.
+5. Confirm live HTML shows the new token:
 
 ```bash
-NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I
+curl -sL https://apply.neexmeet.com | grep google-site-verification
 ```
 
-4. Deploy to Vercel, then click **Verify** in Search Console.
+6. Click **Verify** in Search Console.
 5. In Search Console, submit:
 
 ```text
