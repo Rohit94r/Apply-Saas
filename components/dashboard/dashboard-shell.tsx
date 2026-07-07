@@ -16,7 +16,8 @@ import {
   MagnifyingGlass,
   ShieldCheck,
   Sparkle,
-  Stack
+  Stack,
+  Storefront
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/landing/logo";
@@ -34,6 +35,7 @@ const navItems: Array<{
   { label: "My resumes", href: "/dashboard/resumes", icon: FileText },
   { label: "Tailor", href: "/dashboard/generate", icon: Sparkle },
   { label: "Job search", href: "/dashboard/jobs", icon: MagnifyingGlass },
+  { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
   { label: "Build resume", href: "/dashboard/build", icon: Stack },
   { label: "Learner prep", href: "/dashboard/learners", icon: GraduationCap },
   { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase },
