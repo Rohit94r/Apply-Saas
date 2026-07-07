@@ -3,8 +3,12 @@
  *
  * We do not scrape LinkedIn/Naukri — we deep-link users to pre-filled searches
  * on each platform using their inferred profile (role, skills, location).
+ *
+ * `buildPlatformSearchLinks(profile, country?)` filters which platforms are
+ * shown and switches the location/domain per selected country (India/US/UK/Remote).
  */
 
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import type { ExperienceBand, JobSearchPlatform, JobSeekerProfile } from "@/features/jobs/types";
 
 type PlatformMeta = {
@@ -27,7 +31,7 @@ export const jobPlatformMeta: PlatformMeta[] = [
   },
   {
     platform: "indeed",
-    label: "Indeed India",
+    label: "Indeed",
     description: "Broad listings across cities and experience levels"
   },
   {
@@ -64,42 +68,53 @@ function encode(value: string) {
   return encodeURIComponent(value.trim());
 }
 
-/** LinkedIn jobs search with keywords + India location. */
-function linkedInUrl(profile: JobSeekerProfile) {
+function resolveLocation(profile: JobSeekerProfile, country: JobCountryConfig) {
+  // Use the resume's city when it's specific, else the country default.
+  if (profile.location && profile.location !== "India") {
+    return profile.location;
+  }
+  return country.locationLabel;
+}
+
+/** LinkedIn jobs search with keywords + location (remote filter when country=remote). */
+function linkedInUrl(profile: JobSeekerProfile, country: JobCountryConfig) {
   const keywords = encode(skillQuery(profile));
-  const location = encode(profile.location === "India" ? "India" : profile.location);
+  const location = encode(resolveLocation(profile, country));
   const entryLevel =
     profile.experienceBand === "student" || profile.experienceBand === "fresher"
       ? "&f_E=1&f_E=2"
       : "";
+  const remote = country.remoteOnly ? "&f_WT=2" : "";
 
-  return `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}${entryLevel}`;
+  return `https://www.linkedin.com/jobs/search/?keywords=${keywords}&location=${location}${entryLevel}${remote}`;
 }
 
-/** Naukri search slug from role keywords. */
-function naukriUrl(profile: JobSeekerProfile) {
+/** Naukri search slug from role keywords (India only). */
+function naukriUrl(profile: JobSeekerProfile, country: JobCountryConfig) {
   const slug = primaryKeyword(profile)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
+  const location = resolveLocation(profile, country);
   const locationSlug =
-    profile.location !== "India"
-      ? `-in-${profile.location.toLowerCase().replace(/\s+/g, "-")}`
+    location && location !== "India"
+      ? `-in-${location.toLowerCase().replace(/\s+/g, "-")}`
       : "";
 
   return `https://www.naukri.com/${slug}-jobs${locationSlug}`;
 }
 
-function indeedUrl(profile: JobSeekerProfile) {
+function indeedUrl(profile: JobSeekerProfile, country: JobCountryConfig) {
   const q = encode(skillQuery(profile));
-  const l = encode(profile.location);
-  return `https://in.indeed.com/jobs?q=${q}&l=${l}`;
+  const l = encode(resolveLocation(profile, country));
+  return `https://${country.indeedDomain}/jobs?q=${q}&l=${l}`;
 }
 
-function glassdoorUrl(profile: JobSeekerProfile) {
+function glassdoorUrl(profile: JobSeekerProfile, country: JobCountryConfig) {
   const q = encode(primaryKeyword(profile));
-  return `https://www.glassdoor.co.in/Job/india-${q.replace(/%20/g, "-").toLowerCase()}-jobs-SRCH_IL.0,5_IN115_KO6,${primaryKeyword(profile).length}.htm`;
+  const slug = q.replace(/%20/g, "-").toLowerCase();
+  return `https://${country.glassdoorDomain}/Job/${slug}-jobs-SRCH_KO0,${primaryKeyword(profile).length}.htm`;
 }
 
 function instahyreUrl(profile: JobSeekerProfile) {
@@ -118,17 +133,18 @@ function cutshortUrl(profile: JobSeekerProfile) {
   return `https://cutshort.io/jobs/${slug}`;
 }
 
-function wellfoundUrl(profile: JobSeekerProfile) {
+function wellfoundUrl(profile: JobSeekerProfile, country: JobCountryConfig) {
   const role = primaryKeyword(profile)
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
-  return `https://wellfound.com/role/l/${role}/india`;
+  const loc = country.remoteOnly ? "remote" : "india";
+  return `https://wellfound.com/role/l/${role}/${loc}`;
 }
 
 const urlBuilders: Record<
   JobSearchPlatform,
-  (profile: JobSeekerProfile) => string
+  (profile: JobSeekerProfile, country: JobCountryConfig) => string
 > = {
   linkedin: linkedInUrl,
   naukri: naukriUrl,
@@ -141,15 +157,42 @@ const urlBuilders: Record<
 
 /**
  * Build platform-specific search URLs from a job seeker profile.
- * Shown at the top of Job Search even before the user submits a new resume.
+ * When `country` is provided, only platforms relevant to that country are
+ * returned and the location/domain switches accordingly.
  */
-export function buildPlatformSearchLinks(profile: JobSeekerProfile) {
-  return jobPlatformMeta.map((meta) => ({
-    platform: meta.platform,
-    label: meta.label,
-    description: meta.description,
-    url: urlBuilders[meta.platform](profile)
-  }));
+export function buildPlatformSearchLinks(
+  profile: JobSeekerProfile,
+  country?: JobCountryConfig
+) {
+  const effectiveCountry: JobCountryConfig = country ?? {
+    id: "global",
+    label: "Global",
+    short: "Global",
+    adzunaCountry: "in",
+    indeedDomain: "in.indeed.com",
+    glassdoorDomain: "glassdoor.co.in",
+    locationLabel: "India",
+    remoteOnly: false,
+    platforms: [
+      "linkedin",
+      "naukri",
+      "indeed",
+      "glassdoor",
+      "instahyre",
+      "cutshort",
+      "wellfound"
+    ],
+    providers: []
+  };
+
+  return jobPlatformMeta
+    .filter((meta) => effectiveCountry.platforms.includes(meta.platform))
+    .map((meta) => ({
+      platform: meta.platform,
+      label: meta.label,
+      description: meta.description,
+      url: urlBuilders[meta.platform](profile, effectiveCountry)
+    }));
 }
 
 /** Map experience band to human-readable filter label. */

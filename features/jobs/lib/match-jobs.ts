@@ -6,6 +6,7 @@
  */
 
 import { getAllJobListings } from "@/lib/data/job-listings";
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import { buildPlatformSearchLinks } from "@/features/jobs/lib/platform-links";
 import type {
   JobListing,
@@ -118,6 +119,8 @@ export type MatchJobsOptions = {
   /** Extra listings from live APIs (already normalized). */
   extraListings?: JobListing[];
   providerStatus?: JobProviderFetchStatus[];
+  /** Selected market — drives platform deep-links + which providers fire. */
+  country?: JobCountryConfig;
 };
 
 /**
@@ -128,7 +131,7 @@ export function scoreListingsForProfile(
   listings: JobListing[],
   options: MatchJobsOptions = {}
 ): JobMatchResult {
-  const { limit = 12, minScore = 12, providerStatus } = options;
+  const { limit = 12, minScore = 12, providerStatus, country } = options;
 
   const matches = listings
     .map((job) => scoreJob(profile, job))
@@ -148,9 +151,10 @@ export function scoreListingsForProfile(
   return {
     profile,
     matches: finalMatches,
-    platformSearches: buildPlatformSearchLinks(profile),
+    platformSearches: buildPlatformSearchLinks(profile, country),
     totalListingsScanned: listings.length,
-    providerStatus
+    providerStatus,
+    country: country?.id
   };
 }
 

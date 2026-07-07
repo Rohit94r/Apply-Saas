@@ -6,6 +6,7 @@
  */
 
 import { getJobApiSecrets } from "@/lib/config/job-apis";
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import type { JobListing } from "@/features/jobs/types";
 import type { JobSeekerProfile } from "@/features/jobs/types";
 import {
@@ -39,9 +40,15 @@ type AdzunaResponse = {
 
 export async function fetchAdzunaJobs(
   profile: JobSeekerProfile,
-  limit = 10
+  limit = 10,
+  country: JobCountryConfig
 ): Promise<JobListing[]> {
   const { adzuna } = getJobApiSecrets();
+
+  // Skip Adzuna for markets where it has no coverage (e.g. remote-only).
+  if (!country.adzunaCountry) {
+    return [];
+  }
 
   if (!adzuna.appId || !adzuna.appKey) {
     return [];
@@ -49,10 +56,12 @@ export async function fetchAdzunaJobs(
 
   const what = profile.targetRoles[0] ?? profile.skills.slice(0, 3).join(" ");
   const where =
-    profile.location !== "India" ? profile.location : "India";
+    profile.location && profile.location !== "India"
+      ? profile.location
+      : country.locationLabel;
 
   const url = new URL(
-    `https://api.adzuna.com/v1/api/jobs/${adzuna.country}/search/1`
+    `https://api.adzuna.com/v1/api/jobs/${country.adzunaCountry}/search/1`
   );
   url.searchParams.set("app_id", adzuna.appId);
   url.searchParams.set("app_key", adzuna.appKey);
@@ -71,7 +80,12 @@ export async function fetchAdzunaJobs(
   }
 
   const data = (await response.json()) as AdzunaResponse;
-  const currency = adzuna.country === "in" ? "INR" : adzuna.country === "gb" ? "GBP" : "USD";
+  const currency =
+    country.adzunaCountry === "in"
+      ? "INR"
+      : country.adzunaCountry === "gb"
+        ? "GBP"
+        : "USD";
 
   return (data.results ?? []).slice(0, limit).map((job) => {
     const description = job.description ?? "";

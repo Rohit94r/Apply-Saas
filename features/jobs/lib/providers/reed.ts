@@ -6,6 +6,7 @@
  */
 
 import { getJobApiSecrets } from "@/lib/config/job-apis";
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import type { JobListing, JobSeekerProfile } from "@/features/jobs/types";
 import {
   buildListingId,
@@ -38,7 +39,8 @@ type ReedResponse = {
 
 export async function fetchReedJobs(
   profile: JobSeekerProfile,
-  limit = 10
+  limit = 10,
+  country: JobCountryConfig
 ): Promise<JobListing[]> {
   const { reed } = getJobApiSecrets();
 
@@ -48,7 +50,9 @@ export async function fetchReedJobs(
 
   const keywords = profile.targetRoles[0] ?? profile.skills.slice(0, 3).join(" ");
   const locationName =
-    profile.location !== "India" ? profile.location : "London";
+    profile.location && profile.location !== "India"
+      ? profile.location
+      : country.locationLabel;
 
   const url = new URL("https://www.reed.co.uk/api/1.0/search");
   url.searchParams.set("keywords", keywords || "software developer");

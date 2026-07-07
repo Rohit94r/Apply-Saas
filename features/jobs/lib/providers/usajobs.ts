@@ -6,6 +6,7 @@
  */
 
 import { getJobApiSecrets } from "@/lib/config/job-apis";
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import type { JobListing, JobSeekerProfile } from "@/features/jobs/types";
 import {
   buildListingId,
@@ -40,7 +41,8 @@ type UsaJobsResponse = {
 
 export async function fetchUsajobsJobs(
   profile: JobSeekerProfile,
-  limit = 10
+  limit = 10,
+  _country: JobCountryConfig
 ): Promise<JobListing[]> {
   const { usajobs } = getJobApiSecrets();
 

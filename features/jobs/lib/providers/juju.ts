@@ -6,6 +6,7 @@
  */
 
 import { getJobApiSecrets } from "@/lib/config/job-apis";
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import type { JobListing, JobSeekerProfile } from "@/features/jobs/types";
 import {
   buildListingId,
@@ -47,7 +48,8 @@ function parseJujuRss(xml: string) {
 
 export async function fetchJujuJobs(
   profile: JobSeekerProfile,
-  limit = 10
+  limit = 10,
+  country: JobCountryConfig
 ): Promise<JobListing[]> {
   const { juju } = getJobApiSecrets();
 
@@ -58,7 +60,10 @@ export async function fetchJujuJobs(
   const k =
     profile.targetRoles[0] ??
     (profile.skills.slice(0, 3).join(" ") || "software engineer");
-  const l = profile.location !== "India" ? profile.location : "United States";
+  const l =
+    profile.location && profile.location !== "India"
+      ? profile.location
+      : country.locationLabel;
 
   const url = new URL("https://api.juju.com/jobs");
   url.searchParams.set("partnerid", juju.partnerId);

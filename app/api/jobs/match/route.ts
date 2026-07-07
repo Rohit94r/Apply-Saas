@@ -18,10 +18,12 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const limit = Number(searchParams.get("limit") ?? "12");
+  const country = searchParams.get("country") ?? undefined;
 
   try {
     const result = await getJobMatchesForUser(userId, {
-      limit: Number.isFinite(limit) ? limit : 12
+      limit: Number.isFinite(limit) ? limit : 12,
+      country
     });
 
     return NextResponse.json(result);

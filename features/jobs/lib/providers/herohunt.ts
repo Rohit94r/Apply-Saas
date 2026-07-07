@@ -7,6 +7,7 @@
  */
 
 import { getJobApiSecrets } from "@/lib/config/job-apis";
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import type { JobListing, JobSeekerProfile } from "@/features/jobs/types";
 import {
   buildListingId,
@@ -40,7 +41,8 @@ function normalizeHeroHuntRows(payload: HeroHuntResponse) {
 
 export async function fetchHeroHuntMarketSignals(
   profile: JobSeekerProfile,
-  limit = 5
+  limit = 5,
+  country: JobCountryConfig
 ): Promise<JobListing[]> {
   const { herohunt } = getJobApiSecrets();
 
@@ -51,7 +53,9 @@ export async function fetchHeroHuntMarketSignals(
   const query = [
     profile.targetRoles[0],
     profile.skills.slice(0, 5).join(", "),
-    profile.location !== "India" ? profile.location : "India"
+    profile.location && profile.location !== "India"
+      ? profile.location
+      : country.locationLabel
   ]
     .filter(Boolean)
     .join(" — ");

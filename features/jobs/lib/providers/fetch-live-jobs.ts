@@ -3,12 +3,16 @@
  *
  * Uses Promise.allSettled so one failing API does not break the page.
  * Returns merged listings + per-provider status for the overview UI.
+ *
+ * The `country` config controls which providers fire for the selected market
+ * (e.g. USAJOBS + Juju for US, Reed for UK, Remotive + The Muse for Remote).
  */
 
 import {
   getJobApiProviderStatus,
   type JobApiProviderId
 } from "@/lib/config/job-apis";
+import type { JobCountryConfig } from "@/lib/config/job-countries";
 import type {
   JobListing,
   JobProviderFetchStatus,
@@ -18,11 +22,17 @@ import { fetchAdzunaJobs } from "@/features/jobs/lib/providers/adzuna";
 import { fetchHeroHuntMarketSignals } from "@/features/jobs/lib/providers/herohunt";
 import { fetchJujuJobs } from "@/features/jobs/lib/providers/juju";
 import { fetchReedJobs } from "@/features/jobs/lib/providers/reed";
+import { fetchRemotiveJobs } from "@/features/jobs/lib/providers/remotive";
+import { fetchTheMuseJobs } from "@/features/jobs/lib/providers/themuse";
 import { fetchUsajobsJobs } from "@/features/jobs/lib/providers/usajobs";
 
 type ProviderRunner = {
   id: JobApiProviderId;
-  run: (profile: JobSeekerProfile, limit: number) => Promise<JobListing[]>;
+  run: (
+    profile: JobSeekerProfile,
+    limit: number,
+    country: JobCountryConfig
+  ) => Promise<JobListing[]>;
 };
 
 const LIVE_PROVIDERS: ProviderRunner[] = [
@@ -30,7 +40,9 @@ const LIVE_PROVIDERS: ProviderRunner[] = [
   { id: "reed", run: fetchReedJobs },
   { id: "usajobs", run: fetchUsajobsJobs },
   { id: "juju", run: fetchJujuJobs },
-  { id: "herohunt", run: fetchHeroHuntMarketSignals }
+  { id: "herohunt", run: fetchHeroHuntMarketSignals },
+  { id: "remotive", run: fetchRemotiveJobs },
+  { id: "themuse", run: fetchTheMuseJobs }
 ];
 
 export type LiveJobsFetchResult = {
@@ -40,16 +52,26 @@ export type LiveJobsFetchResult = {
 
 export async function fetchLiveJobs(
   profile: JobSeekerProfile,
-  perProviderLimit = 8
+  perProviderLimit = 8,
+  country: JobCountryConfig
 ): Promise<LiveJobsFetchResult> {
   const meta = getJobApiProviderStatus();
   const metaById = new Map(meta.map((item) => [item.id, item]));
+  const activeProviderIds = new Set(country.providers);
+
+  // Only run providers relevant to the selected country.
+  const runners = LIVE_PROVIDERS.filter((provider) =>
+    activeProviderIds.has(provider.id)
+  );
 
   const settled = await Promise.allSettled(
-    LIVE_PROVIDERS.map(async (provider) => {
+    runners.map(async (provider) => {
       const config = metaById.get(provider.id);
 
-      if (!config?.configured) {
+      // Remotive + TheMuse are always configured (free, no key).
+      const alwaysConfigured = provider.id === "remotive" || provider.id === "themuse";
+
+      if (!config?.configured && !alwaysConfigured) {
         return {
           id: provider.id,
           listings: [] as JobListing[],
@@ -58,7 +80,7 @@ export async function fetchLiveJobs(
         };
       }
 
-      const listings = await provider.run(profile, perProviderLimit);
+      const listings = await provider.run(profile, perProviderLimit, country);
 
       return {
         id: provider.id,
@@ -72,26 +94,33 @@ export async function fetchLiveJobs(
   const listings: JobListing[] = [];
   const providerStatus: JobProviderFetchStatus[] = [];
 
-  for (let index = 0; index < LIVE_PROVIDERS.length; index += 1) {
-    const provider = LIVE_PROVIDERS[index];
-    const config = metaById.get(provider.id)!;
-    const result = settled[index];
+  // Build status for ALL providers (so the overview shows skipped ones too),
+  // but only include those relevant to the selected country.
+  for (const provider of LIVE_PROVIDERS) {
+    if (!activeProviderIds.has(provider.id)) {
+      continue;
+    }
 
-    if (result.status === "fulfilled") {
+    const config = metaById.get(provider.id)!;
+    const alwaysConfigured = provider.id === "remotive" || provider.id === "themuse";
+    const settledIndex = runners.findIndex((r) => r.id === provider.id);
+    const result = settled[settledIndex];
+
+    if (result && result.status === "fulfilled") {
       listings.push(...result.value.listings);
       providerStatus.push({
         id: provider.id,
         label: config.label,
-        configured: config.configured,
+        configured: config.configured || alwaysConfigured,
         ok: result.value.ok && result.value.listings.length > 0,
         count: result.value.listings.length,
         message: result.value.message
       });
-    } else {
+    } else if (result) {
       providerStatus.push({
         id: provider.id,
         label: config.label,
-        configured: config.configured,
+        configured: config.configured || alwaysConfigured,
         ok: false,
         count: 0,
         message:

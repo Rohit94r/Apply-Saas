@@ -17,10 +17,16 @@ import {
   fetchLiveJobs
 } from "@/features/jobs/lib/providers/fetch-live-jobs";
 import { getAllJobListings } from "@/lib/data/job-listings";
+import { getJobCountryConfig } from "@/lib/config/job-countries";
 import {
   getGeneratedResumes,
   getLatestMasterResume
 } from "@/lib/data/resumes";
+
+export type GetJobMatchesOptions = Omit<MatchJobsOptions, "country"> & {
+  /** Selected market id (e.g. "in", "us", "remote"). Resolved to a config. */
+  country?: string;
+};
 
 /**
  * Load the signed-in user's latest resume data, fetch live API jobs,
@@ -28,8 +34,10 @@ import {
  */
 export async function getJobMatchesForUser(
   userId: string,
-  options?: MatchJobsOptions
+  options?: GetJobMatchesOptions
 ): Promise<JobMatchResult> {
+  const country = getJobCountryConfig(options?.country);
+
   const [masterResume, generatedResumes] = await Promise.all([
     getLatestMasterResume(userId).catch(() => null),
     getGeneratedResumes(userId, 1).catch(() => [])
@@ -48,7 +56,8 @@ export async function getJobMatchesForUser(
 
   const { listings: liveListings, providerStatus } = await fetchLiveJobs(
     profile,
-    8
+    8,
+    country
   );
 
   const curated = getAllJobListings().map((job) => ({
@@ -59,7 +68,9 @@ export async function getJobMatchesForUser(
   const merged = dedupeJobListings([...liveListings, ...curated]);
 
   return scoreListingsForProfile(profile, merged, {
-    ...options,
+    limit: options?.limit,
+    minScore: options?.minScore,
+    country,
     providerStatus: [
       ...providerStatus,
       {
