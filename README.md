@@ -155,54 +155,54 @@ Resume-editor/
 │   │   └── resume-improve/       # Improve resume form
 │   └── ui/                       # Shared primitives (Button, Card, Input…)
 │
-├── features/                     # Product modules (preferred for new features)
-│   └── jobs/                     # Job Search — see features/jobs/README.md
-│       ├── types.ts
-│       ├── lib/                  # Profile builder, matcher, platform URLs
-│       └── components/           # Job cards, workspace, dashboard preview
+├── content/                      # ✨ Editable SEO & learning copy (intern-friendly)
+│   ├── blog/posts.ts             # Blog articles → /blog
+│   └── learning/tracks.ts        # Learner roadmaps + YouTube links
+│
+├── features/                     # Product modules — each has README.md
+│   ├── jobs/                     # Job Search (full module)
+│   ├── freelancing/              # Find clients
+│   ├── resume-studio/            # Build resume (map → components + lib)
+│   ├── resume-tailor/            # Upload & tailor
+│   ├── interview-prep/
+│   ├── learning/
+│   ├── ai-tools/
+│   ├── billing/
+│   └── analytics/
+│
+├── apps/                         # 🔜 Future: web (root today) + desktop (Tauri)
+├── packages/                     # 🔜 Future: db, shared, ai (Postgres migration)
+├── services/                     # 🔜 Future: realtime WebSocket
 │
 ├── lib/                          # Business logic — read after app/
 │   ├── ai/                       # AI client, prompts, resume engine
-│   │   ├── openai.ts             # Groq/OpenAI client
-│   │   ├── prompts.ts            # All LLM prompt templates
-│   │   └── resume-engine.ts      # Build, tailor, interview generation
-│   ├── data/                     # Data access + static curated content
-│   │   ├── resumes.ts            # MongoDB/local store + dashboard stats
-│   │   ├── companies.ts          # Company profiles for lookup
-│   │   ├── job-listings.ts       # Curated job openings for matching
-│   │   ├── jobs.ts               # Job search service (loads user resume)
-│   │   └── learning-resources.ts # Learner tracks, videos, courses, platforms
-│   ├── pdf/                      # PDF generation and source patching
-│   ├── validations.ts            # Zod schemas for API bodies
-│   ├── auth.ts                   # Clerk user ID helper
-│   └── mongodb.ts                # Database connection
+│   ├── data/                     # MongoDB services + static data
+│   │   └── learning-resources.ts # Re-exports content/learning/tracks.ts
+│   ├── pdf/
+│   └── …
 │
 ├── models/                       # Mongoose schemas
-│   ├── MasterResume.ts
-│   ├── GeneratedResume.ts
-│   ├── InterviewGuide.ts
-│   └── User.ts
-│
-├── types/index.ts                # Shared TypeScript types
+├── types/index.ts
 ├── docs/                         # Internal documentation
-│   ├── folder-guide.md           # Architecture + intern onboarding
-│   ├── system-design.md          # Product flows and architecture
-│   ├── schema-reference.json     # Data shape reference
-│   └── seo-*.md                  # SEO and growth notes
-└── .data/                        # Local fallback store (gitignored)
-    └── resume-store.json         # Used when MongoDB is unavailable
+│   ├── folder-guide.md           # Master folder map
+│   ├── WHERE-TO-EDIT.md          # Quick edit cheat sheet
+│   ├── intern-onboarding.md      # Day 1 for new contributors
+│   ├── built-features-phase-two.md
+│   └── futureupgradation.md
+└── .data/                        # Local fallback (gitignored)
 ```
+
+**Full tree:** see [docs/folder-guide.md](docs/folder-guide.md)
 
 ### Suggested reading order for contributors
 
-1. `docs/futureupgradation.md` — roadmap: Postgres, Better Auth, desktop app, AI strategy
-2. `docs/built-features-phase-two.md` — what's built today, quality upgrades, Phase 2 new work
-3. `docs/folder-guide.md` — architecture and folder conventions
-4. `docs/system-design.md` — product flows
-5. `features/jobs/README.md` — job search feature walkthrough
-6. `types/index.ts` — domain models
-7. `lib/data/resumes.ts` — how data is saved and loaded
-8. One vertical end-to-end, e.g. `app/dashboard/jobs/page.tsx` → `lib/data/jobs.ts` → `features/jobs/lib/match-jobs.ts`
+1. `docs/intern-onboarding.md` — Day 1 guide for new contributors
+2. `docs/WHERE-TO-EDIT.md` — quick cheat sheet (what file to change)
+3. `docs/futureupgradation.md` — roadmap: Postgres, Better Auth, desktop app
+4. `docs/built-features-phase-two.md` — what's built, quality upgrades, Phase 2
+5. `docs/folder-guide.md` — full architecture map
+6. `docs/system-design.md` — product flows
+7. `features/jobs/README.md` — job search walkthrough
 
 ---
 
@@ -225,12 +225,12 @@ Local fallback path: `RESUME_LOCAL_STORE_PATH` or `.data/resume-store.json` (see
 | Company profiles (20+ companies) | `lib/data/companies.ts` | Improve flow, Interview prep, `GET /api/company/lookup` |
 | Job listings (25+ openings) | `lib/data/job-listings.ts` | Job Search matcher, `/dashboard/jobs` |
 | Job seeker profile (derived) | `features/jobs/lib/build-profile.ts` | Built from master/generated resume — not stored separately |
-| Learner tracks & roadmaps | `lib/data/learning-resources.ts` | `/dashboard/learners` |
-| YouTube video IDs & metadata | `lib/data/learning-resources.ts` → `interviewPrepVideos`, per-track `videos` | Interview prep, Learner prep |
-| Course links (Google, Coursera, etc.) | `lib/data/learning-resources.ts` → `interviewPrepCourses`, per-track `courses` | Interview prep, Learner prep |
-| Coding platform links | `lib/data/learning-resources.ts` → `codingPlatforms` | Interview resources, Learner prep |
+| Learner tracks & roadmaps | `content/learning/tracks.ts` | `/dashboard/learners` |
+| YouTube video IDs & metadata | `content/learning/tracks.ts` | Interview prep, Learner prep |
+| Course links (Google, Coursera, etc.) | `content/learning/tracks.ts` | Interview prep, Learner prep |
+| Coding platform links | `content/learning/tracks.ts` | Interview resources, Learner prep |
 | Dashboard stats helpers | `lib/data/resumes.ts` → `buildDashboardStats`, `buildActivityFeed`, `buildReadinessScore` | Overview, Analytics |
-| Blog posts | `lib/blog.ts` | `/blog` |
+| Blog posts | `content/blog/posts.ts` | `/blog` |
 | SEO metadata | `lib/seo.ts` | Public pages |
 
 ### AI-generated data (runtime)
