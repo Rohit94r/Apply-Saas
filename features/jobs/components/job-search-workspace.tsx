@@ -19,6 +19,7 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import type { JobMatchResult } from "@/features/jobs/types";
+import { jobCountries } from "@/lib/config/job-countries";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { JobApiOverview } from "@/features/jobs/components/job-api-overview";
@@ -38,19 +39,24 @@ const platformLabels: Record<string, string> = {
   reed: "Reed",
   usajobs: "USAJOBS",
   juju: "Juju",
-  herohunt: "HeroHunt"
+  herohunt: "HeroHunt",
+  remotive: "Remotive",
+  themuse: "TheMuse"
 };
 
 export function JobSearchWorkspace() {
   const [result, setResult] = useState<JobMatchResult | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [country, setCountry] = useState<string>("in");
   const [loading, setLoading] = useState(true);
 
-  const loadMatches = useCallback(async () => {
+  const loadMatches = useCallback(async (selectedCountry: string) => {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/jobs/match?limit=12");
+      const response = await fetch(
+        `/api/jobs/match?limit=12&country=${encodeURIComponent(selectedCountry)}`
+      );
       const data = (await response.json()) as JobMatchResult & { error?: string };
 
       if (!response.ok) {
@@ -66,8 +72,13 @@ export function JobSearchWorkspace() {
   }, []);
 
   useEffect(() => {
-    loadMatches();
-  }, [loadMatches]);
+    void loadMatches(country);
+  }, [country, loadMatches]);
+
+  function changeCountry(next: string) {
+    setCountry(next);
+    setFilter("all");
+  }
 
   const profile = result?.profile;
   const hasProfile = profile?.isComplete;
@@ -79,6 +90,8 @@ export function JobSearchWorkspace() {
     { id: "usajobs", label: "USAJOBS" },
     { id: "juju", label: "Juju" },
     { id: "herohunt", label: "HeroHunt" },
+    { id: "remotive", label: "Remotive" },
+    { id: "themuse", label: "The Muse" },
     { id: "curated", label: "Curated" }
   ];
 
@@ -87,8 +100,51 @@ export function JobSearchWorkspace() {
       filter === "all" ? true : job.dataProvider === filter
     ) ?? [];
 
+  const activeCountry = jobCountries.find((c) => c.id === country);
+
   return (
     <div className="space-y-6">
+      {/* Country / market selector */}
+      <Card className="p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Globe className="h-5 w-5 text-primary" weight="regular" />
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Search market
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Switch the country to re-run live feeds + platform links.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {jobCountries.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => changeCountry(item.id)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                  country === item.id
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-white text-muted-foreground hover:border-primary/30"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {activeCountry ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Active feeds:{" "}
+            <span className="font-semibold text-foreground">
+              {activeCountry.providers.join(", ")}
+            </span>
+          </p>
+        ) : null}
+      </Card>
+
       {/* Platform search — always visible at top per product requirement */}
       {result?.platformSearches?.length ? (
         <Card className="overflow-hidden p-0">
@@ -124,7 +180,7 @@ export function JobSearchWorkspace() {
           <SpinnerGap className="h-8 w-8 animate-spin text-accent" weight="regular" />
         </Card>
       ) : profile ? (
-        <JobProfileBanner profile={profile} onRefresh={loadMatches} />
+        <JobProfileBanner profile={profile} onRefresh={() => loadMatches(country)} />
       ) : null}
 
       {/* CTA when no resume uploaded yet */}
@@ -170,7 +226,7 @@ export function JobSearchWorkspace() {
             variant="outline"
             size="sm"
             disabled={loading}
-            onClick={loadMatches}
+            onClick={() => loadMatches(country)}
           >
             {loading ? (
               <SpinnerGap className="h-4 w-4 animate-spin" weight="regular" />

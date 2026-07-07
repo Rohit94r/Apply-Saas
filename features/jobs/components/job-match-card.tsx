@@ -23,7 +23,9 @@ const platformBadge: Record<string, string> = {
   reed: "Reed.co.uk",
   usajobs: "USAJOBS",
   juju: "Juju",
-  herohunt: "HeroHunt"
+  herohunt: "HeroHunt",
+  remotive: "Remotive",
+  themuse: "The Muse"
 };
 
 function sourceLabel(job: MatchedJob) {

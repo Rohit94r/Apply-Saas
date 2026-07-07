@@ -13,7 +13,17 @@ const platformLabel: Record<string, string> = {
   linkedin: "LinkedIn",
   naukri: "Naukri",
   indeed: "Indeed",
-  instahyre: "Instahyre"
+  glassdoor: "Glassdoor",
+  instahyre: "Instahyre",
+  cutshort: "Cutshort",
+  wellfound: "Wellfound",
+  adzuna: "Adzuna",
+  reed: "Reed",
+  usajobs: "USAJOBS",
+  juju: "Juju",
+  herohunt: "HeroHunt",
+  remotive: "Remotive",
+  themuse: "TheMuse"
 };
 
 export function JobMatchesPreview({ result }: { result: JobMatchResult }) {

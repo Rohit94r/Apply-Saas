@@ -16,6 +16,8 @@ const docsLinks: Record<string, string> = {
   usajobs: "https://developer.usajobs.gov/API-Request/",
   juju: "https://www.juju.com/publisher/signup",
   herohunt: "https://www.herohunt.ai/people-search-api",
+  remotive: "https://remotive.com/api/remote-jobs",
+  themuse: "https://www.themuse.com/developers/api/v2",
   curated: "https://github.com/Rohit94r/Apply-Saas"
 };
 
@@ -37,8 +39,9 @@ export function JobApiOverview({
             Connected market feeds
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Jobs are pulled from Adzuna, Reed, USAJOBS, Juju, and HeroHunt when
-            API keys are set in your environment. Apply opens the original listing.
+            Jobs are pulled from Adzuna, Reed, USAJOBS, Juju, HeroHunt, Remotive
+            and The Muse. Remotive & The Muse are free (no key needed); others
+            fire when API keys are set in your environment.
           </p>
         </div>
         <Plug className="h-8 w-8 shrink-0 text-accent" weight="regular" />

@@ -11,8 +11,18 @@ Add these to `.env.local` (never commit real keys).
 | **USAJOBS** | USA (federal) | [developer.usajobs.gov](https://developer.usajobs.gov/API-Request/) | `USAJOBS_API_KEY`, `USAJOBS_USER_AGENT` |
 | **Juju** | USA aggregator | [juju.com/publisher/signup](https://www.juju.com/publisher/signup) | `JUJU_PARTNER_ID` |
 | **HeroHunt** | Global talent signals | [herohunt.ai](https://www.herohunt.ai/people-search-api) | `HEROHUNT_API_KEY` |
+| **Remotive** | Remote / worldwide | [remotive.com/api](https://remotive.com/api/remote-jobs) | _none — free, keyless_ |
+| **The Muse** | Global (company-curated) | [themuse.com/developers](https://www.themuse.com/developers/api/v2) | _none — free, keyless_ |
 
 Curated India listings always load from `lib/data/job-listings.ts` — no key required.
+
+## Country / market selector
+
+`/dashboard/jobs` has a country switcher (India / US / UK / Remote / Global). Each
+market controls which providers fire, the Adzuna country slug, the Indeed/Glassdoor
+domain, and the location used in LinkedIn/Naukri deep-links. Config lives in
+`lib/config/job-countries.ts`. The selected country is passed as `?country=` to
+`/api/jobs/match`.
 
 ## Example `.env.local`
 
@@ -31,13 +41,17 @@ HEROHUNT_API_KEY=ps_live_...
 HEROHUNT_API_BASE_URL=https://api.herohunt.ai/v1/people/search
 ```
 
+> Remotive & The Muse need no keys — they fire automatically for every market
+> they're enabled for.
+
 ## How requests flow
 
 ```
 /dashboard/jobs
-    → GET /api/jobs/match
-    → lib/data/jobs.ts
-    → fetchLiveJobs()  (parallel: Adzuna, Reed, USAJOBS, Juju, HeroHunt)
+    → GET /api/jobs/match?country=in
+    → lib/data/jobs.ts (resolves country → JobCountryConfig)
+    → fetchLiveJobs()  (parallel, filtered by country: Adzuna, Reed, USAJOBS,
+                        Juju, HeroHunt, Remotive, TheMuse)
     → merge + dedupe with lib/data/job-listings.ts
     → scoreListingsForProfile()
     → JSON to UI
@@ -58,11 +72,16 @@ HEROHUNT_API_BASE_URL=https://api.herohunt.ai/v1/people/search
 
 - **HeroHunt**: Bearer token POST to `HEROHUNT_API_BASE_URL`
 
+- **Remotive**: `GET https://remotive.com/api/remote-jobs?search=&limit=` (free, no key)
+
+- **The Muse**: `GET https://www.themuse.com/api/v1/jobs?category=&page=&taking=` (free, no key)
+
 ## Code locations
 
 | Layer | Path |
 |-------|------|
 | Env config | `lib/config/job-apis.ts` |
+| Country config | `lib/config/job-countries.ts` |
 | Providers | `features/jobs/lib/providers/*.ts` |
 | Orchestrator | `features/jobs/lib/providers/fetch-live-jobs.ts` |
 | Scoring | `features/jobs/lib/match-jobs.ts` |

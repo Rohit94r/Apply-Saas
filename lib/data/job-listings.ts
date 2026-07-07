@@ -359,6 +359,153 @@ export const jobListings: JobListing[] = [
     platform: "cutshort",
     applyUrl: "https://cutshort.io/jobs/full-stack-developer",
     postedLabel: "Curated startups"
+  },
+  {
+    id: "job-026",
+    title: "Software Engineer Intern",
+    company: "Microsoft",
+    location: "Hyderabad",
+    workMode: "hybrid",
+    type: "internship",
+    experienceBand: "student",
+    skills: ["C++", "Python", "DSA", "OS", "Problem Solving"],
+    salaryHint: "₹40k+ stipend",
+    platform: "linkedin",
+    applyUrl:
+      "https://www.linkedin.com/jobs/search/?keywords=Microsoft%20Software%20Engineer%20Intern&location=Hyderabad%2C%20Telangana%2C%20India",
+    postedLabel: "Campus hiring"
+  },
+  {
+    id: "job-027",
+    title: "ML Engineer Intern",
+    company: "Goldman Sachs",
+    location: "Bengaluru",
+    workMode: "hybrid",
+    type: "internship",
+    experienceBand: "student",
+    skills: ["Python", "Machine Learning", "Statistics", "Pandas", "SQL"],
+    salaryHint: "₹50k+ stipend",
+    platform: "linkedin",
+    applyUrl:
+      "https://www.linkedin.com/jobs/search/?keywords=Goldman%20Sachs%20ML%20Intern&location=Bengaluru%2C%20Karnataka%2C%20India",
+    postedLabel: "Quant + ML"
+  },
+  {
+    id: "job-028",
+    title: "Data Scientist",
+    company: "Swiggy",
+    location: "Bengaluru",
+    workMode: "hybrid",
+    type: "full-time",
+    experienceBand: "1-3",
+    skills: ["Python", "SQL", "Machine Learning", "Statistics", "A/B Testing"],
+    salaryHint: "₹15–28 LPA",
+    platform: "linkedin",
+    applyUrl:
+      "https://www.linkedin.com/jobs/search/?keywords=Swiggy%20Data%20Scientist&location=Bengaluru%2C%20Karnataka%2C%20India",
+    postedLabel: "Analytics team"
+  },
+  {
+    id: "job-029",
+    title: "Android Developer",
+    company: "PhonePe",
+    location: "Bengaluru",
+    workMode: "hybrid",
+    type: "full-time",
+    experienceBand: "0-1",
+    skills: ["Kotlin", "Android", "Java", "REST APIs", "MVVM"],
+    salaryHint: "₹10–20 LPA",
+    platform: "linkedin",
+    applyUrl:
+      "https://www.linkedin.com/jobs/search/?keywords=PhonePe%20Android%20Developer&location=Bengaluru%2C%20Karnataka%2C%20India",
+    postedLabel: "Fintech mobile"
+  },
+  {
+    id: "job-030",
+    title: "DevOps Engineer",
+    company: "Freshworks",
+    location: "Chennai",
+    workMode: "hybrid",
+    type: "full-time",
+    experienceBand: "1-3",
+    skills: ["AWS", "Docker", "Kubernetes", "CI/CD", "Terraform"],
+    salaryHint: "₹12–22 LPA",
+    platform: "naukri",
+    applyUrl: "https://www.naukri.com/devops-engineer-jobs-in-freshworks",
+    postedLabel: "SRE + Platform"
+  },
+  {
+    id: "job-031",
+    title: "QA Engineer",
+    company: "Zoho",
+    location: "Chennai",
+    workMode: "onsite",
+    type: "full-time",
+    experienceBand: "fresher",
+    skills: ["Testing", "Selenium", "Java", "SQL", "Manual Testing"],
+    salaryHint: "₹4–8 LPA",
+    platform: "naukri",
+    applyUrl: "https://www.naukri.com/zoho-qa-engineer-jobs",
+    postedLabel: "Product QA"
+  },
+  {
+    id: "job-032",
+    title: "Full Stack Developer",
+    company: "Razorpay",
+    location: "Bengaluru",
+    workMode: "hybrid",
+    type: "full-time",
+    experienceBand: "0-1",
+    skills: ["React", "Node.js", "MongoDB", "TypeScript", "REST APIs"],
+    salaryHint: "₹12–24 LPA",
+    platform: "linkedin",
+    applyUrl:
+      "https://www.linkedin.com/jobs/search/?keywords=Razorpay%20Full%20Stack%20Developer&location=Bengaluru%2C%20Karnataka%2C%20India",
+    postedLabel: "Fintech"
+  },
+  {
+    id: "job-033",
+    title: "Backend Engineer",
+    company: "CRED",
+    location: "Bengaluru",
+    workMode: "remote",
+    type: "full-time",
+    experienceBand: "1-3",
+    skills: ["Go", "Node.js", "PostgreSQL", "Microservices", "Redis"],
+    salaryHint: "₹18–35 LPA",
+    platform: "wellfound",
+    applyUrl: "https://wellfound.com/role/l/backend-engineer/india",
+    postedLabel: "Startup"
+  },
+  {
+    id: "job-034",
+    title: "Frontend Engineer",
+    company: "Zerodha",
+    location: "Bengaluru",
+    workMode: "onsite",
+    type: "full-time",
+    experienceBand: "1-3",
+    skills: ["React", "TypeScript", "JavaScript", "CSS", "WebSockets"],
+    salaryHint: "₹12–25 LPA",
+    platform: "linkedin",
+    applyUrl:
+      "https://www.linkedin.com/jobs/search/?keywords=Zerodha%20Frontend%20Engineer&location=Bengaluru%2C%20Karnataka%2C%20India",
+    postedLabel: "Fintech"
+  },
+  {
+    id: "job-035",
+    title: "SDE-1",
+    company: "Walmart Global Tech",
+    location: "Bengaluru",
+    workMode: "hybrid",
+    type: "full-time",
+    experienceBand: "fresher",
+    skills: ["Java", "Spring", "SQL", "DSA", "Microservices"],
+    salaryHint: "₹18–30 LPA",
+    platform: "linkedin",
+    applyUrl:
+      "https://www.linkedin.com/jobs/search/?keywords=Walmart%20SDE-1&location=Bengaluru%2C%20Karnataka%2C%20India",
+    postedLabel: "Campus + lateral"
   }
 ];
 
