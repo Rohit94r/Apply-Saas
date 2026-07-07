@@ -50,9 +50,11 @@ export const metadata: Metadata = {
       "max-snippet": -1
     }
   },
-  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
-    : undefined,
+  verification: {
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ??
+      "nU5T7VdGh6uSoqPIE8PAB9axTn3enk72btXnj_q-3Pg"
+  },
   openGraph: {
     title: seoConfig.title,
     description: seoConfig.description,

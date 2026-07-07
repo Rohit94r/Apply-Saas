@@ -195,12 +195,14 @@ Resume-editor/
 
 ### Suggested reading order for contributors
 
-1. `docs/folder-guide.md` — architecture and folder conventions
-2. `docs/system-design.md` — product flows
-3. `features/jobs/README.md` — job search feature walkthrough
-4. `types/index.ts` — domain models
-5. `lib/data/resumes.ts` — how data is saved and loaded
-6. One vertical end-to-end, e.g. `app/dashboard/jobs/page.tsx` → `lib/data/jobs.ts` → `features/jobs/lib/match-jobs.ts`
+1. `docs/futureupgradation.md` — roadmap: Postgres, Better Auth, desktop app, AI strategy
+2. `docs/built-features-phase-two.md` — what's built today, quality upgrades, Phase 2 new work
+3. `docs/folder-guide.md` — architecture and folder conventions
+4. `docs/system-design.md` — product flows
+5. `features/jobs/README.md` — job search feature walkthrough
+6. `types/index.ts` — domain models
+7. `lib/data/resumes.ts` — how data is saved and loaded
+8. One vertical end-to-end, e.g. `app/dashboard/jobs/page.tsx` → `lib/data/jobs.ts` → `features/jobs/lib/match-jobs.ts`
 
 ---
 
