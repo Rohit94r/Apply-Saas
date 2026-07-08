@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
+import { SmokeCursor } from "@/components/smoke-cursor";
 
 type Theme = "light" | "dark";
 
@@ -59,6 +60,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
       {children}
+      <SmokeCursor />
       <Toaster richColors position="top-center" />
     </ThemeContext.Provider>
   );
