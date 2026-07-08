@@ -12,7 +12,7 @@ const pillars = [
   {
     title: "Master profile",
     description:
-      "Upload once or build from guided questions. Apply stores skills, projects, and education as a reusable profile across every application.",
+      "Upload your resume once — projects, skills, education, and internships. Apply stores a reusable profile for every application.",
     icon: Sparkle,
     accent: "text-accent"
   },

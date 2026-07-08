@@ -84,7 +84,23 @@ export default function RootLayout({
   const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC;
   const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
   const document = (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
+      </head>
       <body className={`${geist.variable} ${instrumentSerif.variable}`}>
         <Providers>{children}</Providers>
         {umamiSrc && umamiWebsiteId ? (

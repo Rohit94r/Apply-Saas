@@ -5,7 +5,6 @@ Each file maps 1:1 to a product route. Keep pages **thin** — delegate to `feat
 | File | Route | Feature README |
 |------|-------|----------------|
 | `page.tsx` | `/dashboard` | Overview |
-| `build/page.tsx` | `/dashboard/build` | [features/resume-studio](../features/resume-studio/README.md) |
 | `generate/page.tsx` | `/dashboard/generate` | [features/resume-tailor](../features/resume-tailor/README.md) |
 | `resumes/page.tsx` | `/dashboard/resumes` | Resume library |
 | `jobs/page.tsx` | `/dashboard/jobs` | [features/jobs](../features/jobs/README.md) |

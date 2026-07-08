@@ -154,18 +154,11 @@ export function QuickActionsGrid() {
       href: "/dashboard/interview",
       icon: Briefcase,
       accent: "bg-emerald-50 text-emerald-700"
-    },
-    {
-      title: "Build resume",
-      description: "Guided questions → master profile",
-      href: "/dashboard/build",
-      icon: Stack,
-      accent: "bg-primary/10 text-primary"
     }
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {actions.map((action) => (
         <Link
           key={action.href}

@@ -20,6 +20,24 @@
   --warning: 32 92% 46%;
 }
 
+.dark {
+  --background: 240 10% 8%;
+  --foreground: 40 20% 93%;
+  --card: 240 8% 12%;
+  --card-foreground: 40 20% 93%;
+  --primary: 175 60% 48%;
+  --primary-foreground: 240 10% 8%;
+  --accent: 175 60% 48%;
+  --accent-foreground: 240 10% 8%;
+  --muted: 240 6% 18%;
+  --muted-foreground: 220 8% 62%;
+  --border: 240 6% 22%;
+  --input: 240 6% 22%;
+  --ring: 175 60% 48%;
+  --success: 158 55% 45%;
+  --warning: 32 85% 52%;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -39,8 +57,19 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.dark body {
+  background:
+    radial-gradient(circle at 8% 6%, rgba(20, 130, 120, 0.18), transparent 26rem),
+    radial-gradient(circle at 92% 4%, rgba(22, 78, 122, 0.14), transparent 22rem),
+    linear-gradient(180deg, hsl(var(--background)), #16161c 48%, #141418);
+}
+
 ::selection {
   background: rgba(20, 130, 120, 0.22);
+}
+
+.dark ::selection {
+  background: rgba(20, 130, 120, 0.35);
 }
 
 .text-balance {
@@ -67,9 +96,19 @@ body {
   background-size: 22px 22px;
 }
 
+.dark .paper-grid {
+  background-image:
+    linear-gradient(rgba(148, 180, 210, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 180, 210, 0.06) 1px, transparent 1px);
+}
+
 .nav-blur {
   background: rgba(248, 245, 238, 0.9);
   backdrop-filter: blur(20px);
+}
+
+.dark .nav-blur {
+  background: rgba(20, 20, 24, 0.88);
 }
 
 .hero-glow {
@@ -78,10 +117,58 @@ body {
     radial-gradient(circle at 20% 80%, rgba(22, 78, 122, 0.08), transparent 40%);
 }
 
+.dark .hero-glow {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 130, 120, 0.2), transparent 55%),
+    radial-gradient(circle at 20% 80%, rgba(22, 78, 122, 0.15), transparent 40%);
+}
+
 .surface-warm {
   background: linear-gradient(145deg, #faf7f0 0%, #f3efe6 100%);
+}
+
+.dark .surface-warm {
+  background: linear-gradient(145deg, #1e1e24 0%, #18181c 100%);
 }
 
 .surface-accent {
   background: linear-gradient(145deg, #f0faf7 0%, #e8f4f1 100%);
 }
+
+.dark .surface-accent {
+  background: linear-gradient(145deg, #1a2422 0%, #141c1a 100%);
+}
+
+/* Dark mode blanket overrides for hardcoded warm backgrounds */
+.dark .bg-white {
+  background-color: #1e1e24;
+}
+
+.dark .bg-\[\#f7f4ee\],
+.dark .bg-\[\#fbfaf6\],
+.dark .bg-\[\#faf7f0\],
+.dark .bg-\[\#f5f1e8\],
+.dark .bg-\[\#fffdf9\] {
+  background-color: #131318;
+}
+
+.dark .bg-white\/50,
+.dark .bg-white\/55,
+.dark .bg-white\/60,
+.dark .bg-white\/70,
+.dark .bg-white\/75,
+.dark .bg-white\/80,
+.dark .bg-white\/90,
+.dark .bg-white\/95 {
+  background-color: rgb(30 30 36 / 0.85);
+}
+
+.dark .bg-\[\#fbfaf6\]\/60,
+.dark .bg-\[\#f7f4ee\]\/50,
+.dark .bg-\[\#f7f4ee\]\/60,
+.dark .bg-\[\#f7f4ee\]\/70,
+.dark .bg-\[\#f7f4ee\]\/80 {
+  background-color: rgb(19 19 24 / 0.88);
+}
+
+

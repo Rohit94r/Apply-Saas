@@ -6,6 +6,7 @@ import { UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/landing/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { clerkIsConfigured } from "@/lib/clerk-config";
 import { siteConfig } from "@/lib/constants";
 
@@ -84,6 +85,7 @@ function HeaderShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {children}
         </div>
       </div>

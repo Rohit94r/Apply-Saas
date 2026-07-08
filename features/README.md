@@ -7,13 +7,7 @@ Each folder is one **product area**. New features go here first.
 | Feature | Route | README |
 |---------|-------|--------|
 | Job Search | `/dashboard/jobs` | [jobs/README.md](./jobs/README.md) |
-| Freelancing | `/dashboard/freelancing` | *(see lib/find-clients.ts)* |
-
-## Documented here — code migrates gradually
-
-| Feature | Route | Map |
-|---------|-------|-----|
-| Resume Studio (build) | `/dashboard/build` | [resume-studio/README.md](./resume-studio/README.md) |
+| Freelancing | `/dashboard/freelancing` | [freelancing/README.md](./freelancing/README.md) |
 | Resume Tailor (upload) | `/dashboard/generate` | [resume-tailor/README.md](./resume-tailor/README.md) |
 | Interview Prep | `/dashboard/interview` | [interview-prep/README.md](./interview-prep/README.md) |
 | Learners | `/dashboard/learners` | [learning/README.md](./learning/README.md) |

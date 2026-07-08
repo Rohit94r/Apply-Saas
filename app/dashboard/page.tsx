@@ -83,8 +83,8 @@ export default async function DashboardPage() {
             <EmptyState
               icon={FileText}
               title="No saved resumes yet"
-              description="Build or improve a resume and it will appear here automatically."
-              action="Build resume"
+              description="Upload and tailor a resume — it will appear here automatically."
+              action="Tailor resume"
             />
           )}
         </Card>

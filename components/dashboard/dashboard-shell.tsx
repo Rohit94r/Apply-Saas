@@ -16,11 +16,11 @@ import {
   MagnifyingGlass,
   ShieldCheck,
   Sparkle,
-  Stack,
   Storefront
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/landing/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { CreditsBadge } from "@/components/billing/credits-badge";
 import { isAdminEmail } from "@/lib/admin/client";
 import { clerkIsConfigured } from "@/lib/clerk-config";
@@ -36,7 +36,6 @@ const navItems: Array<{
   { label: "Tailor", href: "/dashboard/generate", icon: Sparkle },
   { label: "Job search", href: "/dashboard/jobs", icon: MagnifyingGlass },
   { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
-  { label: "Build resume", href: "/dashboard/build", icon: Stack },
   { label: "Learner prep", href: "/dashboard/learners", icon: GraduationCap },
   { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase },
   { label: "AI tools", href: "/dashboard/tools", icon: MagicWand },
@@ -88,10 +87,10 @@ function AuthenticatedDashboardShell({
     : navItems;
 
   return (
-    <div className="min-h-screen bg-[#f7f4ee]">
+    <div className="min-h-screen bg-[#f7f4ee] dark:bg-[#131318]">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden border-r border-border bg-[#fbfaf6] p-4 transition-[width] duration-200 lg:block",
+          "fixed inset-y-0 left-0 z-40 hidden border-r border-border bg-[#fbfaf6] p-4 transition-[width] duration-200 lg:block dark:bg-[#16161c] dark:border-[#2a2a32]",
           collapsed ? "w-20" : "w-64"
         )}
       >
@@ -100,7 +99,7 @@ function AuthenticatedDashboardShell({
           <button
             type="button"
             onClick={() => setCollapsed((value) => !value)}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-white text-muted-foreground transition hover:text-primary"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-white text-muted-foreground transition hover:text-primary dark:bg-[#1e1e24] dark:border-[#2a2a32]"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? (
@@ -134,7 +133,7 @@ function AuthenticatedDashboardShell({
         ) : null}
       </aside>
       <div className={cn("transition-[padding] duration-200", collapsed ? "lg:pl-20" : "lg:pl-64")}>
-        <header className="sticky top-0 z-30 border-b border-border bg-[#f7f4ee]/88 px-5 py-4 backdrop-blur lg:px-8">
+        <header className="sticky top-0 z-30 border-b border-border bg-[#f7f4ee]/88 px-5 py-4 backdrop-blur lg:px-8 dark:bg-[#131318]/88 dark:border-[#2a2a32]">
           <div className="flex items-center justify-between gap-4">
             <div className="lg:hidden">
               <Logo />
@@ -145,10 +144,14 @@ function AuthenticatedDashboardShell({
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-3 sm:flex">
+                <ThemeToggle />
                 <CreditsBadge compact />
-                <div className="rounded-full border border-border bg-white px-4 py-2 text-sm text-muted-foreground">
+                <div className="rounded-full border border-border bg-white px-4 py-2 text-sm text-muted-foreground dark:bg-[#1a1a20] dark:border-[#2a2a32]">
                   {displayName}
                 </div>
+              </div>
+              <div className="sm:hidden">
+                <ThemeToggle />
               </div>
               <UserButton
                 appearance={{
@@ -175,7 +178,8 @@ function AuthenticatedDashboardShell({
             ))}
           </nav>
         </header>
-        <main className="px-5 py-8 lg:px-8 lg:py-10">{children}</main>
+        <main className="px-5 py-8 lg:px-8 lg:py-10 dark:text-foreground">{children}</main>
+
       </div>
     </div>
   );

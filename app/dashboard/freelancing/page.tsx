@@ -9,8 +9,8 @@ export default function FreelancingPage() {
         eyebrow="Freelancing"
         title="Earn from freelance work in your city."
         description="Curated freelance services across web dev, app dev, AI/ML, design, marketing and content — with the skills, deliverables, and deep links to Google Maps, Justdial & IndiaMART so you can find real local clients and call them with a ready pitch."
-        cta="Build a resume"
-        href="/dashboard/build"
+        cta="Tailor resume"
+        href="/dashboard/generate"
       />
       <FreelanceWorkspace />
     </div>

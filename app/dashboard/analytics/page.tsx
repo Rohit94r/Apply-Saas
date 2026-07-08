@@ -140,7 +140,7 @@ export default async function AnalyticsPage() {
           icon={ChartBar}
           title="No analytics yet"
           description="Analytics appear after you generate and save resumes or interview guides."
-          action="Build resume"
+          action="Tailor resume"
         />
       )}
     </div>

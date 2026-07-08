@@ -34,14 +34,6 @@ export type LiveJobsFetchResult = {
   providerStatus: JobProviderFetchStatus[];
 };
 
-async function readProviderError(response: Response, label: string) {
-  const body = await response.text().catch(() => "");
-  const snippet = body.replace(/\s+/g, " ").slice(0, 160);
-  return snippet
-    ? `${label} HTTP ${response.status}: ${snippet}`
-    : `${label} HTTP ${response.status}`;
-}
-
 export async function fetchLiveJobs(
   profile: JobSeekerProfile,
   perProviderLimit = 8,
@@ -125,5 +117,3 @@ export function dedupeJobListings(listings: JobListing[]) {
     return true;
   });
 }
-
-export { readProviderError };

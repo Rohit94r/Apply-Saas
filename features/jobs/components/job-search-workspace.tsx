@@ -22,7 +22,6 @@ import type { JobMatchResult } from "@/features/jobs/types";
 import { jobCountries } from "@/lib/config/job-countries";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { JobApiOverview } from "@/features/jobs/components/job-api-overview";
 import { JobMatchCard } from "@/features/jobs/components/job-match-card";
 import { PlatformSearchLinks } from "@/features/jobs/components/platform-search-links";
 import { JobProfileBanner } from "@/features/jobs/components/job-profile-banner";
@@ -36,12 +35,7 @@ const platformLabels: Record<string, string> = {
   cutshort: "Cutshort",
   wellfound: "Wellfound",
   adzuna: "Adzuna",
-  reed: "Reed",
-  usajobs: "USAJOBS",
-  juju: "Juju",
-  herohunt: "HeroHunt",
-  remotive: "Remotive",
-  themuse: "TheMuse"
+  herohunt: "HeroHunt"
 };
 
 export function JobSearchWorkspace() {
@@ -85,13 +79,8 @@ export function JobSearchWorkspace() {
 
   const filterOptions = [
     { id: "all", label: "All feeds" },
-    { id: "adzuna", label: "Adzuna" },
-    { id: "reed", label: "Reed" },
-    { id: "usajobs", label: "USAJOBS" },
-    { id: "juju", label: "Juju" },
-    { id: "herohunt", label: "HeroHunt" },
-    { id: "remotive", label: "Remotive" },
-    { id: "themuse", label: "The Muse" },
+    { id: "adzuna", label: "Adzuna jobs" },
+    { id: "herohunt", label: "HeroHunt signals" },
     { id: "curated", label: "Curated" }
   ];
 
@@ -137,10 +126,8 @@ export function JobSearchWorkspace() {
         </div>
         {activeCountry ? (
           <p className="mt-3 text-xs text-muted-foreground">
-            Active feeds:{" "}
-            <span className="font-semibold text-foreground">
-              {activeCountry.providers.join(", ")}
-            </span>
+            Live listings from Adzuna and HeroHunt, plus Apply curated picks for{" "}
+            <span className="font-semibold text-foreground">{activeCountry.label}</span>.
           </p>
         ) : null}
       </Card>
@@ -168,10 +155,6 @@ export function JobSearchWorkspace() {
             <PlatformSearchLinks links={result.platformSearches} />
           </div>
         </Card>
-      ) : null}
-
-      {result?.providerStatus?.length ? (
-        <JobApiOverview providers={result.providerStatus} />
       ) : null}
 
       {/* Profile summary from uploaded resume */}

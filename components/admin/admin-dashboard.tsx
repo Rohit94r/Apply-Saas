@@ -18,6 +18,7 @@ import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { JobApiAdminPanel } from "@/components/admin/job-api-panel";
 
 type AdminUser = {
   clerkId: string;
@@ -231,6 +232,8 @@ export function AdminDashboard() {
           value={data?.recentActivity.length ?? 0}
         />
       </div>
+
+      <JobApiAdminPanel />
 
       <div className="rounded-2xl border border-border bg-white p-6 shadow-soft">
         <div className="mb-4 flex items-center gap-2">

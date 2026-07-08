@@ -27,7 +27,8 @@ export async function GET(request: Request) {
     });
 
     // Public response — no provider diagnostics (admin: GET /api/admin/job-apis).
-    const { providerStatus: _providerStatus, ...publicResult } = result;
+    const { providerStatus, ...publicResult } = result;
+    void providerStatus;
 
     return NextResponse.json(publicResult);
   } catch (error) {
