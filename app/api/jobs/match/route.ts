@@ -26,7 +26,10 @@ export async function GET(request: Request) {
       country
     });
 
-    return NextResponse.json(result);
+    // Public response — no provider diagnostics (admin: GET /api/admin/job-apis).
+    const { providerStatus: _providerStatus, ...publicResult } = result;
+
+    return NextResponse.json(publicResult);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Job matching failed";

@@ -1,10 +1,5 @@
 /**
- * Supported job-search countries/regions.
- *
- * The country selector on `/dashboard/jobs` lets a user switch the market they
- * search in — India by default, plus US, UK, Remote and Global. Each config
- * drives which live providers fire, the Adzuna country slug, the Indeed/Glassdoor
- * domain, the location used in platform deep-links, and which platforms are shown.
+ * Supported job-search countries — live feeds: Adzuna + HeroHunt only.
  */
 
 import type { JobApiProviderId } from "@/lib/config/job-apis";
@@ -16,21 +11,16 @@ export type JobCountryConfig = {
   id: JobCountryId;
   label: string;
   short: string;
-  /** Adzuna country slug (`in`, `us`, `gb`, …). `null` = skip Adzuna. */
   adzunaCountry: string | null;
-  /** Indeed domain to use in deep-links. */
   indeedDomain: string;
-  /** Glassdoor domain (country TLD). */
   glassdoorDomain: string;
-  /** Location string injected into LinkedIn / Naukri / Indeed searches. */
   locationLabel: string;
-  /** LinkedIn `f_WT` work-type filter (remote = 2, else omitted). */
   remoteOnly: boolean;
-  /** Platforms to show for this country (others hidden). */
   platforms: JobSearchPlatform[];
-  /** Live providers to fire for this country. */
   providers: JobApiProviderId[];
 };
+
+const LIVE_PROVIDERS: JobApiProviderId[] = ["adzuna", "herohunt"];
 
 export const jobCountries: JobCountryConfig[] = [
   {
@@ -51,7 +41,7 @@ export const jobCountries: JobCountryConfig[] = [
       "cutshort",
       "wellfound"
     ],
-    providers: ["adzuna", "remotive", "themuse", "herohunt"]
+    providers: LIVE_PROVIDERS
   },
   {
     id: "us",
@@ -63,7 +53,7 @@ export const jobCountries: JobCountryConfig[] = [
     locationLabel: "United States",
     remoteOnly: false,
     platforms: ["linkedin", "indeed", "glassdoor", "wellfound"],
-    providers: ["adzuna", "usajobs", "juju", "remotive", "themuse", "herohunt"]
+    providers: LIVE_PROVIDERS
   },
   {
     id: "gb",
@@ -75,7 +65,7 @@ export const jobCountries: JobCountryConfig[] = [
     locationLabel: "United Kingdom",
     remoteOnly: false,
     platforms: ["linkedin", "indeed", "glassdoor"],
-    providers: ["adzuna", "reed", "remotive", "themuse", "herohunt"]
+    providers: LIVE_PROVIDERS
   },
   {
     id: "remote",
@@ -87,7 +77,7 @@ export const jobCountries: JobCountryConfig[] = [
     locationLabel: "Remote",
     remoteOnly: true,
     platforms: ["linkedin", "wellfound", "indeed"],
-    providers: ["remotive", "themuse", "herohunt"]
+    providers: ["herohunt"]
   },
   {
     id: "global",
@@ -107,15 +97,7 @@ export const jobCountries: JobCountryConfig[] = [
       "cutshort",
       "wellfound"
     ],
-    providers: [
-      "adzuna",
-      "reed",
-      "usajobs",
-      "juju",
-      "remotive",
-      "themuse",
-      "herohunt"
-    ]
+    providers: LIVE_PROVIDERS
   }
 ];
 

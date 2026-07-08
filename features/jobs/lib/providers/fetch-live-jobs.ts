@@ -1,11 +1,5 @@
 /**
- * Orchestrates all live job API providers in parallel.
- *
- * Uses Promise.allSettled so one failing API does not break the page.
- * Returns merged listings + per-provider status for the overview UI.
- *
- * The `country` config controls which providers fire for the selected market
- * (e.g. USAJOBS + Juju for US, Reed for UK, Remotive + The Muse for Remote).
+ * Orchestrates live job APIs — Adzuna (jobs) + HeroHunt (market signals).
  */
 
 import {
@@ -20,11 +14,6 @@ import type {
 } from "@/features/jobs/types";
 import { fetchAdzunaJobs } from "@/features/jobs/lib/providers/adzuna";
 import { fetchHeroHuntMarketSignals } from "@/features/jobs/lib/providers/herohunt";
-import { fetchJujuJobs } from "@/features/jobs/lib/providers/juju";
-import { fetchReedJobs } from "@/features/jobs/lib/providers/reed";
-import { fetchRemotiveJobs } from "@/features/jobs/lib/providers/remotive";
-import { fetchTheMuseJobs } from "@/features/jobs/lib/providers/themuse";
-import { fetchUsajobsJobs } from "@/features/jobs/lib/providers/usajobs";
 
 type ProviderRunner = {
   id: JobApiProviderId;
@@ -37,18 +26,21 @@ type ProviderRunner = {
 
 const LIVE_PROVIDERS: ProviderRunner[] = [
   { id: "adzuna", run: fetchAdzunaJobs },
-  { id: "reed", run: fetchReedJobs },
-  { id: "usajobs", run: fetchUsajobsJobs },
-  { id: "juju", run: fetchJujuJobs },
-  { id: "herohunt", run: fetchHeroHuntMarketSignals },
-  { id: "remotive", run: fetchRemotiveJobs },
-  { id: "themuse", run: fetchTheMuseJobs }
+  { id: "herohunt", run: fetchHeroHuntMarketSignals }
 ];
 
 export type LiveJobsFetchResult = {
   listings: JobListing[];
   providerStatus: JobProviderFetchStatus[];
 };
+
+async function readProviderError(response: Response, label: string) {
+  const body = await response.text().catch(() => "");
+  const snippet = body.replace(/\s+/g, " ").slice(0, 160);
+  return snippet
+    ? `${label} HTTP ${response.status}: ${snippet}`
+    : `${label} HTTP ${response.status}`;
+}
 
 export async function fetchLiveJobs(
   profile: JobSeekerProfile,
@@ -59,7 +51,6 @@ export async function fetchLiveJobs(
   const metaById = new Map(meta.map((item) => [item.id, item]));
   const activeProviderIds = new Set(country.providers);
 
-  // Only run providers relevant to the selected country.
   const runners = LIVE_PROVIDERS.filter((provider) =>
     activeProviderIds.has(provider.id)
   );
@@ -68,15 +59,12 @@ export async function fetchLiveJobs(
     runners.map(async (provider) => {
       const config = metaById.get(provider.id);
 
-      // Remotive + TheMuse are always configured (free, no key).
-      const alwaysConfigured = provider.id === "remotive" || provider.id === "themuse";
-
-      if (!config?.configured && !alwaysConfigured) {
+      if (!config?.configured) {
         return {
           id: provider.id,
           listings: [] as JobListing[],
           ok: false,
-          message: "Add API keys in .env.local"
+          message: `${config?.label ?? provider.id} API keys not configured`
         };
       }
 
@@ -94,15 +82,8 @@ export async function fetchLiveJobs(
   const listings: JobListing[] = [];
   const providerStatus: JobProviderFetchStatus[] = [];
 
-  // Build status for ALL providers (so the overview shows skipped ones too),
-  // but only include those relevant to the selected country.
-  for (const provider of LIVE_PROVIDERS) {
-    if (!activeProviderIds.has(provider.id)) {
-      continue;
-    }
-
+  for (const provider of runners) {
     const config = metaById.get(provider.id)!;
-    const alwaysConfigured = provider.id === "remotive" || provider.id === "themuse";
     const settledIndex = runners.findIndex((r) => r.id === provider.id);
     const result = settled[settledIndex];
 
@@ -111,7 +92,7 @@ export async function fetchLiveJobs(
       providerStatus.push({
         id: provider.id,
         label: config.label,
-        configured: config.configured || alwaysConfigured,
+        configured: config.configured,
         ok: result.value.ok && result.value.listings.length > 0,
         count: result.value.listings.length,
         message: result.value.message
@@ -120,7 +101,7 @@ export async function fetchLiveJobs(
       providerStatus.push({
         id: provider.id,
         label: config.label,
-        configured: config.configured || alwaysConfigured,
+        configured: config.configured,
         ok: false,
         count: 0,
         message:
@@ -134,7 +115,6 @@ export async function fetchLiveJobs(
   return { listings, providerStatus };
 }
 
-/** Deduplicate jobs that appear from multiple feeds (same title + company). */
 export function dedupeJobListings(listings: JobListing[]) {
   const seen = new Set<string>();
 
@@ -145,3 +125,5 @@ export function dedupeJobListings(listings: JobListing[]) {
     return true;
   });
 }
+
+export { readProviderError };

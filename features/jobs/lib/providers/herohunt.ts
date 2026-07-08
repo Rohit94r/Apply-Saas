@@ -75,7 +75,13 @@ export async function fetchHeroHuntMarketSignals(
   });
 
   if (!response.ok) {
-    throw new Error(`HeroHunt HTTP ${response.status}`);
+    const detail = await response.text().catch(() => "");
+    const snippet = detail.replace(/\s+/g, " ").slice(0, 140);
+    throw new Error(
+      snippet
+        ? `HeroHunt HTTP ${response.status}: ${snippet}`
+        : `HeroHunt HTTP ${response.status}`
+    );
   }
 
   const data = (await response.json()) as HeroHuntResponse;

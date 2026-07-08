@@ -76,7 +76,13 @@ export async function fetchAdzunaJobs(
   });
 
   if (!response.ok) {
-    throw new Error(`Adzuna HTTP ${response.status}`);
+    const detail = await response.text().catch(() => "");
+    const snippet = detail.replace(/\s+/g, " ").slice(0, 140);
+    throw new Error(
+      snippet
+        ? `Adzuna HTTP ${response.status}: ${snippet}`
+        : `Adzuna HTTP ${response.status}`
+    );
   }
 
   const data = (await response.json()) as AdzunaResponse;
