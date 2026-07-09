@@ -86,6 +86,16 @@ export default function RootLayout({
   const document = (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta
+          name="google-site-verification"
+          content="aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I"
+        />
+        <link
+          rel="sitemap"
+          type="application/xml"
+          title="Sitemap"
+          href={`${seoConfig.url}/sitemap.xml`}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

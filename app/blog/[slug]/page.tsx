@@ -49,6 +49,16 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: post.title,
       description: post.description
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1
+      }
     }
   };
 }

@@ -2,31 +2,40 @@
 
 Use this after deploying `https://apply.neexmeet.com`.
 
-1. Open Google Search Console and add the property `https://apply.neexmeet.com`.
-2. Choose **HTML tag** verification (recommended on Vercel — avoids DNS CNAME conflicts).
-3. The app emits this meta tag from `app/layout.tsx` (hardcoded — do not override via env):
+## Verification (done)
+
+The site uses **HTML meta tag** verification in `app/layout.tsx`:
 
 ```html
 <meta name="google-site-verification" content="aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I" />
 ```
 
-**If verification fails with the old token:** Vercel may still have `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` set to an old value. **Delete that env var** in Vercel → Settings → Environment Variables, then redeploy.
+Backup HTML file (optional method):  
+`https://apply.neexmeet.com/googleaMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I.html`
 
-4. Push to GitHub and wait for Vercel deploy to finish.
-5. Confirm live HTML shows the new token:
+**Property URL must be exactly:** `https://apply.neexmeet.com` (not `http://`, not `www.`)
 
-```bash
-curl -sL https://apply.neexmeet.com | grep google-site-verification
-```
+Delete `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` from Vercel if it still holds an old token.
 
-6. Click **Verify** in Search Console.
-5. In Search Console, submit:
+---
+
+## After verification — do these 3 steps (required)
+
+Verification alone does **not** index your site. You must:
+
+### 1. Submit sitemap
+
+Search Console → **Sitemaps** → add:
 
 ```text
 https://apply.neexmeet.com/sitemap.xml
 ```
 
-6. Use URL Inspection for:
+Status should become **Success** within 24 hours.
+
+### 2. Request indexing (homepage + blog)
+
+Search Console → **URL inspection** → paste each URL → **Request indexing**:
 
 ```text
 https://apply.neexmeet.com/
@@ -34,14 +43,56 @@ https://apply.neexmeet.com/blog
 https://apply.neexmeet.com/blog/ats-friendly-resume-india-2026
 ```
 
-7. Check these reports weekly:
+### 3. Wait for data (normal timeline)
 
-- Pages: confirm blog URLs are indexed.
-- Sitemaps: confirm the sitemap was read successfully.
-- Search results: track impressions, clicks, CTR, and average position.
-- Core Web Vitals: watch mobile LCP, INP, and CLS.
+| Report | Typical wait |
+|--------|----------------|
+| Sitemap processed | 1–24 hours |
+| Pages indexed | 2–14 days (new site) |
+| Performance / Search results | **3–7 days** after first impressions |
+| Core Web Vitals | 7–28 days |
 
-Target early keywords:
+---
+
+## "Processing data" — is it broken?
+
+**Usually no.** Google Search Console shows **Processing data** when:
+
+1. **Performance tab** — no search impressions yet (new site, low traffic). Data appears only after people find you on Google.
+2. **Pages report** — Google is still crawling; request indexing to speed up.
+3. **Sitemaps** — sitemap not submitted yet, or submitted less than 24h ago.
+
+This is **not** a verification bug if ownership shows **Verified**.
+
+### Quick health check
+
+```bash
+# Meta tag present
+curl -sL https://apply.neexmeet.com | grep google-site-verification
+
+# Sitemap reachable
+curl -sI https://apply.neexmeet.com/sitemap.xml
+
+# Robots allows public pages
+curl -s https://apply.neexmeet.com/robots.txt
+```
+
+Expected:
+
+- Verification meta tag with token `aMaC-d-l0Bvd80mzAuNQdWqHZXgzfxpwTl0kcLpdC6I`
+- Sitemap HTTP `200`
+- `Allow: /` and `Sitemap: https://apply.neexmeet.com/sitemap.xml`
+
+---
+
+## Weekly checks
+
+- **Pages** — homepage and blog URLs indexed
+- **Sitemaps** — last read date recent, no errors
+- **Search results** — impressions, clicks (after ~1 week)
+- **Core Web Vitals** — mobile LCP, INP, CLS
+
+## Target keywords (content SEO)
 
 - resume builder for engineering students India
 - ATS resume optimizer for freshers

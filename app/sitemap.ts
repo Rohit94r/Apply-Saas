@@ -3,9 +3,10 @@ import { blogPosts } from "@/lib/blog";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const now = new Date();
   const publicRoutes = seoConfig.publicRoutes.map((route) => ({
     url: absoluteUrl(route),
-    lastModified: new Date("2026-05-24"),
+    lastModified: now,
     changeFrequency: route === "/" ? ("weekly" as const) : ("daily" as const),
     priority: route === "/" ? 1 : 0.9
   }));
@@ -18,3 +19,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...publicRoutes, ...blogRoutes];
 }
+
+/** Refresh sitemap daily so Google sees updated lastmod dates. */
+export const revalidate = 86_400;

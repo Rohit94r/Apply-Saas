@@ -15,8 +15,36 @@ import {
   faqJsonLd,
   organizationJsonLd,
   softwareJsonLd,
-  websiteJsonLd
+  websiteJsonLd,
+  seoConfig,
+  absoluteUrl
 } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: seoConfig.title,
+  description: seoConfig.description,
+  alternates: {
+    canonical: absoluteUrl("/")
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1
+    }
+  },
+  openGraph: {
+    title: seoConfig.title,
+    description: seoConfig.description,
+    url: absoluteUrl("/"),
+    siteName: seoConfig.name,
+    type: "website"
+  }
+};
 
 export default function Home() {
   return (

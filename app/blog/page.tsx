@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: absoluteUrl("/blog")
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true }
+  },
   openGraph: {
     title: "Resume and ATS Guides for Students",
     description:
