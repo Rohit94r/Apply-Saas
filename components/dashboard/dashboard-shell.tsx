@@ -9,6 +9,7 @@ import {
   CaretLineLeft,
   CaretLineRight,
   ChartBar,
+  Desktop,
   FileText,
   GraduationCap,
   House,
@@ -33,7 +34,7 @@ const navItems: Array<{
 }> = [
   { label: "Overview", href: "/dashboard", icon: House },
   { label: "My resumes", href: "/dashboard/resumes", icon: FileText },
-  { label: "Tailor", href: "/dashboard/generate", icon: Sparkle },
+  { label: "AI Resume Builder", href: "/dashboard/generate", icon: Sparkle },
   { label: "Job search", href: "/dashboard/jobs", icon: MagnifyingGlass },
   { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
   { label: "Learner prep", href: "/dashboard/learners", icon: GraduationCap },
@@ -41,6 +42,15 @@ const navItems: Array<{
   { label: "AI tools", href: "/dashboard/tools", icon: MagicWand },
   { label: "Analytics", href: "/dashboard/analytics", icon: ChartBar },
   { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle }
+];
+
+const comingSoonItems: Array<{
+  label: string;
+  icon: PhosphorIcon;
+}> = [
+  { label: "Interview Copilot", icon: Desktop },
+  { label: "Mock interview", icon: Briefcase },
+  { label: "App tracker", icon: MagnifyingGlass }
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -124,6 +134,31 @@ function AuthenticatedDashboardShell({
               <item.icon className="h-4 w-4" weight="regular" />
               <span className={cn(collapsed && "sr-only")}>{item.label}</span>
             </Link>
+          ))}
+          {!collapsed ? (
+            <p className="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Coming soon
+            </p>
+          ) : (
+            <div className="my-3 border-t border-border" />
+          )}
+          {comingSoonItems.map((item) => (
+            <div
+              key={item.label}
+              title={`${item.label} — coming soon`}
+              className={cn(
+                "flex cursor-default items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground/70",
+                collapsed && "justify-center px-0"
+              )}
+            >
+              <item.icon className="h-4 w-4" weight="regular" />
+              <span className={cn("flex min-w-0 items-center gap-2", collapsed && "sr-only")}>
+                <span className="truncate">{item.label}</span>
+                <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide">
+                  Soon
+                </span>
+              </span>
+            </div>
           ))}
         </nav>
         {!collapsed ? (

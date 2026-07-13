@@ -33,7 +33,7 @@ const pillars = [
   {
     title: "Cover letter",
     description:
-      "Generate a letter from the same role context — company, job description, and resume text prefilled from your studio profile.",
+      "Generate a letter from the same role context — company, job description, and resume text prefilled from your AI Resume Builder profile.",
     icon: EnvelopeSimple,
     accent: "text-primary"
   },
@@ -57,9 +57,9 @@ export function StudentGatewaySection() {
       <div className="section-shell">
         <Reveal>
           <SectionHeading
-            eyebrow="Application studio"
+            eyebrow="AI Resume Builder"
             title="Profile → Tailor → Export → Prep"
-            description="Apply is an AI Resume Studio — not a LaTeX editor. Upload once, tailor every application with prompts, then cover letter and interview prep from the same role."
+            description="Apply’s AI Resume Builder is not a LaTeX editor. Upload once, tailor every application with prompts, then cover letter and interview prep from the same role."
           />
         </Reveal>
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

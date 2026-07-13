@@ -15,12 +15,17 @@ import type {
 import { fetchAdzunaJobs } from "@/features/jobs/lib/providers/adzuna";
 import { fetchHeroHuntMarketSignals } from "@/features/jobs/lib/providers/herohunt";
 
+export type LiveJobsFetchOptions = {
+  jobType?: JobListing["type"] | "all";
+};
+
 type ProviderRunner = {
   id: JobApiProviderId;
   run: (
     profile: JobSeekerProfile,
     limit: number,
-    country: JobCountryConfig
+    country: JobCountryConfig,
+    options?: LiveJobsFetchOptions
   ) => Promise<JobListing[]>;
 };
 
@@ -37,7 +42,8 @@ export type LiveJobsFetchResult = {
 export async function fetchLiveJobs(
   profile: JobSeekerProfile,
   perProviderLimit = 8,
-  country: JobCountryConfig
+  country: JobCountryConfig,
+  options: LiveJobsFetchOptions = {}
 ): Promise<LiveJobsFetchResult> {
   const meta = getJobApiProviderStatus();
   const metaById = new Map(meta.map((item) => [item.id, item]));
@@ -60,7 +66,12 @@ export async function fetchLiveJobs(
         };
       }
 
-      const listings = await provider.run(profile, perProviderLimit, country);
+      const listings = await provider.run(
+        profile,
+        perProviderLimit,
+        country,
+        options
+      );
 
       return {
         id: provider.id,

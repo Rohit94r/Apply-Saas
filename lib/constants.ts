@@ -2,17 +2,16 @@ export const siteConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: "https://apply.neexmeet.com",
-  tagline: "AI Resume Studio for students and job seekers worldwide.",
+  tagline: "One platform for resumes, jobs & interviews.",
   description:
-    "Upload once, tailor with AI prompts for every job, export ATS PDFs, and prep interviews from the same profile.",
+    "All-in-one career platform: AI resume builder, live job search, interview prep, cover letters, freelancing, and learner tracks — with Interview Copilot coming soon.",
   nav: [
-    { label: "Application studio", href: "/#student-gateway" },
+    { label: "AI Resume Builder", href: "/#student-gateway" },
+    { label: "Features", href: "/#features" },
+    { label: "Coming soon", href: "/#coming-soon" },
     { label: "How it works", href: "/#how-it-works" },
-    { label: "Why Apply", href: "/#comparison" },
-    { label: "AI engine", href: "/#engine" },
-    { label: "FAQ", href: "/#faq" },
-    { label: "Blog", href: "/blog" },
-    { label: "Pricing", href: "/#pricing" }
+    { label: "Pricing", href: "/#pricing" },
+    { label: "Blog", href: "/blog" }
   ]
 } as const;
 

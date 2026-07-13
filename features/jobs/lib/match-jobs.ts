@@ -121,6 +121,8 @@ export type MatchJobsOptions = {
   providerStatus?: JobProviderFetchStatus[];
   /** Selected market — drives platform deep-links + which providers fire. */
   country?: JobCountryConfig;
+  /** Optional job-type bias for live providers. */
+  jobType?: JobListing["type"] | "all";
 };
 
 /**

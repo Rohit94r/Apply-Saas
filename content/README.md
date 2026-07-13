@@ -6,6 +6,17 @@
 |--------|--------------|-------------|
 | `blog/` | SEO blog posts, keywords, sections | `/blog`, landing blog preview |
 | `learning/` | Student roadmaps, YouTube IDs, course URLs | `/dashboard/learners`, interview prep videos |
+| `landing/` | Phase 1 live + Phase 2 coming-soon feature copy | Homepage, dashboard roadmap panel |
+
+## Landing roadmap (`landing/phase-features.ts`)
+
+| Export | Purpose |
+|--------|---------|
+| `phaseOneFeatures` | Live dashboard tools (Tailor, Jobs, Interview, …) |
+| `phaseTwoFeatures` | Coming soon (Desktop Copilot, tracker, Stripe, …) |
+| `phaseCopy` | Section titles / desktop highlight blurb |
+
+Edit names and summaries there — UI in `components/landing/product-features-section.tsx` and `components/dashboard/roadmap-panel.tsx` reads this file.
 
 ## Still in `lib/data/` (migrate later)
 

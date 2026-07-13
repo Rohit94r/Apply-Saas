@@ -57,22 +57,23 @@ export const seoConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: appUrl,
-  title: "Free AI Resume Builder for Students Worldwide | Apply",
+  title: "AI Resume Builder, Job Search & Interview Prep | Apply",
   description:
-    "Free AI resume builder for students and early-career applicants globally. Upload once, generate ATS-optimized resumes for any job. 5 free generations, then affordable Pro.",
+    "All-in-one career platform: AI resume builder, live job search, interview prep, cover letters, freelancing, and learner tracks. Free for students — Interview Copilot coming soon.",
   keywords: [
     "free resume builder for students",
     "ATS resume optimizer",
     "internship resume builder free",
     "resume tailoring tool",
     "AI resume builder",
+    "job search for students",
+    "interview preparation for students",
     "how to optimize resume for ATS",
     "student resume generator with job description",
     "entry level resume builder",
     "college student resume builder",
-    "engineering internship resume tips",
     "cover letter generator",
-    "interview preparation for students"
+    "freelance jobs for students"
   ],
   publicRoutes: [
     "/",

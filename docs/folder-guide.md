@@ -37,7 +37,8 @@ Apply/                              # ← Web app runs HERE today (Phase A)
 │
 ├── content/                        # ✨ EDITABLE copy & SEO → content/README.md
 │   ├── blog/posts.ts               # Blog articles
-│   └── learning/tracks.ts          # Learner roadmaps + YouTube links
+│   ├── learning/tracks.ts          # Learner roadmaps + YouTube links
+│   └── landing/phase-features.ts   # Phase 1 live + Phase 2 coming soon
 │
 ├── features/                       # Product modules → features/README.md
 │   ├── jobs/                       # ✅ Full module (job search)

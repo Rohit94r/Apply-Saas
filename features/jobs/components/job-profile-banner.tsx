@@ -51,9 +51,13 @@ export function JobProfileBanner({
           ) : null}
           {!profile.isComplete ? (
             <Button asChild size="sm">
-              <Link href="/dashboard/generate">Upload resume</Link>
+              <Link href="/dashboard/generate">Tailor resume</Link>
             </Button>
-          ) : null}
+          ) : (
+            <Button asChild size="sm" variant="outline">
+              <Link href="/dashboard/generate">Update on Tailor</Link>
+            </Button>
+          )}
         </div>
       </div>
       <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-4">

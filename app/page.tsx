@@ -6,6 +6,10 @@ import { Footer } from "@/components/landing/footer";
 import { FreelancingSection } from "@/components/landing/freelancing-section";
 import { HeroSection } from "@/components/landing/hero-section";
 import { HowItWorks } from "@/components/landing/how-it-works";
+import {
+  ComingSoonSection,
+  ProductFeaturesSection
+} from "@/components/landing/product-features-section";
 import { StudentGatewaySection } from "@/components/landing/student-gateway-section";
 import { InterviewPrepSection } from "@/components/landing/interview-prep-section";
 import { PricingSection } from "@/components/landing/pricing-section";
@@ -65,11 +69,13 @@ export default function Home() {
       <main>
         <HeroSection />
         <StudentGatewaySection />
+        <ProductFeaturesSection />
         <HowItWorks />
         <ComparisonSection />
         <EngineShowcase />
         <InterviewPrepSection />
         <FreelancingSection />
+        <ComingSoonSection />
         <Testimonials />
         <FaqSection />
         <BlogPreviewSection />

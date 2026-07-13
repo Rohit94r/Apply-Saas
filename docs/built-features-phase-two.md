@@ -3,6 +3,21 @@
 > **apply.neexmeet.com** · Founder: Rohit Jadhav · CTO execution doc · July 2026  
 > **Rule:** Finish Section 1 quality upgrades first (~50% → 100%). Then start Section 2 new features.
 
+InterviewLift: The Product
+InterviewLift is an AI-powered interview assistant founded in 2023, based in Dehradun, India. Their core product is "Jarvis" — a desktop app that provides real-time, sub-second AI answers during live interviews (Zoom, Teams, Google Meet) via an invisible overlay. They pair this with human coaches/Customer Success Managers who reply within 4 hours. 
+Key features:
+Real-time transcription + contextual AI answers based on your resume + job description
+"Invisible" overlay (claims to be undetectable via screen-share, task manager, network traffic)
+LaTeX ATS-optimized resume builder
+1:1 coaching with senior engineers (ex-Stripe, Notion, Figma)
+50+ languages supported
+Company-specific question banks
+Pricing (INR-focused):
+Silver (3 months): ₹24,000 (~$280)
+Gold (6 months): ₹48,000 (~$560)
+Diamond (12 months): ₹96,000 (~$1,120)
+Claims: 100,000+ candidates placed, 95% su about my project 
+
 **Related docs:** [futureupgradation.md](./futureupgradation.md) · [system-design.md](./system-design.md) · [folder-guide.md](./folder-guide.md)
 
 ---

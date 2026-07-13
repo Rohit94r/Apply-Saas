@@ -9,6 +9,7 @@ import {
   buildJobSeekerProfile,
   emptyJobSeekerProfile,
   scoreListingsForProfile,
+  type JobListing,
   type JobMatchResult,
   type MatchJobsOptions
 } from "@/features/jobs";
@@ -26,6 +27,8 @@ import {
 export type GetJobMatchesOptions = Omit<MatchJobsOptions, "country"> & {
   /** Selected market id (e.g. "in", "us", "remote"). Resolved to a config. */
   country?: string;
+  /** Bias live feeds toward a job type (internship / full-time / contract). */
+  jobType?: JobListing["type"] | "all";
 };
 
 /**
@@ -56,8 +59,9 @@ export async function getJobMatchesForUser(
 
   const { listings: liveListings, providerStatus } = await fetchLiveJobs(
     profile,
-    8,
-    country
+    15,
+    country,
+    { jobType: options?.jobType }
   );
 
   const curated = getAllJobListings().map((job) => ({

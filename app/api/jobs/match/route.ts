@@ -17,13 +17,21 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const limit = Number(searchParams.get("limit") ?? "12");
+  const limit = Number(searchParams.get("limit") ?? "30");
   const country = searchParams.get("country") ?? undefined;
+  const jobTypeParam = searchParams.get("jobType");
+  const jobType =
+    jobTypeParam === "internship" ||
+    jobTypeParam === "full-time" ||
+    jobTypeParam === "contract"
+      ? jobTypeParam
+      : "all";
 
   try {
     const result = await getJobMatchesForUser(userId, {
-      limit: Number.isFinite(limit) ? limit : 12,
-      country
+      limit: Number.isFinite(limit) ? limit : 30,
+      country,
+      jobType
     });
 
     // Public response — no provider diagnostics (admin: GET /api/admin/job-apis).

@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 type EmptyStateProps = {
@@ -6,16 +7,18 @@ type EmptyStateProps = {
   title: string;
   description: string;
   action?: string;
+  href?: string;
 };
 
 export function EmptyState({
   icon: Icon,
   title,
   description,
-  action
+  action,
+  href = "/dashboard/generate"
 }: EmptyStateProps) {
   return (
-    <div className="flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/45 p-8 text-center">
+    <div className="flex min-h-56 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white/45 p-8 text-center">
       <div className="mb-4 rounded-full bg-accent/10 p-3 text-accent">
         <Icon className="h-5 w-5" />
       </div>
@@ -24,8 +27,8 @@ export function EmptyState({
         {description}
       </p>
       {action ? (
-        <Button className="mt-5" size="sm">
-          {action}
+        <Button asChild className="mt-5" size="sm">
+          <Link href={href}>{action}</Link>
         </Button>
       ) : null}
     </div>

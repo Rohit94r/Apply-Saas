@@ -42,8 +42,10 @@ function normalizeHeroHuntRows(payload: HeroHuntResponse) {
 export async function fetchHeroHuntMarketSignals(
   profile: JobSeekerProfile,
   limit = 5,
-  country: JobCountryConfig
+  country: JobCountryConfig,
+  _options?: { jobType?: JobListing["type"] | "all" }
 ): Promise<JobListing[]> {
+  void _options;
   const { herohunt } = getJobApiSecrets();
 
   if (!herohunt.apiKey) {

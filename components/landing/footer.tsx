@@ -9,9 +9,9 @@ const columns = [
   {
     title: "Product",
     links: [
-      { label: "How it works", href: "/#how-it-works" },
-      { label: "AI resume engine", href: "/#engine" },
-      { label: "Freelancing", href: "/dashboard/freelancing" },
+      { label: "AI Resume Builder", href: "/#student-gateway" },
+      { label: "Live features", href: "/#features" },
+      { label: "Coming soon", href: "/#coming-soon" },
       { label: "Interview prep", href: "/dashboard/interview" },
       { label: "Pricing", href: "/#pricing" }
     ]

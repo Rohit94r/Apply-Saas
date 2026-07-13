@@ -41,7 +41,8 @@ type AdzunaResponse = {
 export async function fetchAdzunaJobs(
   profile: JobSeekerProfile,
   limit = 10,
-  country: JobCountryConfig
+  country: JobCountryConfig,
+  options?: { jobType?: JobListing["type"] | "all" }
 ): Promise<JobListing[]> {
   const { adzuna } = getJobApiSecrets();
 
@@ -54,7 +55,16 @@ export async function fetchAdzunaJobs(
     return [];
   }
 
-  const what = profile.targetRoles[0] ?? profile.skills.slice(0, 3).join(" ");
+  const role = profile.targetRoles[0] ?? profile.skills.slice(0, 3).join(" ");
+  const typeBias =
+    options?.jobType === "internship"
+      ? "internship"
+      : options?.jobType === "contract"
+        ? "contract"
+        : options?.jobType === "full-time"
+          ? "full time"
+          : "";
+  const what = [role || "software developer", typeBias].filter(Boolean).join(" ");
   const where =
     profile.location && profile.location !== "India"
       ? profile.location
@@ -65,7 +75,7 @@ export async function fetchAdzunaJobs(
   );
   url.searchParams.set("app_id", adzuna.appId);
   url.searchParams.set("app_key", adzuna.appKey);
-  url.searchParams.set("what", what || "software developer");
+  url.searchParams.set("what", what);
   url.searchParams.set("where", where);
   url.searchParams.set("results_per_page", String(Math.min(limit, 20)));
   url.searchParams.set("content-type", "application/json");
