@@ -15,9 +15,8 @@ export function HeroSection() {
             <span className="block text-accent italic">for placements.</span>
           </h1>
           <p className="mx-auto mt-7 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
-            India&apos;s placement prep platform — tailor resumes, track
-            applications, mock interview, and prep for TCS, Infosys, Amazon, and
-            more.
+            Tailor ATS resumes, practice AI mock interviews, and study previous year
+            coding questions from 64+ companies — TCS, Infosys, Amazon, Zoho, and more.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg">
@@ -27,14 +26,18 @@ export function HeroSection() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/prepare">
+              <Link href="/pyqs">
                 <MagnifyingGlass className="h-4 w-4" weight="regular" />
-                Company prep guides
+                Previous year coding questions
               </Link>
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
             Free to start ·{" "}
+            <Link href="/mock-interview" className="underline-offset-2 hover:underline">
+              AI mock interview
+            </Link>{" "}
+            ·{" "}
             <Link href="/downloads" className="underline-offset-2 hover:underline">
               Interview Copilot
             </Link>{" "}

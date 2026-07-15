@@ -10,7 +10,8 @@ const columns = [
     title: "Product",
     links: [
       { label: "Tailor resume", href: "/dashboard/generate" },
-      { label: "Mock interview", href: "/dashboard/mock-interview" },
+      { label: "Mock interview", href: "/mock-interview" },
+      { label: "Company PYQs", href: "/pyqs" },
       { label: "My applications", href: "/dashboard/applications" },
       { label: "AI tools", href: "/dashboard/tools" },
       { label: "Interview prep", href: "/dashboard/interview" },
@@ -22,14 +23,13 @@ const columns = [
   {
     title: "Guides",
     links: [
+      { label: "Company PYQs library", href: "/pyqs" },
+      { label: "Previous year coding questions guide", href: "/blog/company-previous-year-coding-questions-india" },
+      { label: "AI mock interview guide", href: "/blog/ai-mock-interview-practice-campus-placements" },
       { label: "Company prep guides", href: "/prepare" },
       { label: "TCS interview questions", href: "/prepare/tcs-interview-questions-2026" },
       { label: "Amazon OA questions", href: "/prepare/amazon-oa-questions" },
       { label: "ATS resume tips", href: "/blog/ats-friendly-resume-india-2026" },
-      {
-        label: "Entry-level resume format",
-        href: "/blog/fresher-resume-format-it-companies"
-      },
       { label: "Blog", href: "/blog" }
     ]
   },
@@ -38,7 +38,7 @@ const columns = [
     links: [
       { label: "Interview Copilot (Coming soon)", href: "/downloads" },
       { label: "Desktop roadmap", href: "/#coming-soon" },
-      { label: "Try web mock interview", href: "/dashboard/mock-interview" }
+      { label: "Try web mock interview", href: "/mock-interview" }
     ]
   },
   {

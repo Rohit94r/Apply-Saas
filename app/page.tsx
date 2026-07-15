@@ -13,6 +13,8 @@ import {
 } from "@/components/landing/product-features-section";
 import { StudentGatewaySection } from "@/components/landing/student-gateway-section";
 import { InterviewPrepSection } from "@/components/landing/interview-prep-section";
+import { MockInterviewLandingSection } from "@/components/landing/mock-interview-landing-section";
+import { PyqsSection } from "@/components/landing/pyqs-section";
 import { PricingSection } from "@/components/landing/pricing-section";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Testimonials } from "@/components/landing/testimonials";
@@ -71,6 +73,8 @@ export default function Home() {
       <main>
         <HeroSection />
         <ProductFeaturesSection />
+        <PyqsSection />
+        <MockInterviewLandingSection />
         <CompanyPrepSection />
         <ComingSoonSection />
         <HowItWorks />

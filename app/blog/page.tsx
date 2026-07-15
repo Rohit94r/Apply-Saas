@@ -8,9 +8,15 @@ import { preparePages } from "@/lib/prepare";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Resume and ATS Guides for Students",
+  title: "Placement Guides — PYQs, Mock Interviews, ATS Resumes | Apply",
   description:
-    "Practical resume guides for students and early-career applicants — ATS optimization, internship tips, and job-specific resume tailoring.",
+    "Guides for Indian campus placements: company previous year coding questions, AI mock interview practice, ATS resume tips, and fresher resume formats.",
+  keywords: [
+    "previous year coding questions",
+    "mock interview practice online",
+    "ATS resume tips India",
+    "campus placement prep"
+  ],
   alternates: {
     canonical: absoluteUrl("/blog")
   },
@@ -20,9 +26,9 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true }
   },
   openGraph: {
-    title: "Resume and ATS Guides for Students",
+    title: "Placement Guides — PYQs, Mock Interviews, ATS Resumes | Apply",
     description:
-      "Practical resume guides for students and early-career applicants — ATS optimization, internship tips, and job-specific resume tailoring.",
+      "Guides for Indian campus placements: company previous year coding questions, AI mock interview practice, ATS resume tips, and fresher resume formats.",
     url: absoluteUrl("/blog"),
     siteName: seoConfig.name,
     type: "website"

@@ -34,17 +34,27 @@ export const seoFaqs = [
   {
     question: "Does Apply help with interview preparation?",
     answer:
-      "Yes. The interview prep tool uses your current resume and the job description to create coding practice, project questions, HR prompts, and a study roadmap."
+      "Yes. Apply includes company prep guides, a 64+ company previous year coding questions (PYQs) library, interview guides from your resume + JD, and an AI mock interview with voice and optional coding rounds."
+  },
+  {
+    question: "Where can I find previous year coding questions for companies?",
+    answer:
+      "Open Apply's free Company PYQs Library at /pyqs — previous year coding question papers and OA guides for TCS, Infosys, Amazon, Zoho, Google, Flipkart, Goldman Sachs, Deloitte, and 60+ more companies."
+  },
+  {
+    question: "Is there an AI mock interview on Apply?",
+    answer:
+      "Yes. The web mock interview is a Meet-style practice room with ElevenLabs voice, multilingual options, coding questions, scored feedback, and session history. Start at /mock-interview."
   },
   {
     question: "Is company name mandatory?",
     answer:
-      "No. Company and role are optional. If you do not have them yet, Apply can still work from the job description and your resume."
+      "No. Company and role are optional for resume tailoring. If you do not have them yet, Apply can still work from the job description and your resume."
   },
   {
     question: "Which job markets does Apply support?",
     answer:
-      "Apply works globally. Job search links cover LinkedIn, Indeed, Reed, USAJOBS, and other boards depending on your profile and location."
+      "Apply works globally. Job search links cover LinkedIn, Indeed, Reed, USAJOBS, and other boards depending on your profile and location. PYQs and company guides focus on Indian campus placements."
   },
   {
     question: "How many resumes can I generate free?",
@@ -57,11 +67,22 @@ export const seoConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: appUrl,
-  title: "Placement Prep: Resume, Jobs & Interviews | Apply",
+  title:
+    "Placement Prep: Resume, PYQs, Mock Interview & Jobs | Apply",
   description:
-    "India's placement preparation platform — tailor ATS resumes, find matching jobs, prep interviews, and learn skills. Free to start. Desktop Interview Copilot coming soon.",
+    "India's placement preparation platform — ATS resumes, 64+ company previous year coding questions (PYQs), AI mock interviews, job match, and company prep guides. Free to start.",
   keywords: [
     "India placement preparation platform",
+    "previous year coding questions",
+    "company previous year question paper",
+    "campus placement coding PYQs",
+    "TCS previous year coding questions",
+    "Infosys previous year coding questions",
+    "Amazon OA previous year questions",
+    "Zoho previous year coding questions",
+    "mock interview practice online",
+    "AI mock interview for freshers",
+    "campus placement mock interview",
     "TCS interview questions",
     "Infosys resume format",
     "campus placement prep India",
@@ -78,12 +99,15 @@ export const seoConfig = {
     "college student resume builder",
     "cover letter generator",
     "mock interview practice",
-    "freelance jobs for students"
+    "freelance jobs for students",
+    "online assessment previous year papers"
   ],
   publicRoutes: [
     "/",
     "/blog",
     "/prepare",
+    "/pyqs",
+    "/mock-interview",
     "/downloads"
   ]
 } as const;
@@ -133,7 +157,8 @@ export const softwareJsonLd = {
   featureList: [
     "ATS resume optimization",
     "Resume tailoring from job descriptions",
-    "Mock interview practice",
+    "Company previous year coding questions (PYQs)",
+    "AI mock interview practice",
     "Application / placement tracker",
     "Offer comparison",
     "Company placement prep guides",

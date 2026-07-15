@@ -39,6 +39,17 @@ export function InterviewPrepSection() {
           <Button asChild className="mt-8">
             <Link href="/dashboard/interview">Get your first guide free</Link>
           </Button>
+          <div className="mt-4 flex flex-wrap gap-4 text-sm font-semibold">
+            <Link href="/pyqs" className="text-accent transition hover:underline">
+              Company PYQs library →
+            </Link>
+            <Link
+              href="/mock-interview"
+              className="text-muted-foreground transition hover:text-primary hover:underline"
+            >
+              AI mock interview →
+            </Link>
+          </div>
         </Reveal>
         <Reveal delay={0.1}>
           <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-soft">

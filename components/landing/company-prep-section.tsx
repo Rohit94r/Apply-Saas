@@ -15,8 +15,9 @@ export function CompanyPrepSection() {
             Prepare for the companies that hire on campus.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
-            Free guides for interview questions, OA patterns, and resume formats —
-            then jump into Tailor or Interview prep inside Apply.
+            Free guides for interview questions, OA patterns, resume formats — plus
+            a full Company PYQs library of previous year coding question papers.
+            Then jump into Tailor or AI mock interview inside Apply.
           </p>
         </Reveal>
 
@@ -42,6 +43,13 @@ export function CompanyPrepSection() {
               className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-accent"
             >
               Browse all company guides
+              <ArrowRight className="h-4 w-4" weight="regular" />
+            </Link>
+            <Link
+              href="/pyqs"
+              className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground transition hover:text-primary"
+            >
+              Previous year coding questions
               <ArrowRight className="h-4 w-4" weight="regular" />
             </Link>
             <Link

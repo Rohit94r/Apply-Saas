@@ -7,9 +7,9 @@ export const siteConfig = {
     "Tailor resumes, find matching jobs, prep interviews, and learn skills — free to start. Desktop Interview Copilot coming soon.",
   nav: [
     { label: "Tailor resume", href: "/#student-gateway" },
+    { label: "Company PYQs", href: "/pyqs" },
+    { label: "Mock interview", href: "/mock-interview" },
     { label: "Company prep", href: "/prepare" },
-    { label: "Mock interview", href: "/dashboard/mock-interview" },
-    { label: "Track applications", href: "/dashboard/applications" },
     { label: "Features", href: "/#features" },
     { label: "Pricing", href: "/#pricing" },
     { label: "Blog", href: "/blog" }

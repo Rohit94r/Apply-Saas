@@ -260,5 +260,123 @@ export const blogPosts = [
         ]
       }
     ]
+  },
+  {
+    slug: "company-previous-year-coding-questions-india",
+    title:
+      "Company Previous Year Coding Questions (PYQs): Complete Campus Placement Guide 2026",
+    description:
+      "How to use company previous year coding question papers for TCS, Infosys, Amazon, Zoho, Google, and 60+ firms — OA practice, hiring process, and mock interview tips.",
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "8 min read",
+    category: "Coding PYQs",
+    targetKeyword: "previous year coding questions",
+    keywords: [
+      "previous year coding questions",
+      "company previous year question paper",
+      "campus placement coding PYQs",
+      "TCS previous year coding questions",
+      "Amazon OA previous year questions",
+      "Infosys previous year coding questions",
+      "online assessment previous year papers",
+      "Zoho previous year coding questions"
+    ],
+    excerpt:
+      "Previous year coding questions (PYQs) are the fastest way to understand what a company's OA and coding rounds actually ask — if you practice them under time pressure and pair them with speaking mocks.",
+    sections: [
+      {
+        heading: "What are company previous year coding questions?",
+        body: [
+          "Company PYQs are coding problems and online assessment (OA) patterns reported by real candidates from campus drives, off-campus hirings, and hiring challenges. They are not unofficial dumps of every secret question — they are a practical map of difficulty, topics, and round structure.",
+          "On Apply, the Company PYQs Library covers 64+ product, IT services, and BFSI companies — including TCS CodeVita, Infosys SP/DSE, Amazon OA, Zoho, Flipkart Grid, Google, Microsoft, Goldman Sachs, and Deloitte — with links to detailed previous year question guides."
+        ]
+      },
+      {
+        heading: "How to study a previous year question paper for placements",
+        body: [
+          "Start with the hiring process section before jumping into problems. Know whether the company uses an aptitude screen, OA coding, technical interviews, or HR culture rounds.",
+          "Then solve OA questions under a 60–90 minute timer. Attempt each problem first; only open approach hints after you are stuck for a real attempt. Track weak topics (arrays, graphs, DP, strings) across companies.",
+          "Keep a short list of three target companies. Repeat their PYQs weekly instead of randomly browsing every company guide once."
+        ]
+      },
+      {
+        heading: "Best PYQs for Indian campus placements",
+        body: [
+          "IT services: start with TCS, Infosys, Wipro, Cognizant, and Capgemini if you are aiming at volume hiring.",
+          "Product and startups: Amazon, Flipkart, Zoho, PhonePe, Razorpay, and Microsoft-style OA patterns emphasize DSA clarity and timed coding.",
+          "BFSI / consulting: Goldman Sachs, JP Morgan, Deloitte, and American Express often combine coding with analytical thinking — use their PYQ guides plus behavioral prep."
+        ]
+      },
+      {
+        heading: "Combine PYQs with AI mock interviews",
+        body: [
+          "Silent LeetCode practice is not enough. After you finish a company PYQs set, open Apply's AI mock interview for the same company and role. Enable coding questions at matching difficulty and speak your answers aloud.",
+          "This closes the gap between knowing a solution and explaining it under interview pressure — the exact skill campus recruiters test."
+        ]
+      },
+      {
+        heading: "Where to open the full library",
+        body: [
+          "Browse the public PYQs hub for SEO-friendly discovery, then use the interactive Company PYQs Library inside Interview prep after you sign in.",
+          "Links: apply.neexmeet.com/pyqs for the library overview, and apply.neexmeet.com/mock-interview to start voice practice."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "ai-mock-interview-practice-campus-placements",
+    title:
+      "AI Mock Interview Practice for Campus Placements: Speak, Code, Score",
+    description:
+      "How to practice AI mock interviews online for Indian campus placements — Meet-style room, voice answers, coding rounds, and scored feedback on Apply.",
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "7 min read",
+    category: "Mock interviews",
+    targetKeyword: "mock interview practice online",
+    keywords: [
+      "mock interview practice online",
+      "AI mock interview for freshers",
+      "campus placement mock interview",
+      "virtual mock interview India",
+      "coding mock interview practice",
+      "free mock interview for students",
+      "ElevenLabs AI interviewer"
+    ],
+    excerpt:
+      "A good mock interview should feel like a real call: you on camera, an interviewer speaking questions, live captions, optional coding, and a clear score when you hang up.",
+    sections: [
+      {
+        heading: "Why reading answers is not enough",
+        body: [
+          "Most students prepare by reading HR and coding answers. Interviews require speaking under time pressure, clarifying assumptions, and recovering when stuck.",
+          "Apply's web mock interview is built like a light Google Meet room — your camera on the left, an AI interviewer on the right — with ElevenLabs voice so questions sound natural, not robotic."
+        ]
+      },
+      {
+        heading: "How Apply's mock interview works",
+        body: [
+          "You enter company, role, optional job description, interview type (HR / technical / mixed), difficulty, and language (English default; Hindi, Tamil, Telugu, Marathi available).",
+          "Questions are spoken aloud. Your answers are captioned live as you speak, then scored. You can enable coding questions so a terminal appears for Easy, Medium, or Hard problems with a test runner.",
+          "When you click End call, the meeting closes and a results popup shows questions answered, strong answers, and coding tests passed — with history in Applications & progress."
+        ]
+      },
+      {
+        heading: "Best weekly practice plan",
+        body: [
+          "Day 1–2: Solve previous year coding questions for one target company from the PYQs library.",
+          "Day 3: Run a technical mock interview for that company with coding enabled.",
+          "Day 4: Run an HR / mixed mock to rehearse introductions and STAR stories.",
+          "Day 5: Review weak answers in history, rewrite one STAR story, and repeat a short mock."
+        ]
+      },
+      {
+        heading: "Start free today",
+        body: [
+          "Open apply.neexmeet.com/mock-interview, sign in, and start a session. Pair every mock with company PYQs at apply.neexmeet.com/pyqs for the highest placement readiness."
+        ]
+      }
+    ]
   }
 ] satisfies BlogPost[];

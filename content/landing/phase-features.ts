@@ -38,8 +38,9 @@ export const phaseOneFeatures: ProductFeature[] = [
   },
   {
     id: "interview",
-    name: "Interview prep",
-    summary: "Practice questions and talking points for that role.",
+    name: "Interview prep + PYQs",
+    summary:
+      "Shortlist companies and open previous year coding question guides.",
     href: "/dashboard/interview",
     status: "improving",
     badge: "Live"
@@ -47,8 +48,9 @@ export const phaseOneFeatures: ProductFeature[] = [
   {
     id: "mock",
     name: "Mock interview",
-    summary: "Timed practice for a company and role before the real call.",
-    href: "/dashboard/mock-interview",
+    summary:
+      "Meet-style AI interview with voice, languages, and coding rounds.",
+    href: "/mock-interview",
     status: "live",
     badge: "Live"
   },
@@ -87,10 +89,10 @@ export const phaseOneFeatures: ProductFeature[] = [
   },
   {
     id: "prepare",
-    name: "Company prep",
+    name: "Company prep & PYQs",
     summary:
-      "Free guides for TCS, Infosys, Amazon, and more — then jump into Tailor.",
-    href: "/prepare",
+      "Free guides + previous year coding questions for TCS, Infosys, Amazon, and more.",
+    href: "/pyqs",
     status: "live",
     badge: "Live"
   }

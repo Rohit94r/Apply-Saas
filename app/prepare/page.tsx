@@ -11,9 +11,9 @@ import {
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Company Prep Guides — Interview, OA & Resume",
+  title: "Company Prep Guides — Interview, OA, PYQs & Resume",
   description:
-    "India placement preparation guides for TCS, Infosys, Amazon, Capgemini, Microsoft, Google, Wipro, Cognizant, Accenture, Morgan Stanley, JPMorgan, Deloitte, and Flipkart.",
+    "India placement prep guides for TCS, Infosys, Amazon, Capgemini, Microsoft, Google, Wipro, Cognizant, Accenture, Morgan Stanley, JPMorgan, Deloitte, and Flipkart — plus previous year coding questions.",
   alternates: {
     canonical: absoluteUrl("/prepare")
   },
@@ -67,8 +67,16 @@ export default function PrepareIndexPage() {
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground">
               Interview questions, OA patterns, resume formats, and hiring
-              processes — written for campus and early-career India. Each guide
-              links into Tailor, Interview, and Jobs inside Apply.
+              processes — written for campus and early-career India. Pair each
+              guide with the{" "}
+              <Link href="/pyqs" className="font-semibold text-primary underline-offset-2 hover:underline">
+                Company PYQs library
+              </Link>{" "}
+              and{" "}
+              <Link href="/mock-interview" className="font-semibold text-primary underline-offset-2 hover:underline">
+                AI mock interview
+              </Link>
+              .
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
