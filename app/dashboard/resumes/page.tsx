@@ -28,8 +28,9 @@ export default async function ResumesPage() {
         <EmptyState
           icon={FileText}
           title="No resumes yet"
-          description="Upload and tailor a resume for a job — saved versions appear here automatically."
-          action="Tailor resume"
+          description="Upload your resume once, then tailor a version for each job."
+          action="Tailor your first resume"
+          href="/dashboard/generate"
         />
       )}
     </div>

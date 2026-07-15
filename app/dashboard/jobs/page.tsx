@@ -8,7 +8,7 @@ export default function JobsPage() {
       <PageHeader
         eyebrow="Job search"
         title="Find jobs."
-        description="Upload your resume for ranked matches. Filter internship, full-time, or contract — spend less time applying and raise your odds of getting selected."
+        description="Upload your resume, then filter by type and work mode to find the best fits."
       />
       <JobSearchWorkspace />
     </div>

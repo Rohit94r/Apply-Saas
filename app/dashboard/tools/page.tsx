@@ -44,8 +44,8 @@ export default async function ToolsPage({
     <div>
       <PageHeader
         eyebrow="AI tools"
-        title="Cover letters, critique, and export — prefilled from your profile."
-        description="Your master resume and tailored versions load automatically. Generate a cover letter or ATS critique for the same role without re-pasting everything."
+        title="Cover letter, critique, and more."
+        description="Your saved resume loads automatically — pick a tool, or compare offers when letters arrive."
       />
       <ToolsWorkspace
         initialTool={initialTool}
