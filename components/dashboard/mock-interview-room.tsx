@@ -2,41 +2,32 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import {
   ArrowLeft,
   CheckCircle,
   CircleNotch,
-  Clock,
-  Microphone,
   Play,
-  Robot,
-  SpeakerHigh,
   Sparkle,
-  Stop,
   WarningCircle
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type {
   MockInterviewSessionRecord,
   MockTurnRecord
 } from "@/lib/data/mock-interviews";
+import { MockInterviewRobot } from "@/components/dashboard/mock-interview-robot";
+import {
+  MockInterviewMeet,
+  type MeetRoomState
+} from "@/components/dashboard/mock-interview-meet";
 
 type InterviewType = "hr" | "technical" | "mixed";
 type Difficulty = "easy" | "medium" | "hard";
 type Phase = "setup" | "live" | "summary";
-type RoomState =
-  | "asking"
-  | "speaking"
-  | "listening"
-  | "recording"
-  | "thinking"
-  | "coaching";
 
 type AIStatus = {
   available: boolean;
@@ -174,6 +165,15 @@ export function MockInterviewRoom() {
       mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
     };
   }, []);
+
+  useEffect(() => {
+    if (phase !== "live") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [phase]);
 
   const speakCurrentQuestion = useCallback(
     (text: string) => {
@@ -529,21 +529,20 @@ export function MockInterviewRoom() {
   }
 
   const current = turns[questionIndex];
-  const progressPct = Math.round(
-    (Math.min(questionIndex + 1, totalQuestions) / totalQuestions) * 100
-  );
 
-  const roomState: RoomState = feedback
+  const roomState: MeetRoomState = feedback
     ? "coaching"
-    : submitting || transcribing
+    : submitting
       ? "thinking"
-      : recording
-        ? "recording"
-        : speaking
-          ? "speaking"
-          : answer.trim()
-            ? "listening"
-            : "asking";
+      : transcribing
+        ? "transcribing"
+        : recording
+          ? "recording"
+          : speaking
+            ? "speaking"
+            : answer.trim()
+              ? "listening"
+              : "asking";
 
   return (
     <div className="space-y-8">
@@ -588,9 +587,9 @@ export function MockInterviewRoom() {
                 Virtual interview room
               </CardTitle>
               <p className="text-sm leading-6 text-muted-foreground">
-                Apply Interviewer asks out loud, you answer by voice or text, get
-                scored feedback, then move to the next question — full practice on
-                the web. Desktop is only for live assist later.
+                Click start to join a Meet-style call with Apply Interviewer —
+                spoken questions, voice or text answers, and live coaching.
+                Desktop later is for live interview assist only.
               </p>
               {ai?.available ? (
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
@@ -707,7 +706,7 @@ export function MockInterviewRoom() {
                   ) : (
                     <Play className="h-4 w-4" weight="fill" />
                   )}
-                  {loading ? "Starting…" : "Start live interview"}
+                  {loading ? "Joining…" : "Start interview"}
                 </Button>
                 {!ai?.available ? (
                   <Button
@@ -769,222 +768,46 @@ export function MockInterviewRoom() {
       ) : null}
 
       {phase === "live" && current ? (
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-[#fbfaf6] px-5 py-4">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-accent">
-                Virtual interview · {providerLabel(provider, demoMode)}
-              </p>
-              <p className="mt-1 font-semibold text-foreground">
-                {role} · {company}
-              </p>
-              <p className="mt-0.5 text-xs capitalize text-muted-foreground">
-                {interviewType} · {difficulty}
-                {resumeContextAvailable ? " · resume on" : ""}
-                {voiceEnabled ? " · voice Qs on" : ""}
-                {demoMode ? " · demo" : ""}
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 text-sm font-semibold tabular-nums text-primary">
-                <Clock className="h-4 w-4" weight="regular" />
-                {formatTime(seconds)}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (speaking) {
-                    stopSpeaking();
-                    setSpeaking(false);
-                  } else if (current.question) {
-                    speakCurrentQuestion(current.question);
-                  }
-                }}
-                disabled={!voiceEnabled || submitting}
-              >
-                <SpeakerHigh className="h-4 w-4" weight="regular" />
-                {speaking ? "Stop voice" : "Repeat question"}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => void endSession()}
-                disabled={loading || submitting || recording}
-              >
-                <CheckCircle className="h-4 w-4" weight="regular" />
-                End session
-              </Button>
-            </div>
-          </div>
-
-          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-            <motion.div
-              className="h-full rounded-full bg-accent"
-              initial={false}
-              animate={{ width: `${progressPct}%` }}
-              transition={{ type: "spring", stiffness: 120, damping: 20 }}
-            />
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-            <InterviewerPanel
-              state={roomState}
-              category={current.category ?? "general"}
-              questionNumber={questionIndex + 1}
-              total={totalQuestions}
-            />
-
-            <div className="rounded-[1.5rem] border border-border bg-white/80 p-6 sm:p-8">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                <Microphone className="h-4 w-4 text-accent" weight="regular" />
-                Question {questionIndex + 1} of {totalQuestions}
-                <span className="rounded bg-muted px-2 py-0.5 normal-case tracking-normal text-[10px] font-semibold">
-                  {current.category ?? "general"}
-                </span>
-              </div>
-
-              <AnimatePresence mode="wait">
-                <motion.h3
-                  key={current.question}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.25 }}
-                  className="mt-4 font-serif text-2xl leading-snug text-primary sm:text-3xl"
-                >
-                  {current.question}
-                </motion.h3>
-              </AnimatePresence>
-
-              {feedback ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 space-y-3 rounded-2xl border border-accent/20 bg-[hsl(175_40%_96%)] p-4"
-                >
-                  <p className="text-xs font-bold uppercase tracking-wide text-accent">
-                    Feedback · {feedback.score}/10
-                    {demoMode ? " (demo)" : ""}
-                  </p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">
-                        Strengths
-                      </p>
-                      <ul className="mt-1 space-y-1 text-sm leading-6 text-muted-foreground">
-                        {feedback.strengths.map((item) => (
-                          <li key={item}>• {item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">
-                        Improve
-                      </p>
-                      <ul className="mt-1 space-y-1 text-sm leading-6 text-muted-foreground">
-                        {feedback.improvements.map((item) => (
-                          <li key={item}>• {item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  <Button size="sm" onClick={goToNextQuestion} disabled={loading}>
-                    {sessionDone ? (
-                      loading ? (
-                        <CircleNotch className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <CheckCircle className="h-4 w-4" weight="fill" />
-                      )
-                    ) : null}
-                    {sessionDone
-                      ? loading
-                        ? "Saving summary…"
-                        : "View summary"
-                      : "Next question"}
-                  </Button>
-                </motion.div>
-              ) : (
-                <div className="mt-6 space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Your answer
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {!recording ? (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => void startRecording()}
-                          disabled={
-                            submitting ||
-                            transcribing ||
-                            Boolean(stt && !stt.available)
-                          }
-                          title={
-                            stt && !stt.available
-                              ? stt.message
-                              : speaking
-                                ? "Stops the question voice and starts listening"
-                                : "Record your answer"
-                          }
-                        >
-                          <Microphone className="h-4 w-4" weight="fill" />
-                          Speak answer
-                        </Button>
-                      ) : (
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={() => stopRecording(true)}
-                        >
-                          <Stop className="h-4 w-4" weight="fill" />
-                          Stop &amp; transcribe
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                  <Textarea
-                    ref={answerRef}
-                    value={answer}
-                    onChange={(e) => setAnswer(e.target.value)}
-                    placeholder="Speak with the mic, or type as you would answer live…"
-                    className="min-h-40"
-                    disabled={submitting || recording}
-                  />
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-xs text-muted-foreground">
-                      {recording
-                        ? "Recording… click Stop when finished."
-                        : transcribing
-                          ? "Transcribing with Whisper…"
-                          : stt && !stt.available
-                            ? "Voice unavailable — type your answer."
-                            : "Voice uses Groq Whisper · interviewer uses Gemini/Groq."}
-                    </p>
-                    <Button
-                      onClick={() => void submitAnswer()}
-                      disabled={
-                        submitting ||
-                        recording ||
-                        transcribing ||
-                        !answer.trim()
-                      }
-                    >
-                      {submitting ? (
-                        <CircleNotch className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Sparkle className="h-4 w-4" weight="fill" />
-                      )}
-                      {submitting ? "Evaluating…" : "Submit answer"}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <MockInterviewMeet
+          company={company}
+          role={role}
+          interviewType={interviewType}
+          difficulty={difficulty}
+          providerLabel={providerLabel(provider, demoMode)}
+          demoMode={demoMode}
+          seconds={seconds}
+          questionNumber={questionIndex + 1}
+          totalQuestions={totalQuestions}
+          question={current.question}
+          category={current.category ?? "general"}
+          roomState={roomState}
+          answer={answer}
+          onAnswerChange={setAnswer}
+          answerRef={answerRef}
+          feedback={feedback}
+          sessionDone={sessionDone}
+          voiceEnabled={voiceEnabled}
+          speaking={speaking}
+          recording={recording}
+          submitting={submitting}
+          transcribing={transcribing}
+          loading={loading}
+          sttAvailable={!stt || stt.available}
+          sttMessage={stt?.message}
+          resumeContextAvailable={resumeContextAvailable}
+          onStartRecording={() => void startRecording()}
+          onStopRecording={() => stopRecording(true)}
+          onSubmitAnswer={() => void submitAnswer()}
+          onReplayQuestion={() => {
+            if (current.question) speakCurrentQuestion(current.question);
+          }}
+          onStopVoice={() => {
+            stopSpeaking();
+            setSpeaking(false);
+          }}
+          onEndInterview={() => void endSession()}
+          onNext={goToNextQuestion}
+        />
       ) : null}
 
       {phase === "summary" ? (
@@ -1052,120 +875,18 @@ export function MockInterviewRoom() {
 
 function InterviewerPreview() {
   return (
-    <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-[#0f2a3d] via-[#123447] to-[#0d5c56] p-6 text-white shadow-sm">
-      <motion.div
-        className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-accent/30 blur-2xl"
-        animate={{ opacity: [0.35, 0.55, 0.35], scale: [1, 1.08, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <div className="relative flex items-center gap-4">
-        <motion.div
-          className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20"
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Robot className="h-8 w-8 text-[#7fd9c7]" weight="duotone" />
-        </motion.div>
-        <div>
+    <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-[#0f2a3d] via-[#123447] to-[#0d5c56] p-5 text-white shadow-sm">
+      <div className="relative flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <MockInterviewRobot mood="idle" size="sm" />
+        <div className="text-center sm:text-left">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7fd9c7]">
             Apply Interviewer
           </p>
           <p className="mt-1 text-sm leading-6 text-white/80">
-            Speaks questions, listens to your voice or text, scores answers, and
-            coaches — practice mode on the web.
+            Starts a Google Meet–style room — speaks questions, listens to your
+            voice or text, then coaches you live.
           </p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function InterviewerPanel({
-  state,
-  category,
-  questionNumber,
-  total
-}: {
-  state: RoomState;
-  category: string;
-  questionNumber: number;
-  total: number;
-}) {
-  const active =
-    state === "asking" ||
-    state === "thinking" ||
-    state === "speaking" ||
-    state === "recording";
-
-  const statusLabel =
-    state === "speaking"
-      ? "Speaking question…"
-      : state === "asking"
-        ? "Ready for your answer"
-        : state === "thinking"
-          ? "Evaluating…"
-          : state === "recording"
-            ? "Listening to your voice…"
-            : state === "coaching"
-              ? "Coaching feedback"
-              : "Listening";
-
-  return (
-    <div className="relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-[#0f2a3d] via-[#123447] to-[#0d5c56] p-6 text-white">
-      <motion.div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(127,217,199,0.22),transparent_55%)]"
-        animate={{ opacity: active ? [0.5, 0.85, 0.5] : 0.4 }}
-        transition={{ duration: active ? 2.4 : 4, repeat: Infinity }}
-      />
-      <div className="relative">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7fd9c7]">
-          Apply Interviewer
-        </p>
-        <p className="mt-2 text-sm text-white/70">
-          Question {questionNumber}/{total} · {category}
-        </p>
-      </div>
-      <div className="relative flex flex-1 flex-col items-center justify-center py-8">
-        <motion.div
-          className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white/10 ring-1 ring-white/25"
-          animate={
-            state === "recording"
-              ? { scale: [1, 1.08, 1] }
-              : active
-                ? { scale: [1, 1.04, 1], rotate: [0, 1.5, -1.5, 0] }
-                : { y: [0, -3, 0] }
-          }
-          transition={{
-            duration: state === "recording" ? 1.1 : active ? 1.8 : 3.2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          {state === "recording" ? (
-            <Microphone className="h-14 w-14 text-[#ffb4a8]" weight="fill" />
-          ) : (
-            <Robot className="h-14 w-14 text-[#7fd9c7]" weight="duotone" />
-          )}
-        </motion.div>
-        <div className="mt-5 flex items-center gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <motion.span
-              key={i}
-              className="h-1.5 w-1.5 rounded-full bg-[#7fd9c7]"
-              animate={
-                active
-                  ? { opacity: [0.3, 1, 0.3], y: [0, -3, 0] }
-                  : { opacity: 0.45 }
-              }
-              transition={{
-                duration: 0.9,
-                repeat: Infinity,
-                delay: i * 0.15
-              }}
-            />
-          ))}
-        </div>
-        <p className="mt-3 text-xs font-medium text-white/65">{statusLabel}</p>
       </div>
     </div>
   );
