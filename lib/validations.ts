@@ -130,8 +130,12 @@ export const mockInterviewStartSchema = z.object({
   action: z.literal("start").optional(),
   company: z.string().trim().min(1, "Company is required").max(120),
   role: z.string().trim().min(1, "Role is required").max(120),
+  jobDescription: z.string().trim().max(4000).optional(),
   interviewType: mockInterviewTypeSchema.default("mixed"),
   difficulty: mockInterviewDifficultySchema.default("medium"),
+  includeCoding: z.boolean().optional().default(false),
+  languageCode: z.string().trim().max(8).optional().default("en"),
+  voiceId: z.string().trim().max(64).optional(),
   totalQuestions: z.number().int().min(5).max(8).optional().default(6),
   /** When true, allow labeled demo mode if no AI key is configured. */
   allowDemo: z.boolean().optional().default(false)
@@ -160,6 +164,9 @@ export const mockInterviewAnswerSchema = z.object({
   difficulty: mockInterviewDifficultySchema.optional(),
   totalQuestions: z.number().int().min(5).max(8).optional(),
   resumeContext: z.string().max(12000).optional(),
+  jobDescription: z.string().max(4000).optional(),
+  includeCoding: z.boolean().optional(),
+  languageCode: z.string().max(8).optional(),
   questionIndex: z.number().int().min(0).max(20).optional(),
   currentQuestion: z.string().min(1).max(2000).optional()
 });

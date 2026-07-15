@@ -37,8 +37,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = (await request.json()) as { text?: unknown };
+    const body = (await request.json()) as {
+      text?: unknown;
+      voiceId?: unknown;
+      languageCode?: unknown;
+    };
     const text = typeof body.text === "string" ? body.text.trim() : "";
+    const voiceId =
+      typeof body.voiceId === "string" ? body.voiceId.trim() : undefined;
+    const languageCode =
+      typeof body.languageCode === "string"
+        ? body.languageCode.trim()
+        : undefined;
 
     if (!text) {
       return NextResponse.json(
@@ -54,7 +64,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const audio = await synthesizeSpeech(text);
+    const audio = await synthesizeSpeech(text, { voiceId, languageCode });
 
     return new NextResponse(audio, {
       status: 200,

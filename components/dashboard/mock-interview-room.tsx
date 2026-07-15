@@ -24,6 +24,11 @@ import {
   MockInterviewMeet,
   type MeetRoomState
 } from "@/components/dashboard/mock-interview-meet";
+import {
+  MockInterviewExitDialog,
+  type SessionExitStats
+} from "@/components/dashboard/mock-interview-exit-dialog";
+import { DEFAULT_ELEVENLABS_VOICE_ID } from "@/lib/ai/elevenlabs-tts";
 
 type InterviewType = "hr" | "technical" | "mixed";
 type Difficulty = "easy" | "medium" | "hard";
@@ -41,10 +46,52 @@ type SttStatus = {
   message: string;
 };
 
+type VoiceOption = {
+  id: string;
+  name: string;
+  label: string;
+};
+
+type LanguageOption = {
+  code: string;
+  label: string;
+  speechLang: string;
+};
+
+type VoicesCatalog = {
+  voices?: VoiceOption[];
+  languages?: LanguageOption[];
+  defaultVoiceId?: string;
+};
+
 type TtsStatus = {
   available: boolean;
   message: string;
 };
+
+function computeExitStats(
+  turns: MockTurnRecord[],
+  totalQuestions: number,
+  company: string,
+  role: string,
+  overallScore?: number
+): SessionExitStats {
+  const answered = turns.filter((t) => t.answer?.trim()).length;
+  const strongAnswers = turns.filter((t) => (t.score ?? 0) >= 7).length;
+  const codingTurns = turns.filter((t) => t.codeProblem);
+  const codingPassed = turns.filter((t) => t.codePassed).length;
+
+  return {
+    answered,
+    totalQuestions,
+    strongAnswers,
+    codingPassed,
+    codingTotal: codingTurns.length,
+    overallScore,
+    company,
+    role
+  };
+}
 
 type Feedback = {
   strengths: string[];
@@ -121,33 +168,106 @@ function stopBrowserSpeech() {
   window.speechSynthesis?.cancel();
 }
 
-function speakBrowserFallback(text: string, onEnd?: () => void) {
+/**
+ * Pick the best available browser voice for an Indian English interviewer.
+ * Priority: en-IN voices → Google Indian English → British English → American English → any en.
+ */
+function pickInterviewerVoice(
+  voices: SpeechSynthesisVoice[],
+  langCode: string
+): SpeechSynthesisVoice | undefined {
+  const speechLang = langCode || "en-IN";
+
+  if (speechLang !== "en-IN") {
+    return (
+      voices.find((v) => v.lang.toLowerCase() === speechLang.toLowerCase()) ??
+      voices.find((v) => v.lang.toLowerCase().startsWith(speechLang.slice(0, 2).toLowerCase()))
+    );
+  }
+
+  return (
+    voices.find((v) => v.lang.toLowerCase() === "en-in") ??
+    voices.find((v) => /india|indian/i.test(v.name)) ??
+    voices.find((v) => /Google.*India/i.test(v.name)) ??
+    voices.find((v) => v.lang.toLowerCase() === "en-gb") ??
+    voices.find((v) => /Daniel|Kate|Serena|Moira/i.test(v.name)) ??
+    voices.find((v) => v.lang.toLowerCase() === "en-us") ??
+    voices.find((v) => /Samantha|Karen|Google US/i.test(v.name)) ??
+    voices.find((v) => v.lang.toLowerCase().startsWith("en"))
+  );
+}
+
+/**
+ * Speak text using the browser's built-in TTS — tuned to sound like a
+ * calm, clear human interviewer. Splits long text into sentence chunks
+ * for more natural pacing.
+ */
+function speakBrowserFallback(text: string, onEnd?: () => void, langCode = "en-IN") {
   if (typeof window === "undefined" || !window.speechSynthesis) {
     onEnd?.();
     return;
   }
   stopBrowserSpeech();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = 1;
-  utter.pitch = 1.05;
-  utter.lang = "en-US";
+
   const voices = window.speechSynthesis.getVoices();
-  const preferred =
-    voices.find((v) =>
-      /Samantha|Karen|Moira|Google US English|Female|Woman/i.test(v.name)
-    ) || voices.find((v) => v.lang.toLowerCase().startsWith("en"));
-  if (preferred) utter.voice = preferred;
-  utter.onend = () => onEnd?.();
-  utter.onerror = () => onEnd?.();
-  window.speechSynthesis.speak(utter);
+  const voice = pickInterviewerVoice(voices, langCode);
+
+  // Split into sentence-sized chunks for natural pauses
+  const sentences = text
+    .replace(/([.!?])\s+/g, "$1\n")
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const chunks = sentences.length > 0 ? sentences : [text];
+  let chunkIndex = 0;
+
+  const speakChunk = () => {
+    if (chunkIndex >= chunks.length) {
+      onEnd?.();
+      return;
+    }
+
+    const utter = new SpeechSynthesisUtterance(chunks[chunkIndex]);
+    utter.rate = 0.92; // slightly slower = clearer, more human
+    utter.pitch = 1.0; // neutral pitch
+    utter.volume = 1.0;
+
+    if (voice) {
+      utter.voice = voice;
+      utter.lang = voice.lang;
+    } else {
+      utter.lang = langCode;
+    }
+
+    utter.onend = () => {
+      chunkIndex++;
+      // Small natural pause between sentences
+      window.setTimeout(speakChunk, 180);
+    };
+    utter.onerror = () => {
+      chunkIndex++;
+      speakChunk();
+    };
+
+    window.speechSynthesis.speak(utter);
+  };
+
+  speakChunk();
 }
 
 export function MockInterviewRoom() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [interviewType, setInterviewType] = useState<InterviewType>("mixed");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [includeCoding, setIncludeCoding] = useState(false);
+  const [languageCode, setLanguageCode] = useState("en");
+  const [voiceId, setVoiceId] = useState(DEFAULT_ELEVENLABS_VOICE_ID);
+  const [voiceOptions, setVoiceOptions] = useState<VoiceOption[]>([]);
+  const [languageOptions, setLanguageOptions] = useState<LanguageOption[]>([]);
   const [totalQuestions, setTotalQuestions] = useState(6);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -179,6 +299,9 @@ export function MockInterviewRoom() {
   const [cameraOn, setCameraOn] = useState(true);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [showExitDialog, setShowExitDialog] = useState(false);
+  const [exitStats, setExitStats] = useState<SessionExitStats | null>(null);
+  const speechLangRef = useRef("en-IN");
 
   const companyInputRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLTextAreaElement>(null);
@@ -202,6 +325,11 @@ export function MockInterviewRoom() {
   useEffect(() => {
     answerSnapshotRef.current = answer;
   }, [answer]);
+
+  useEffect(() => {
+    const lang = languageOptions.find((item) => item.code === languageCode);
+    speechLangRef.current = lang?.speechLang ?? "en-IN";
+  }, [languageCode, languageOptions]);
 
   useEffect(() => {
     setBrowserSpeechAvailable(Boolean(getSpeechRecognitionCtor()));
@@ -363,7 +491,7 @@ export function MockInterviewRoom() {
           const res = await fetch("/api/mock-interview/speak", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text })
+            body: JSON.stringify({ text, voiceId, languageCode })
           });
 
           if (!res.ok) {
@@ -374,6 +502,7 @@ export function MockInterviewRoom() {
           const url = URL.createObjectURL(blob);
           audioUrlRef.current = url;
           const audio = new Audio(url);
+          audio.playbackRate = 0.94;
           audioRef.current = audio;
           audio.onended = () => {
             clearAudio();
@@ -381,15 +510,15 @@ export function MockInterviewRoom() {
           };
           audio.onerror = () => {
             clearAudio();
-            speakBrowserFallback(text, finishSpeaking);
+            speakBrowserFallback(text, finishSpeaking, speechLangRef.current);
           };
           await audio.play();
         } catch {
-          speakBrowserFallback(text, finishSpeaking);
+          speakBrowserFallback(text, finishSpeaking, speechLangRef.current);
         }
       })();
     },
-    [voiceEnabled, clearAudio]
+    [voiceEnabled, clearAudio, voiceId, languageCode]
   );
 
   useEffect(() => {
@@ -405,11 +534,20 @@ export function MockInterviewRoom() {
         ai?: AIStatus;
         stt?: SttStatus;
         tts?: TtsStatus;
+        voices?: VoicesCatalog;
       };
-      setHistory(data.sessions ?? []);
+      setHistory((data.sessions ?? []).slice(0, 5));
       if (data.ai) setAi(data.ai);
       if (data.stt) setStt(data.stt);
       if (data.tts) setTts(data.tts);
+      const catalog = data.voices;
+      if (catalog?.voices?.length) {
+        setVoiceOptions(catalog.voices);
+        setVoiceId(catalog.defaultVoiceId ?? catalog.voices[0].id);
+      }
+      if (catalog?.languages?.length) {
+        setLanguageOptions(catalog.languages);
+      }
     } catch {
       /* ignore */
     }
@@ -435,8 +573,12 @@ export function MockInterviewRoom() {
           action: "start",
           company,
           role,
+          jobDescription: jobDescription.trim() || undefined,
           interviewType,
           difficulty,
+          includeCoding,
+          languageCode,
+          voiceId,
           totalQuestions,
           allowDemo
         })
@@ -515,6 +657,9 @@ export function MockInterviewRoom() {
           difficulty,
           totalQuestions,
           resumeContext,
+          jobDescription: jobDescription.trim() || undefined,
+          includeCoding,
+          languageCode,
           questionIndex,
           currentQuestion: turns[questionIndex]?.question
         })
@@ -524,7 +669,14 @@ export function MockInterviewRoom() {
         throw new Error(data.error || "Could not submit answer");
       }
 
-      setTurns(data.turns ?? turns);
+      setTurns((prev) => {
+        const next = (data.turns ?? prev) as MockTurnRecord[];
+        return next.map((turn, index) => ({
+          ...turn,
+          codePassed: prev[index]?.codePassed ?? turn.codePassed,
+          codeProblem: turn.codeProblem ?? prev[index]?.codeProblem
+        }));
+      });
       setDemoMode(Boolean(data.demoMode));
       setProvider(data.provider ?? provider);
       if (data.ai) setAi(data.ai);
@@ -673,7 +825,7 @@ export function MockInterviewRoom() {
       const recognition = new Ctor();
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = "en-US";
+      recognition.lang = speechLangRef.current;
       recognitionRef.current = recognition;
 
       recognition.onresult = (event) => {
@@ -806,6 +958,7 @@ export function MockInterviewRoom() {
     if (recording) stopRecording(false);
     stopWebSpeech();
     stopCamera();
+    setPhase("summary");
 
     const turnsToSave = finalTurns ?? turns;
     if (!sessionId) {
@@ -828,7 +981,10 @@ export function MockInterviewRoom() {
           interviewType,
           difficulty,
           totalQuestions,
-          resumeContext
+          resumeContext,
+          jobDescription: jobDescription.trim() || undefined,
+          includeCoding,
+          languageCode
         })
       });
       const data = await res.json();
@@ -838,6 +994,15 @@ export function MockInterviewRoom() {
       setSummary(data.summary);
       setDemoMode(Boolean(data.demoMode));
       setProvider(data.provider ?? provider);
+      const stats = computeExitStats(
+        turnsToSave,
+        totalQuestions,
+        company,
+        role,
+        data.summary?.overallScore
+      );
+      setExitStats(stats);
+      setShowExitDialog(true);
       setPhase("summary");
       void loadHistory();
     } catch (error) {
@@ -879,6 +1044,14 @@ export function MockInterviewRoom() {
   const goToNextQuestionRef = useRef(goToNextQuestion);
   goToNextQuestionRef.current = goToNextQuestion;
 
+  function handleCodePassed(passed: boolean) {
+    setTurns((prev) =>
+      prev.map((turn, index) =>
+        index === questionIndex ? { ...turn, codePassed: passed } : turn
+      )
+    );
+  }
+
   function resetToSetup() {
     clearTimers();
     clearAudio();
@@ -899,6 +1072,8 @@ export function MockInterviewRoom() {
     setSessionDone(false);
     setSpeaking(false);
     setRecording(false);
+    setShowExitDialog(false);
+    setExitStats(null);
   }
 
   const current = turns[questionIndex];
@@ -986,6 +1161,72 @@ export function MockInterviewRoom() {
               </div>
 
               <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Job description / interview notes (optional)
+                </label>
+                <textarea
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  placeholder="Paste JD, round details, or topics you expect…"
+                  rows={3}
+                  className="w-full rounded-xl border border-input bg-white px-3 py-2.5 text-sm leading-6 text-foreground placeholder:text-muted-foreground/70 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20"
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Interviewer voice
+                  </label>
+                  <select
+                    value={voiceId}
+                    onChange={(e) => setVoiceId(e.target.value)}
+                    disabled={!tts?.available || voiceOptions.length === 0}
+                    className="h-11 w-full rounded-xl border border-input bg-white px-3 text-sm font-medium text-foreground focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20 disabled:opacity-60"
+                  >
+                    {(voiceOptions.length
+                      ? voiceOptions
+                      : [{ id: voiceId, name: "Rachel", label: "Rachel — default voice" }]
+                    ).map((voice) => (
+                      <option key={voice.id} value={voice.id}>
+                        {voice.label}
+                      </option>
+                    ))}
+                  </select>
+                  {!tts?.available ? (
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      ElevenLabs unavailable — browser voice fallback
+                    </p>
+                  ) : null}
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Language
+                  </label>
+                  <select
+                    value={languageCode}
+                    onChange={(e) => setLanguageCode(e.target.value)}
+                    className="h-11 w-full rounded-xl border border-input bg-white px-3 text-sm font-medium text-foreground focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20"
+                  >
+                    {(languageOptions.length
+                      ? languageOptions
+                      : [
+                          { code: "en", label: "English", speechLang: "en-IN" },
+                          { code: "hi", label: "Hindi", speechLang: "hi-IN" },
+                          { code: "ta", label: "Tamil", speechLang: "ta-IN" },
+                          { code: "te", label: "Telugu", speechLang: "te-IN" },
+                          { code: "mr", label: "Marathi", speechLang: "mr-IN" }
+                        ]
+                    ).map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Interview type
                 </label>
@@ -1053,6 +1294,16 @@ export function MockInterviewRoom() {
               <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
                 <input
                   type="checkbox"
+                  checked={includeCoding}
+                  onChange={(e) => setIncludeCoding(e.target.checked)}
+                  className="h-4 w-4 rounded border-border accent-[hsl(var(--accent))]"
+                />
+                Include coding questions (easy / medium / hard uses difficulty above)
+              </label>
+
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
                   checked={voiceEnabled}
                   onChange={(e) => setVoiceEnabled(e.target.checked)}
                   className="h-4 w-4 rounded border-border accent-[hsl(var(--accent))]"
@@ -1099,7 +1350,7 @@ export function MockInterviewRoom() {
               <p className="fine-label mb-3">Recent practice</p>
               {history.length ? (
                 <ul className="space-y-2">
-                  {history.slice(0, 6).map((session) => (
+                  {history.slice(0, 5).map((session) => (
                     <li
                       key={session.id}
                       className="flex items-center justify-between gap-3 border-b border-border/70 py-3 text-sm last:border-0"
@@ -1148,6 +1399,10 @@ export function MockInterviewRoom() {
           totalQuestions={totalQuestions}
           question={current.question}
           category={current.category ?? "general"}
+          codeProblem={
+            includeCoding && current.codeProblem ? current.codeProblem : undefined
+          }
+          onCodePassed={handleCodePassed}
           roomState={roomState}
           answer={answer}
           onAnswerChange={setAnswer}
@@ -1166,11 +1421,36 @@ export function MockInterviewRoom() {
           cameraError={cameraError}
           onToggleCamera={toggleCamera}
           liveCaption={liveCaption}
+          voiceOptions={voiceOptions}
+          languageOptions={
+            languageOptions.length
+              ? languageOptions
+              : [
+                  { code: "en", label: "English", speechLang: "en-IN" },
+                  { code: "hi", label: "Hindi", speechLang: "hi-IN" },
+                  { code: "ta", label: "Tamil", speechLang: "ta-IN" },
+                  { code: "te", label: "Telugu", speechLang: "te-IN" },
+                  { code: "mr", label: "Marathi", speechLang: "mr-IN" }
+                ]
+          }
+          currentVoiceId={voiceId}
+          currentLanguageCode={languageCode}
+          onVoiceChange={setVoiceId}
+          onLanguageChange={setLanguageCode}
+          ttsAvailable={Boolean(tts?.available)}
           onStartRecording={() => void startListening()}
           onStopRecording={() => stopRecording(true)}
           onSubmitAnswer={() => void submitAnswer()}
           onEndInterview={() => void endSession()}
           onNext={goToNextQuestion}
+        />
+      ) : null}
+
+      {exitStats ? (
+        <MockInterviewExitDialog
+          open={showExitDialog}
+          stats={exitStats}
+          onClose={() => setShowExitDialog(false)}
         />
       ) : null}
 

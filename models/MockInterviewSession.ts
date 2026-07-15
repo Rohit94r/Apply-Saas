@@ -9,7 +9,9 @@ const MockTurnSchema = new Schema(
     answer: { type: String, default: "" },
     strengths: { type: [String], default: [] },
     improvements: { type: [String], default: [] },
-    score: { type: Number }
+    score: { type: Number },
+    codeProblem: { type: Schema.Types.Mixed },
+    codePassed: { type: Boolean }
   },
   { _id: false }
 );

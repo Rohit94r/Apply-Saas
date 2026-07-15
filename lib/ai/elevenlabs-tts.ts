@@ -3,25 +3,39 @@
  * API key stays server-side — never expose to the client.
  */
 
+import {
+  getInterviewLanguage,
+  getInterviewVoice
+} from "@/lib/ai/elevenlabs-voices";
+
 /** Rachel — clear English female voice (ElevenLabs default catalog) */
 export const DEFAULT_ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
 
-/** Turbo model — lower latency for conversational interview turns */
+/** Natural conversational model — slower, clearer delivery */
 export const DEFAULT_ELEVENLABS_MODEL_ID = "eleven_turbo_v2_5";
+
+export type SynthesizeSpeechOptions = {
+  voiceId?: string;
+  languageCode?: string;
+  speed?: number;
+};
 
 export function isElevenLabsConfigured() {
   return Boolean(process.env.ELEVENLABS_API_KEY?.trim());
 }
 
-export function getElevenLabsVoiceId() {
+export function getElevenLabsVoiceId(override?: string) {
   return (
-    process.env.ELEVENLABS_VOICE_ID?.trim() || DEFAULT_ELEVENLABS_VOICE_ID
+    override?.trim() ||
+    process.env.ELEVENLABS_VOICE_ID?.trim() ||
+    DEFAULT_ELEVENLABS_VOICE_ID
   );
 }
 
-export function getElevenLabsModelId() {
+export function getElevenLabsModelId(languageCode?: string) {
+  const lang = getInterviewLanguage(languageCode);
   return (
-    process.env.ELEVENLABS_MODEL_ID?.trim() || DEFAULT_ELEVENLABS_MODEL_ID
+    process.env.ELEVENLABS_MODEL_ID?.trim() || lang.elevenLabsModel
   );
 }
 
@@ -35,7 +49,10 @@ export function getElevenLabsTtsStatus() {
   };
 }
 
-export async function synthesizeSpeech(text: string): Promise<ArrayBuffer> {
+export async function synthesizeSpeech(
+  text: string,
+  options: SynthesizeSpeechOptions = {}
+): Promise<ArrayBuffer> {
   const apiKey = process.env.ELEVENLABS_API_KEY?.trim();
   if (!apiKey) {
     throw new Error("ELEVENLABS_API_KEY is not configured");
@@ -46,11 +63,13 @@ export async function synthesizeSpeech(text: string): Promise<ArrayBuffer> {
     throw new Error("Nothing to speak");
   }
 
-  const voiceId = getElevenLabsVoiceId();
-  const modelId = getElevenLabsModelId();
+  const voice = getInterviewVoice(getElevenLabsVoiceId(options.voiceId));
+  const lang = getInterviewLanguage(options.languageCode);
+  const modelId = getElevenLabsModelId(options.languageCode);
+  const speed = options.speed ?? 0.88;
 
   const response = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+    `https://api.elevenlabs.io/v1/text-to-speech/${voice.id}`,
     {
       method: "POST",
       headers: {
@@ -61,11 +80,13 @@ export async function synthesizeSpeech(text: string): Promise<ArrayBuffer> {
       body: JSON.stringify({
         text: trimmed.slice(0, 2500),
         model_id: modelId,
+        language_code: lang.code !== "en" ? lang.code : undefined,
         voice_settings: {
-          stability: 0.45,
-          similarity_boost: 0.8,
-          style: 0.35,
-          use_speaker_boost: true
+          stability: 0.55,
+          similarity_boost: 0.82,
+          style: 0.22,
+          use_speaker_boost: true,
+          speed
         }
       })
     }

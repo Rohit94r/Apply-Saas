@@ -1,24 +1,28 @@
 "use client";
 
-import { type ReactNode, type RefObject, useEffect, useRef } from "react";
+import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle,
   CircleNotch,
   ClosedCaptioning,
+  Gear,
   Microphone,
   MicrophoneSlash,
   PaperPlaneTilt,
   PhoneDisconnect,
   User,
   VideoCamera,
-  VideoCameraSlash
+  VideoCameraSlash,
+  X
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import {
   MockInterviewRobot,
   type RobotMood
 } from "@/components/dashboard/mock-interview-robot";
+import { MockInterviewCodePanel } from "@/components/dashboard/mock-interview-code-panel";
+import type { MockCodeProblem } from "@/lib/data/mock-interviews";
 
 export type MeetRoomState =
   | "asking"
@@ -28,6 +32,18 @@ export type MeetRoomState =
   | "thinking"
   | "transcribing"
   | "coaching";
+
+type VoiceOption = {
+  id: string;
+  name: string;
+  label: string;
+};
+
+type LanguageOption = {
+  code: string;
+  label: string;
+  speechLang: string;
+};
 
 type Feedback = {
   strengths: string[];
@@ -47,6 +63,8 @@ type MockInterviewMeetProps = {
   totalQuestions: number;
   question: string;
   category: string;
+  codeProblem?: MockCodeProblem;
+  onCodePassed?: (passed: boolean) => void;
   roomState: MeetRoomState;
   answer: string;
   onAnswerChange: (value: string) => void;
@@ -65,6 +83,13 @@ type MockInterviewMeetProps = {
   cameraError: string | null;
   onToggleCamera: () => void;
   liveCaption?: string;
+  voiceOptions: VoiceOption[];
+  languageOptions: LanguageOption[];
+  currentVoiceId: string;
+  currentLanguageCode: string;
+  onVoiceChange: (voiceId: string) => void;
+  onLanguageChange: (langCode: string) => void;
+  ttsAvailable: boolean;
   onStartRecording: () => void;
   onStopRecording: () => void;
   onSubmitAnswer: () => void;
@@ -292,6 +317,108 @@ function InterviewerTile({
   );
 }
 
+function VoiceSettingsPanel({
+  voiceOptions,
+  languageOptions,
+  currentVoiceId,
+  currentLanguageCode,
+  onVoiceChange,
+  onLanguageChange,
+  ttsAvailable,
+  onClose
+}: {
+  voiceOptions: VoiceOption[];
+  languageOptions: LanguageOption[];
+  currentVoiceId: string;
+  currentLanguageCode: string;
+  onVoiceChange: (id: string) => void;
+  onLanguageChange: (code: string) => void;
+  ttsAvailable: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.97 }}
+      transition={{ duration: 0.2 }}
+      className="absolute bottom-full right-0 mb-3 w-72 rounded-2xl border border-border bg-white p-4 shadow-xl"
+    >
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          Interviewer Voice
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <X className="h-4 w-4" weight="regular" />
+        </button>
+      </div>
+
+      {!ttsAvailable ? (
+        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-[11px] leading-4 text-amber-700">
+          Using browser voice. Add <code className="font-mono">ELEVENLABS_API_KEY</code> for premium human-like voices.
+        </p>
+      ) : null}
+
+      <div className="space-y-2">
+        <p className="text-[10px] font-semibold uppercase text-muted-foreground/70">
+          Voice
+        </p>
+        <div className="max-h-44 overflow-y-auto space-y-1">
+          {voiceOptions.length > 0 ? (
+            voiceOptions.map((voice) => (
+              <button
+                key={voice.id}
+                type="button"
+                onClick={() => onVoiceChange(voice.id)}
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition",
+                  currentVoiceId === voice.id
+                    ? "bg-accent/10 text-accent ring-1 ring-accent/30"
+                    : "hover:bg-muted text-foreground"
+                )}
+              >
+                <span className="flex-1 truncate font-semibold">{voice.label}</span>
+                {currentVoiceId === voice.id ? (
+                  <CheckCircle className="h-3.5 w-3.5 shrink-0 text-accent" weight="fill" />
+                ) : null}
+              </button>
+            ))
+          ) : (
+            <p className="px-3 py-2 text-xs text-muted-foreground">Browser default voice</p>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-3 space-y-2 border-t border-border pt-3">
+        <p className="text-[10px] font-semibold uppercase text-muted-foreground/70">
+          Language
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {languageOptions.map((lang) => (
+            <button
+              key={lang.code}
+              type="button"
+              onClick={() => onLanguageChange(lang.code)}
+              className={cn(
+                "rounded-full px-2.5 py-1 text-[11px] font-semibold transition",
+                currentLanguageCode === lang.code
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/70"
+              )}
+            >
+              {lang.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function MockInterviewMeet({
   company,
   role,
@@ -304,6 +431,8 @@ export function MockInterviewMeet({
   totalQuestions,
   question,
   category,
+  codeProblem,
+  onCodePassed,
   roomState,
   answer,
   onAnswerChange,
@@ -322,12 +451,20 @@ export function MockInterviewMeet({
   cameraError,
   onToggleCamera,
   liveCaption,
+  voiceOptions,
+  languageOptions,
+  currentVoiceId,
+  currentLanguageCode,
+  onVoiceChange,
+  onLanguageChange,
+  ttsAvailable,
   onStartRecording,
   onStopRecording,
   onSubmitAnswer,
   onEndInterview,
   onNext
 }: MockInterviewMeetProps) {
+  const [voicePanelOpen, setVoicePanelOpen] = useState(false);
   const progressPct = Math.round(
     (Math.min(questionNumber, totalQuestions) / totalQuestions) * 100
   );
@@ -497,6 +634,15 @@ export function MockInterviewMeet({
         </div>
       </div>
 
+      {codeProblem ? (
+        <div className="relative z-10 shrink-0">
+          <MockInterviewCodePanel
+            problem={codeProblem}
+            onTestsPassed={onCodePassed}
+          />
+        </div>
+      ) : null}
+
       {/* Light Meet-style control bar */}
       <footer className="relative z-10 border-t border-border/70 bg-white/85 px-3 py-3 backdrop-blur-xl sm:px-6 sm:py-4">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-3">
@@ -556,6 +702,30 @@ export function MockInterviewMeet({
                 weight="fill"
               />
             </MeetControlButton>
+
+            <div className="relative">
+              <MeetControlButton
+                label="Voice"
+                onClick={() => setVoicePanelOpen((v) => !v)}
+                active={voicePanelOpen}
+              >
+                <Gear className="h-5 w-5 sm:h-6 sm:w-6" weight="fill" />
+              </MeetControlButton>
+              <AnimatePresence>
+                {voicePanelOpen ? (
+                  <VoiceSettingsPanel
+                    voiceOptions={voiceOptions}
+                    languageOptions={languageOptions}
+                    currentVoiceId={currentVoiceId}
+                    currentLanguageCode={currentLanguageCode}
+                    onVoiceChange={onVoiceChange}
+                    onLanguageChange={onLanguageChange}
+                    ttsAvailable={ttsAvailable}
+                    onClose={() => setVoicePanelOpen(false)}
+                  />
+                ) : null}
+              </AnimatePresence>
+            </div>
 
             <MeetControlButton
               label="Submit"

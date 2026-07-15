@@ -14,6 +14,13 @@ export type MockQuestion = {
   category: string;
 };
 
+export type MockCodeProblem = {
+  title: string;
+  description: string;
+  starterCode: string;
+  testCases: Array<{ input: string; expected: string; label?: string }>;
+};
+
 export type MockTurnRecord = {
   question: string;
   tip?: string;
@@ -23,6 +30,8 @@ export type MockTurnRecord = {
   strengths?: string[];
   improvements?: string[];
   score?: number;
+  codeProblem?: MockCodeProblem;
+  codePassed?: boolean;
 };
 
 export type MockInterviewSessionRecord = {
@@ -48,8 +57,12 @@ export type MockInterviewSessionRecord = {
 type CreateSessionInput = {
   company: string;
   role: string;
+  jobDescription?: string;
   interviewType?: MockInterviewType;
   difficulty?: MockDifficulty;
+  includeCoding?: boolean;
+  languageCode?: string;
+  voiceId?: string;
   totalQuestions?: number;
   questions?: MockQuestion[];
   turns?: MockTurnRecord[];
@@ -162,7 +175,7 @@ export function buildMockQuestions(company: string, role: string): MockQuestion[
   ];
 }
 
-export async function listMockSessions(userId: string, limit = 10) {
+export async function listMockSessions(userId: string, limit = 5) {
   await connectToDatabase();
   const rows = await MockInterviewSession.find({ userId })
     .sort({ createdAt: -1 })

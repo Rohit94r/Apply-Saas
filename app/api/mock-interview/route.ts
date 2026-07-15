@@ -11,6 +11,7 @@ import {
   type MockInterviewType
 } from "@/lib/ai/mock-interview";
 import { getElevenLabsTtsStatus } from "@/lib/ai/elevenlabs-tts";
+import { listAvailableVoices } from "@/lib/ai/elevenlabs-voices";
 import { isTranscriptionAvailable } from "@/lib/ai/transcribe";
 import {
   completeMockSession,
@@ -43,10 +44,12 @@ function sttStatus() {
 }
 
 function sessionMeta() {
+  const tts = getElevenLabsTtsStatus();
   return {
     ai: getMockInterviewAIStatus(),
     stt: sttStatus(),
-    tts: getElevenLabsTtsStatus()
+    tts,
+    voices: listAvailableVoices(tts.available)
   };
 }
 
@@ -157,21 +160,29 @@ async function handleStart(userId: string, body: unknown) {
     interviewType: input.interviewType,
     difficulty: input.difficulty,
     totalQuestions,
-    resumeContext
+    resumeContext,
+    jobDescription: input.jobDescription,
+    includeCoding: input.includeCoding,
+    languageCode: input.languageCode
   });
 
   const turns: MockTurnRecord[] = [
     {
       question: first.question.question,
-      category: first.question.category
+      category: first.question.category,
+      codeProblem: first.question.codeProblem
     }
   ];
 
   const payload = {
     company: input.company,
     role: input.role,
+    jobDescription: input.jobDescription ?? "",
     interviewType: input.interviewType as MockInterviewType,
     difficulty: input.difficulty as MockDifficulty,
+    includeCoding: input.includeCoding ?? false,
+    languageCode: input.languageCode ?? "en",
+    voiceId: input.voiceId ?? "",
     totalQuestions,
     turns,
     questions: [
@@ -290,7 +301,10 @@ async function handleAnswer(userId: string, body: unknown) {
       interviewType,
       difficulty,
       totalQuestions,
-      resumeContext
+      resumeContext,
+      jobDescription: input.jobDescription,
+      includeCoding: input.includeCoding,
+      languageCode: input.languageCode
     },
     history,
     currentQuestion: current,
@@ -313,7 +327,8 @@ async function handleAnswer(userId: string, body: unknown) {
   if (!evaluation.result.done && evaluation.result.nextQuestion) {
     nextTurn = {
       question: evaluation.result.nextQuestion.question,
-      category: evaluation.result.nextQuestion.category
+      category: evaluation.result.nextQuestion.category,
+      codeProblem: evaluation.result.nextQuestion.codeProblem
     };
     updatedTurns.push(nextTurn);
   }

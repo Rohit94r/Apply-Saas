@@ -12,9 +12,17 @@ export type MockTurnFeedback = {
   score: number;
 };
 
+export type MockCodeProblem = {
+  title: string;
+  description: string;
+  starterCode: string;
+  testCases: Array<{ input: string; expected: string; label?: string }>;
+};
+
 export type MockQuestionOut = {
   question: string;
   category: string;
+  codeProblem?: MockCodeProblem;
 };
 
 export type MockAnswerResult = {
@@ -48,6 +56,9 @@ type SessionContext = {
   difficulty: MockDifficulty;
   totalQuestions: number;
   resumeContext?: string;
+  jobDescription?: string;
+  includeCoding?: boolean;
+  languageCode?: string;
 };
 
 function safeJsonParse<T>(value: string | null | undefined, fallback: T): T {
@@ -154,6 +165,27 @@ function typeGuidance(type: MockInterviewType) {
     return "Focus on role-relevant technical depth, problem-solving, systems thinking, and past project details.";
   }
   return "Mix HR/behavioral (~40%) and technical (~60%) questions across the session.";
+}
+
+function jobDescriptionBlock(jobDescription?: string) {
+  const text = jobDescription?.trim() ?? "";
+  if (!text) return "";
+  return `\nJob description / interview notes from candidate:\n${text.slice(0, 2000)}\n`;
+}
+
+function codingGuidance(includeCoding?: boolean, difficulty?: MockDifficulty) {
+  if (!includeCoding) return "";
+  return `
+Include coding/DSA questions in this session (~30-40% of questions when type allows).
+Coding difficulty: ${difficulty ?? "medium"}.
+When asking a coding question, set category to "coding" and include codeProblem:
+{
+  "title": string,
+  "description": string (problem statement),
+  "starterCode": string (JavaScript function solve(input) starter),
+  "testCases": [{ "input": string, "expected": string, "label": string }]
+}
+Use 2-3 small test cases. Keep problems solvable in 10-15 minutes.`;
 }
 
 function difficultyGuidance(difficulty: MockDifficulty) {
@@ -277,7 +309,11 @@ export async function generateFirstQuestion(
   }
 
   const fallback = demoFirstQuestion(ctx);
-  const result = await completeJson<{ question?: string; category?: string }>(
+  const result = await completeJson<{
+    question?: string;
+    category?: string;
+    codeProblem?: MockCodeProblem;
+  }>(
     "You are Apply Interviewer — a professional, calm AI interviewer for early-career candidates in India. Return only valid JSON.",
     `Start a ${ctx.totalQuestions}-question mock interview.
 
@@ -287,6 +323,8 @@ Interview type: ${ctx.interviewType}
 Difficulty: ${ctx.difficulty}
 ${typeGuidance(ctx.interviewType)}
 ${difficultyGuidance(ctx.difficulty)}
+${jobDescriptionBlock(ctx.jobDescription)}
+${codingGuidance(ctx.includeCoding, ctx.difficulty)}
 
 Candidate resume context:
 ${resumeSnippet(ctx.resumeContext)}
@@ -294,7 +332,7 @@ ${resumeSnippet(ctx.resumeContext)}
 Ask the FIRST question only. Make it specific to company + role. Do not answer it.
 
 Return JSON:
-{ "question": string, "category": "intro" | "behavioral" | "technical" | "company" | "closing" | "general" }`,
+{ "question": string, "category": "intro" | "behavioral" | "technical" | "coding" | "company" | "closing" | "general", "codeProblem"?: { "title": string, "description": string, "starterCode": string, "testCases": [{ "input": string, "expected": string, "label"?: string }] } }`,
     fallback
   );
 
@@ -305,7 +343,8 @@ Return JSON:
   return {
     question: {
       question: result.parsed.question.trim(),
-      category: result.parsed.category?.trim() || "general"
+      category: result.parsed.category?.trim() || "general",
+      codeProblem: result.parsed.codeProblem
     },
     provider: result.provider,
     demoMode: false
@@ -349,6 +388,7 @@ export async function evaluateAnswerAndContinue(input: {
     score?: number;
     nextQuestion?: string | null;
     nextCategory?: string;
+    nextCodeProblem?: MockCodeProblem;
     done?: boolean;
   }>(
     "You are Apply Interviewer. Give brief, actionable coaching. Never invent fake praise. Return only valid JSON.",
@@ -356,6 +396,8 @@ export async function evaluateAnswerAndContinue(input: {
 Type: ${ctx.interviewType}. Difficulty: ${ctx.difficulty}.
 Questions planned: ${ctx.totalQuestions}. This was question ${questionIndex + 1}.
 Remaining after this: ${remaining}.
+${jobDescriptionBlock(ctx.jobDescription)}
+${codingGuidance(ctx.includeCoding, ctx.difficulty)}
 
 Resume context:
 ${resumeSnippet(ctx.resumeContext)}
@@ -376,7 +418,8 @@ Return JSON:
   "score": number (1-10),
   "done": boolean (true if this should be the last question OR remaining is 0),
   "nextQuestion": string | null (required if done is false; null if done),
-  "nextCategory": string
+  "nextCategory": string,
+  "nextCodeProblem"?: { "title": string, "description": string, "starterCode": string, "testCases": [{ "input": string, "expected": string, "label"?: string }] }
 }
 
 If done or remaining is 0, set done=true and nextQuestion=null.
@@ -416,7 +459,8 @@ Otherwise ask a distinct next question aligned to type/difficulty — do not rep
           ? null
           : {
               question: result.parsed.nextQuestion.trim(),
-              category: result.parsed.nextCategory?.trim() || "general"
+              category: result.parsed.nextCategory?.trim() || "general",
+              codeProblem: result.parsed.nextCodeProblem
             },
       done
     },
