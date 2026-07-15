@@ -73,7 +73,7 @@ type GeneratedResumeResponse = {
   };
 };
 
-type PreviewMode = "before" | "after";
+type PreviewMode = "before" | "after" | "diff";
 
 async function readApiJson<T>(response: Response, fallbackMessage: string) {
   const contentType = response.headers.get("content-type") ?? "";
@@ -246,6 +246,39 @@ function toPreview(data: GeneratedResumeResponse["resume"]): GeneratedPreview {
 
 function normalizeLine(value: string) {
   return value.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+type DiffLine = {
+  type: "added" | "removed" | "unchanged";
+  text: string;
+};
+
+function buildDiffLines(beforeText: string, afterText: string): DiffLine[] {
+  const beforeLines = beforeText.split(/\r?\n/).map((l) => l.trim());
+  const afterLines = afterText.split(/\r?\n/).map((l) => l.trim());
+  const beforeSet = new Set(beforeLines.map(normalizeLine).filter(Boolean));
+  const afterSet = new Set(afterLines.map(normalizeLine).filter(Boolean));
+  const result: DiffLine[] = [];
+
+  for (const line of afterLines) {
+    const key = normalizeLine(line);
+    if (!key) continue;
+    if (afterSet.has(key) && !beforeSet.has(key)) {
+      result.push({ type: "added", text: line });
+    } else {
+      result.push({ type: "unchanged", text: line });
+    }
+  }
+
+  for (const line of beforeLines) {
+    const key = normalizeLine(line);
+    if (!key) continue;
+    if (beforeSet.has(key) && !afterSet.has(key)) {
+      result.push({ type: "removed", text: line });
+    }
+  }
+
+  return result;
 }
 
 function buildSuggestedJobDescription(
@@ -858,7 +891,7 @@ export function GenerateResumeForm({
           </div>
           <div className="flex flex-wrap gap-2">
             <div className="inline-flex rounded-xl border border-border bg-white p-1">
-              {(["before", "after"] as PreviewMode[]).map((mode) => (
+              {(["before", "after", "diff"] as PreviewMode[]).map((mode) => (
                 <button
                   key={mode}
                   type="button"
@@ -929,7 +962,7 @@ export function GenerateResumeForm({
           <div className="mb-4 grid gap-2 sm:grid-cols-2">
             <div className="rounded-lg border border-border bg-white/70 px-3 py-2">
               <p className="text-[10px] font-semibold uppercase text-muted-foreground">
-                Before ATS
+                Before keyword match
               </p>
               <p className="mt-1 text-xl font-bold text-primary">
                 {preview.beforeAtsScore}%
@@ -937,7 +970,7 @@ export function GenerateResumeForm({
             </div>
             <div className="rounded-lg border border-accent/25 bg-accent/10 px-3 py-2">
               <p className="text-[10px] font-semibold uppercase text-accent">
-                New ATS
+                New keyword match
               </p>
               <p className="mt-1 text-xl font-bold text-accent">
                 {preview.atsScore}%
@@ -1045,7 +1078,7 @@ export function GenerateResumeForm({
             </div>
           ) : (
             <div className="space-y-6">
-              {previewMode === "after" && preview.changeSummary.length ? (
+              {previewMode !== "before" && preview.changeSummary.length ? (
                 <section>
                   <h4 className="mb-3 text-sm font-semibold text-foreground">
                     Changes made
@@ -1063,39 +1096,79 @@ export function GenerateResumeForm({
                 </section>
               ) : null}
 
-              <section>
-                <h4 className="mb-3 text-sm font-semibold text-foreground">
-                  Matched keywords
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {preview.keywords.map((keyword) => (
-                    <span
-                      key={keyword}
-                      className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
-                    >
-                      {keyword}
-                    </span>
-                  ))}
-                </div>
-              </section>
-
-              <section>
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h4 className="text-sm font-semibold text-foreground">
-                    {previewMode === "before" ? "Before PDF" : "After PDF"}
+              {previewMode !== "before" ? (
+                <section>
+                  <h4 className="mb-3 text-sm font-semibold text-foreground">
+                    Matched keywords
                   </h4>
-                  <span className="text-xs font-semibold text-accent">
-                    Same document preview
-                  </span>
-                </div>
-                <div className="overflow-hidden rounded-xl border border-border bg-white shadow-inner">
-                  <iframe
-                    title={`${previewMode} resume PDF preview`}
-                    src={`/api/pdf?resumeId=${preview.id}&preview=1&mode=${previewMode}`}
-                    className="h-[680px] w-full bg-white"
-                  />
-                </div>
-              </section>
+                  <div className="flex flex-wrap gap-2">
+                    {preview.keywords.map((keyword) => (
+                      <span
+                        key={keyword}
+                        className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                      >
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+
+              {previewMode === "diff" ? (
+                <section>
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold text-foreground">
+                      Before → After diff
+                    </h4>
+                    <span className="text-xs font-semibold text-accent">
+                      {changedLineCount} line{changedLineCount === 1 ? "" : "s"} changed
+                    </span>
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    <div className="max-h-[680px] overflow-y-auto">
+                      {buildDiffLines(preview.beforeText, preview.afterText).map(
+                        (line, idx) => (
+                          <div
+                            key={idx}
+                            className={`flex gap-2 border-b border-border/40 px-3 py-1.5 text-xs leading-5 ${
+                              line.type === "added"
+                                ? "bg-emerald-50 text-emerald-900"
+                                : line.type === "removed"
+                                  ? "bg-rose-50 text-rose-900"
+                                  : "bg-white text-muted-foreground"
+                            }`}
+                          >
+                            <span className="w-4 shrink-0 font-bold">
+                              {line.type === "added" ? "+" : line.type === "removed" ? "-" : ""}
+                            </span>
+                            <span className="min-w-0 flex-1 whitespace-pre-wrap break-words">
+                              {line.text || "\u00A0"}
+                            </span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </section>
+              ) : (
+                <section>
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold text-foreground">
+                      {previewMode === "before" ? "Before PDF" : "After PDF"}
+                    </h4>
+                    <span className="text-xs font-semibold text-accent">
+                      Same document preview
+                    </span>
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-border bg-white shadow-inner">
+                    <iframe
+                      title={`${previewMode} resume PDF preview`}
+                      src={`/api/pdf?resumeId=${preview.id}&preview=1&mode=${previewMode}`}
+                      className="h-[680px] w-full bg-white"
+                    />
+                  </div>
+                </section>
+              )}
             </div>
           )
         ) : (

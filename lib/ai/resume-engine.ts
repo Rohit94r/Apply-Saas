@@ -7,7 +7,7 @@ import type {
   ResumeCritiqueInput
 } from "@/lib/validations";
 import type { InterviewGuide as InterviewGuideType } from "@/types";
-import { getTextAIClient } from "@/lib/ai/openai";
+import { getTextAIForTask, type AITask } from "@/lib/ai/router";
 import {
   coverLetterPrompt,
   interviewGuidePrompt,
@@ -17,6 +17,86 @@ import {
   resumeTailoringPrompt
 } from "@/lib/ai/prompts";
 import { clampScore } from "@/lib/utils";
+
+/**
+ * Call a text AI with JSON response_format and retry once on parse failure.
+ * Returns parsed JSON, or null if both attempts fail (caller uses fallback).
+ */
+async function completeJsonWithRetry<T>(
+  task: AITask,
+  systemContent: string,
+  userContent: string,
+  fallback: T
+): Promise<{ parsed: T; provider: string } | null> {
+  const provider = getTextAIForTask(task);
+  if (!provider) {
+    return null;
+  }
+
+  const buildMessages = (retry: boolean) => [
+    { role: "system" as const, content: systemContent },
+    {
+      role: "user" as const,
+      content: retry
+        ? `${userContent}\n\nIMPORTANT: Return ONLY valid JSON. No markdown, no code fences, no trailing text. The entire response must parse as a single JSON object.`
+        : userContent
+    }
+  ];
+
+  try {
+    const completion = await provider.client.chat.completions.create({
+      model: provider.model,
+      response_format: { type: "json_object" },
+      messages: buildMessages(false)
+    });
+    const content = completion.choices[0]?.message.content;
+    const parsed = safeJsonParse<T>(content, fallback);
+
+    if (content && isValidParsedResult(parsed, fallback)) {
+      return { parsed, provider: provider.provider };
+    }
+
+    const retryCompletion = await provider.client.chat.completions.create({
+      model: provider.model,
+      response_format: { type: "json_object" },
+      messages: buildMessages(true)
+    });
+    const retryContent = retryCompletion.choices[0]?.message.content;
+    const retryParsed = safeJsonParse<T>(retryContent, fallback);
+
+    if (retryContent && isValidParsedResult(retryParsed, fallback)) {
+      return { parsed: retryParsed, provider: provider.provider };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Heuristic: check if parsed result has meaningful content (not just the fallback). */
+function isValidParsedResult<T>(parsed: T, fallback: T): boolean {
+  if (typeof parsed === "string") {
+    return parsed.trim().length >= 40 && parsed !== (fallback as unknown as string);
+  }
+
+  if (parsed && typeof parsed === "object") {
+    const parsedObj = parsed as Record<string, unknown>;
+    const keys = Object.keys(parsedObj);
+    if (keys.length === 0) return false;
+
+    const hasContent = keys.some((key) => {
+      const val = parsedObj[key];
+      if (typeof val === "string") return val.trim().length >= 20;
+      if (Array.isArray(val)) return val.length > 0;
+      if (val && typeof val === "object") return Object.keys(val).length > 0;
+      return false;
+    });
+    return hasContent;
+  }
+
+  return false;
+}
 
 type TailoredResumeOutput = {
   summary: string;
@@ -367,6 +447,53 @@ export function analyzeResumeAts({
   };
 }
 
+type AtsGapExplanation = {
+  keyword: string;
+  why: string;
+  how: string;
+};
+
+export async function explainAtsGaps(input: {
+  missingKeywords: string[];
+  jobDescription: string;
+  role: string;
+}): Promise<AtsGapExplanation[]> {
+  if (!input.missingKeywords.length) {
+    return [];
+  }
+
+  const fallback: AtsGapExplanation[] = input.missingKeywords.slice(0, 6).map((keyword) => ({
+    keyword,
+    why: `This keyword appears in the job description for ${input.role} but is not found in your resume.`,
+    how: `Add "${keyword}" to your skills section or mention it in a project bullet where you have real experience with it.`
+  }));
+
+  const prompt = `You are an ATS and resume expert. For each missing keyword below, explain in 1-2 sentences WHY it matters for the ${input.role} role and HOW the candidate can address it truthfully.
+
+Return JSON: { "gaps": [{ "keyword": string, "why": string, "how": string }] }
+
+Missing keywords: ${input.missingKeywords.slice(0, 8).join(", ")}
+
+Role: ${input.role}
+
+Job description excerpt:
+${input.jobDescription.slice(0, 800)}`;
+
+  const result = await completeJsonWithRetry<{ gaps: AtsGapExplanation[] }>(
+    "ats",
+    "You explain ATS keyword gaps concisely. Return only valid JSON.",
+    prompt,
+    { gaps: fallback }
+  );
+
+  if (!result) {
+    return fallback;
+  }
+
+  const gaps = result.parsed.gaps;
+  return gaps?.length ? gaps.slice(0, 8) : fallback;
+}
+
 function firstUsefulParagraph(text: string) {
   return (
     text
@@ -502,33 +629,19 @@ function fallbackResume(input: GenerateResumeInput): TailoredResumeOutput {
 export async function generateTailoredResume(
   input: GenerateResumeInput
 ): Promise<TailoredResumeOutput> {
-  const textAI = getTextAIClient();
   const fallback = fallbackResume(input);
+  const result = await completeJsonWithRetry<TailoredResumeOutput>(
+    "resume",
+    "You generate truthful, ATS-friendly resumes for students and job seekers. Return only valid JSON.",
+    resumeTailoringPrompt(input),
+    fallback
+  );
 
-  if (!textAI) {
+  if (!result) {
     return fallback;
   }
 
-  const completion = await textAI.client.chat.completions.create({
-    model: textAI.model,
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content:
-          "You generate truthful, ATS-friendly resumes for students and job seekers."
-      },
-      {
-        role: "user",
-        content: resumeTailoringPrompt(input)
-      }
-    ]
-  });
-
-  const parsed = safeJsonParse<TailoredResumeOutput>(
-    completion.choices[0]?.message.content,
-    fallback
-  );
+  const parsed = result.parsed;
   const parsedAfterText =
     parsed.afterText?.trim().length >= 80
       ? parsed.afterText.trim()
@@ -581,7 +694,6 @@ export async function refineGeneratedResume(
     currentResume: string;
   }
 ): Promise<Omit<TailoredResumeOutput, "beforeAtsScore">> {
-  const textAI = getTextAIClient();
   const baseInput: GenerateResumeInput = {
     company: input.company,
     role: input.role,
@@ -590,47 +702,28 @@ export async function refineGeneratedResume(
     prompt: input.prompt
   };
   const fallback = fallbackResume(baseInput);
+  const refineFallback: Omit<TailoredResumeOutput, "beforeAtsScore"> = {
+    summary: fallback.summary,
+    skills: fallback.skills,
+    bullets: fallback.bullets,
+    afterText: fallback.afterText,
+    changeSummary: [`Applied refinement: ${input.prompt.slice(0, 80)}`],
+    keywords: fallback.keywords,
+    atsScore: fallback.atsScore
+  };
 
-  if (!textAI) {
-    return {
-      summary: fallback.summary,
-      skills: fallback.skills,
-      bullets: fallback.bullets,
-      afterText: fallback.afterText,
-      changeSummary: [`Applied refinement: ${input.prompt.slice(0, 80)}`],
-      keywords: fallback.keywords,
-      atsScore: fallback.atsScore
-    };
+  const result = await completeJsonWithRetry<Omit<TailoredResumeOutput, "beforeAtsScore">>(
+    "resume",
+    "You refine truthful, ATS-friendly resumes without inventing experience. Return only valid JSON.",
+    refineResumePrompt(input),
+    refineFallback
+  );
+
+  if (!result) {
+    return refineFallback;
   }
 
-  const completion = await textAI.client.chat.completions.create({
-    model: textAI.model,
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content:
-          "You refine truthful, ATS-friendly resumes without inventing experience."
-      },
-      {
-        role: "user",
-        content: refineResumePrompt(input)
-      }
-    ]
-  });
-
-  const parsed = safeJsonParse<Omit<TailoredResumeOutput, "beforeAtsScore">>(
-    completion.choices[0]?.message.content,
-    {
-      summary: fallback.summary,
-      skills: fallback.skills,
-      bullets: fallback.bullets,
-      afterText: fallback.afterText,
-      changeSummary: [`Applied refinement: ${input.prompt.slice(0, 80)}`],
-      keywords: fallback.keywords,
-      atsScore: fallback.atsScore
-    }
-  );
+  const parsed = result.parsed;
   const parsedAfterText =
     parsed.afterText?.trim().length >= 80
       ? parsed.afterText.trim()
@@ -657,6 +750,142 @@ export async function refineGeneratedResume(
     changeSummary: parsed.changeSummary?.length
       ? parsed.changeSummary
       : [`Applied refinement: ${input.prompt.slice(0, 80)}`]
+  };
+}
+
+type SectionName = "summary" | "skills" | "experience" | "projects" | "education" | "achievements";
+
+const sectionHeaders: Record<SectionName, RegExp[]> = {
+  summary: [/^(professional\s+)?summary$/i, /^profile$/i, /^objective$/i],
+  skills: [/^(technical\s+)?skills$/i, /^core\s+skills$/i, /^key\s+skills$/i],
+  experience: [/^(work\s+)?experience$/i, /^employment$/i, /^professional\s+experience$/i],
+  projects: [/^projects?$/i, /^personal\s+projects$/i, /^academic\s+projects$/i],
+  education: [/^education$/i, /^academic\s+background$/i],
+  achievements: [/^(achievements|awards|certifications?)$/i, /^honors?$/i]
+};
+
+function extractSection(text: string, section: SectionName): { header: string; content: string; startIdx: number; endIdx: number } | null {
+  const lines = text.split(/\r?\n/);
+  const patterns = sectionHeaders[section];
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (patterns.some((p) => p.test(trimmed))) {
+      let endIdx = lines.length;
+      for (let j = i + 1; j < lines.length; j++) {
+        const nextTrimmed = lines[j].trim();
+        if (nextTrimmed && /^[A-Z]/.test(nextTrimmed) && nextTrimmed.length < 40 &&
+            !nextTrimmed.startsWith("-") && !nextTrimmed.startsWith("•")) {
+          const allPatterns = Object.values(sectionHeaders).flat();
+          if (allPatterns.some((p) => p.test(nextTrimmed))) {
+            endIdx = j;
+            break;
+          }
+        }
+      }
+      const content = lines.slice(i + 1, endIdx).join("\n").trim();
+      return { header: trimmed, content, startIdx: i, endIdx };
+    }
+  }
+  return null;
+}
+
+function mergeSectionBack(originalText: string, section: SectionName, refinedContent: string): string {
+  const lines = originalText.split(/\r?\n/);
+  const extracted = extractSection(originalText, section);
+
+  if (!extracted) {
+    return `${originalText.trim()}\n\n${section.toUpperCase()}\n${refinedContent}`;
+  }
+
+  const before = lines.slice(0, extracted.startIdx + 1);
+  const after = lines.slice(extracted.endIdx);
+  return [...before, refinedContent, ...after].join("\n");
+}
+
+export async function refineResumeSection(
+  input: RefineResumeInput & {
+    section: SectionName;
+    company: string;
+    role: string;
+    jobDescription: string;
+    currentResume: string;
+  }
+): Promise<Omit<TailoredResumeOutput, "beforeAtsScore">> {
+  const baseInput: GenerateResumeInput = {
+    company: input.company,
+    role: input.role,
+    jobDescription: input.jobDescription,
+    masterResume: input.currentResume,
+    prompt: input.prompt
+  };
+  const fallback = fallbackResume(baseInput);
+  const extracted = extractSection(input.currentResume, input.section as SectionName);
+
+  const sectionContent = extracted?.content ?? input.currentResume;
+  const sectionContext = `You are refining ONLY the "${input.section}" section of a resume for ${input.role} at ${input.company}.
+Keep all other sections unchanged. Do not invent experience — only improve wording, clarity, and keyword alignment.
+Return JSON with: { "afterText": string (the FULL resume with only this section updated), "summary": string, "skills": string[], "bullets": string[], "changeSummary": string[], "keywords": string[], "atsScore": number }
+
+Section to refine (${input.section}):
+${sectionContent}
+
+User instruction: ${input.prompt}
+
+Full resume for context (DO NOT change other sections):
+${input.currentResume}
+
+Job description:
+${input.jobDescription}`;
+
+  const refineFallback: Omit<TailoredResumeOutput, "beforeAtsScore"> = {
+    summary: fallback.summary,
+    skills: fallback.skills,
+    bullets: fallback.bullets,
+    afterText: mergeSectionBack(input.currentResume, input.section as SectionName, sectionContent),
+    changeSummary: [`Refined ${input.section}: ${input.prompt.slice(0, 80)}`],
+    keywords: fallback.keywords,
+    atsScore: fallback.atsScore
+  };
+
+  const result = await completeJsonWithRetry<Omit<TailoredResumeOutput, "beforeAtsScore">>(
+    "resume",
+    "You refine one section of a resume without changing other sections or inventing experience. Return only valid JSON.",
+    sectionContext,
+    refineFallback
+  );
+
+  if (!result) {
+    return refineFallback;
+  }
+
+  const parsed = result.parsed;
+  const parsedAfterText =
+    parsed.afterText?.trim().length >= 80
+      ? parsed.afterText.trim()
+      : refineFallback.afterText;
+  const analysis = analyzeResumeAts({
+    resumeText: parsedAfterText,
+    jobDescription: input.jobDescription,
+    role: input.role
+  });
+
+  return {
+    ...refineFallback,
+    ...parsed,
+    afterText: parsedAfterText,
+    atsScore: analysis.score,
+    summary: parsed.summary?.trim()
+      ? parsed.summary
+      : firstUsefulParagraph(parsedAfterText),
+    keywords: analysis.matchedKeywords.length
+      ? analysis.matchedKeywords.slice(0, 12)
+      : refineFallback.keywords,
+    skills: parsed.skills?.length ? parsed.skills : refineFallback.skills,
+    bullets: parsed.bullets?.length ? parsed.bullets : refineFallback.bullets,
+    changeSummary: parsed.changeSummary?.length
+      ? parsed.changeSummary
+      : [`Refined ${input.section}: ${input.prompt.slice(0, 80)}`]
   };
 }
 
@@ -1204,48 +1433,44 @@ function normalizeInterviewGuide(
 
 export async function generateInterviewGuide(input: InterviewGuideInput) {
   const fallback = buildFallbackInterviewGuide(input);
-  const textAI = getTextAIClient();
-
-  if (!textAI) {
-    return fallback;
-  }
-
-  const completion = await textAI.client.chat.completions.create({
-    model: textAI.model,
-    response_format: { type: "json_object" },
-    messages: [{ role: "user", content: interviewGuidePrompt(input) }]
-  });
-  const parsed = safeJsonParse<Partial<InterviewGuideOutput>>(
-    completion.choices[0]?.message.content,
+  const result = await completeJsonWithRetry<Partial<InterviewGuideOutput>>(
+    "interview",
+    "You are an expert interview coach for Indian campus and early-career placements. Return only valid JSON.",
+    interviewGuidePrompt(input),
     fallback
   );
 
-  return normalizeInterviewGuide(parsed, fallback);
+  if (!result) {
+    return fallback;
+  }
+
+  return normalizeInterviewGuide(result.parsed, fallback);
 }
 
 export async function generateCoverLetter(input: CoverLetterInput) {
-  const textAI = getTextAIClient();
   const fallback = {
     coverLetter: `Dear ${input.company} team,\n\nI am excited to apply for the ${input.role} role. My resume reflects hands-on experience that aligns with your job description, including practical project work, collaboration, and a strong willingness to learn quickly.\n\nI would be grateful for the opportunity to contribute to your team and discuss how my background fits this role.\n\nSincerely,`
   };
 
-  if (!textAI) {
+  const result = await completeJsonWithRetry<{ coverLetter: string }>(
+    "cover-letter",
+    "You write professional, concise cover letters for students and early-career applicants. Return only valid JSON with a 'coverLetter' field.",
+    coverLetterPrompt(input),
+    fallback
+  );
+
+  if (!result) {
     return fallback;
   }
 
-  const completion = await textAI.client.chat.completions.create({
-    model: textAI.model,
-    response_format: { type: "json_object" },
-    messages: [{ role: "user", content: coverLetterPrompt(input) }]
-  });
-
-  return safeJsonParse(completion.choices[0]?.message.content, fallback);
+  return result.parsed.coverLetter?.trim().length >= 80
+    ? result.parsed
+    : fallback;
 }
 
 export async function generateResumeCritique(
   input: ResumeCritiqueInput
 ): Promise<ResumeCritiqueOutput> {
-  const textAI = getTextAIClient();
   const keywords = extractKeywords(input.jobDescription);
   const resumeKeywords = extractKeywords(input.resumeContent);
   const missingKeywords = keywords.filter((keyword) => !resumeKeywords.includes(keyword));
@@ -1267,20 +1492,18 @@ export async function generateResumeCritique(
     missingKeywords: missingKeywords.length ? missingKeywords : keywords.slice(0, 4)
   };
 
-  if (!textAI) {
+  const result = await completeJsonWithRetry<ResumeCritiqueOutput>(
+    "critique",
+    "You are an expert resume reviewer for ATS and recruiter screening. Return only valid JSON.",
+    resumeCritiquePrompt(input),
+    fallback
+  );
+
+  if (!result) {
     return fallback;
   }
 
-  const completion = await textAI.client.chat.completions.create({
-    model: textAI.model,
-    response_format: { type: "json_object" },
-    messages: [{ role: "user", content: resumeCritiquePrompt(input) }]
-  });
-
-  const parsed = safeJsonParse<ResumeCritiqueOutput>(
-    completion.choices[0]?.message.content,
-    fallback
-  );
+  const parsed = result.parsed;
 
   return {
     ...fallback,
@@ -1298,7 +1521,6 @@ export async function generateResumeCritique(
 export async function generateProfessionalPhotoPlan(
   input: ProfessionalPhotoInput
 ): Promise<ProfessionalPhotoOutput> {
-  const textAI = getTextAIClient();
   const fallback: ProfessionalPhotoOutput = {
     headline: input.imageUrl ? "Photo uploaded and ready" : "Profile photo plan ready",
     recommendations: [
@@ -1311,20 +1533,18 @@ export async function generateProfessionalPhotoPlan(
     wardrobe: "Solid shirt or blazer, medium contrast, no busy patterns."
   };
 
-  if (!textAI) {
+  const result = await completeJsonWithRetry<ProfessionalPhotoOutput>(
+    "photo",
+    "You advise on professional profile photos for job applications. Return only valid JSON.",
+    professionalPhotoPrompt(input),
+    fallback
+  );
+
+  if (!result) {
     return fallback;
   }
 
-  const completion = await textAI.client.chat.completions.create({
-    model: textAI.model,
-    response_format: { type: "json_object" },
-    messages: [{ role: "user", content: professionalPhotoPrompt(input) }]
-  });
-
-  const parsed = safeJsonParse<ProfessionalPhotoOutput>(
-    completion.choices[0]?.message.content,
-    fallback
-  );
+  const parsed = result.parsed;
 
   return {
     ...fallback,

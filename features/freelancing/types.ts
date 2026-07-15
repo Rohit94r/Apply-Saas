@@ -12,7 +12,11 @@ export type FreelanceDomainId =
   | "ai-ml"
   | "design"
   | "marketing"
-  | "content";
+  | "content"
+  | "data"
+  | "automation"
+  | "video"
+  | "business";
 
 export type FreelanceDomainIcon =
   | "code"
@@ -20,7 +24,11 @@ export type FreelanceDomainIcon =
   | "brain"
   | "palette"
   | "megaphone"
-  | "pen";
+  | "pen"
+  | "chart"
+  | "gear"
+  | "film"
+  | "briefcase";
 
 export type FreelanceDomain = {
   id: FreelanceDomainId;
@@ -53,6 +61,8 @@ export type FreelanceSubdomain = {
   pricingInr: string;
   /** Short call pitch the student can read while on the phone. */
   pitchScript: string;
+  /** India / global market note */
+  market?: "india" | "global" | "both";
 };
 
 export type FindClientProvider =
@@ -67,4 +77,21 @@ export type FindClientLink = {
   label: string;
   hint: string;
   url: string;
+};
+
+export type FreelancePlatform = {
+  id: string;
+  name: string;
+  region: "india" | "global" | "both";
+  bestFor: string;
+  url: string;
+  starterTip: string;
+  feeNote: string;
+};
+
+export type FreelanceStarterTip = {
+  id: string;
+  title: string;
+  body: string;
+  stage: "week-1" | "first-client" | "pricing" | "delivery" | "growth";
 };

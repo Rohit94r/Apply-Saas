@@ -36,7 +36,10 @@ export const masterResumeSchema = z.object({
 export const refineResumeSchema = z.object({
   resumeId: z.string().min(1, "Resume id is required"),
   prompt: z.string().trim().min(8, "Add a short refinement instruction").max(2000),
-  jobDescription: z.string().trim().min(10).optional()
+  jobDescription: z.string().trim().min(10).optional(),
+  section: z
+    .enum(["summary", "skills", "experience", "projects", "education", "achievements"])
+    .optional()
 });
 
 export const updateGeneratedResumeSchema = z.object({
@@ -89,6 +92,46 @@ export const resumeCritiqueSchema = z.object({
 export const professionalPhotoSchema = z.object({
   imageUrl: z.string().url().optional(),
   prompt: z.string().max(500).optional()
+});
+
+export const applicationStatusSchema = z.enum([
+  "applied",
+  "interview",
+  "offer",
+  "rejected"
+]);
+
+export const applicationCreateSchema = z.object({
+  company: z.string().trim().min(1, "Company is required").max(120),
+  role: z.string().trim().min(1, "Role is required").max(120),
+  status: applicationStatusSchema.optional().default("applied"),
+  notes: z.string().trim().max(2000).optional().default(""),
+  location: z.string().trim().max(120).optional().default(""),
+  appliedAt: z.string().optional()
+});
+
+export const applicationUpdateSchema = applicationCreateSchema.partial();
+
+export const offerCreateSchema = z.object({
+  company: z.string().trim().min(1, "Company is required").max(120),
+  role: z.string().trim().min(1, "Role is required").max(120),
+  ctc: z.string().trim().min(1, "CTC is required").max(80),
+  location: z.string().trim().max(120).optional().default(""),
+  deadline: z.string().trim().max(80).optional().default(""),
+  notes: z.string().trim().max(2000).optional().default("")
+});
+
+export const offerUpdateSchema = offerCreateSchema.partial();
+
+export const mockInterviewStartSchema = z.object({
+  company: z.string().trim().min(1, "Company is required").max(120),
+  role: z.string().trim().min(1, "Role is required").max(120)
+});
+
+export const mockInterviewCompleteSchema = z.object({
+  action: z.literal("complete"),
+  sessionId: z.string().min(1),
+  durationSeconds: z.number().int().min(0).max(60 * 60 * 4)
 });
 
 export type GenerateResumeInput = z.infer<typeof generateResumeSchema>;

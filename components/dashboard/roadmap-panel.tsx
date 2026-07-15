@@ -14,7 +14,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-/** Dashboard roadmap — live Phase 1 links + Phase 2 coming soon. */
+/** Live toolkit links + Desktop coming soon (unused on home; kept for reuse). */
 export function RoadmapPanel() {
   return (
     <div className="grid gap-5 lg:grid-cols-2">
@@ -55,14 +55,14 @@ export function RoadmapPanel() {
           <div className="flex items-center gap-2">
             <Desktop className="h-5 w-5 text-accent" weight="regular" />
             <p className="text-xs font-bold uppercase tracking-wide text-accent">
-              Phase 2 · Coming soon
+              Desktop · Coming soon
             </p>
           </div>
           <h3 className="mt-2 text-lg font-semibold">
-            Interview Copilot & more
+            Interview Copilot on desktop
           </h3>
           <p className="mt-1 text-xs leading-5 text-primary-foreground/70">
-            We ship desktop practice tools after Phase 1 AI + PDF quality is solid.
+            Mock interview, applications, and offers are already live on the web.
           </p>
         </div>
         <ul className="space-y-0 p-2">
@@ -88,8 +88,8 @@ export function RoadmapPanel() {
         </ul>
         <div className="border-t border-border px-5 py-4">
           <Button asChild size="sm" variant="outline" className="w-full sm:w-auto">
-            <Link href="/#coming-soon">
-              See roadmap on landing
+            <Link href="/downloads">
+              Open downloads page
               <ArrowRight className="h-4 w-4" weight="regular" />
             </Link>
           </Button>

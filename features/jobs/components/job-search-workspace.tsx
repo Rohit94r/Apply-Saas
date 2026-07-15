@@ -202,8 +202,8 @@ export function JobSearchWorkspace() {
               ))}
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Upload a resume to rank openings — ~2× clearer shortlist vs random
-              apply. Filters cover internship, full-time, and contract.
+              Upload a resume to rank jobs for you. Then filter by internship,
+              full-time, remote, or source.
             </p>
           </div>
 
@@ -342,7 +342,7 @@ export function JobSearchWorkspace() {
               <p className="text-sm text-muted-foreground">
                 {loading
                   ? "Finding matched jobs…"
-                  : "No jobs for these filters. Try All, or upload a resume."}
+                  : "No jobs match these filters. Clear filters or upload a resume."}
               </p>
               {!loading ? (
                 <Button

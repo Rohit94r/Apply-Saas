@@ -1,12 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import {
+  ArrowRight,
   Camera,
   DownloadSimple,
   EnvelopeSimple,
   FilePdf,
   MagicWand,
+  Scales,
   Sparkle,
   SpinnerGap
 } from "@phosphor-icons/react";
@@ -221,21 +224,31 @@ export function ToolsWorkspace({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-white/70 p-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTool(tab.id)}
-            className={cn(
-              "inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
-              activeTool === tab.id && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-            )}
-          >
-            <tab.icon className="h-4 w-4" weight="regular" />
-            {tab.label}
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-white/70 p-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTool(tab.id)}
+              className={cn(
+                "inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
+                activeTool === tab.id && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+              )}
+            >
+              <tab.icon className="h-4 w-4" weight="regular" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <Link
+          href="/dashboard/offers"
+          className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#fbfaf6] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:text-primary"
+        >
+          <Scales className="h-4 w-4 text-accent" weight="regular" />
+          Compare offers
+          <ArrowRight className="h-3.5 w-3.5 text-accent" weight="regular" />
+        </Link>
       </div>
 
       {activeTool === "cover" ? (
@@ -303,13 +316,17 @@ export function ToolsWorkspace({
           <OutputPanel
             title="Critique report"
             icon={MagicWand}
-            empty="ATS score, risks, fixes, and keywords will appear here."
+            empty="Keyword match score, risks, fixes, and keywords will appear here."
           >
             {critique ? (
               <div className="space-y-5">
                 <div className="rounded-xl border border-accent/20 bg-accent/10 p-4">
                   <p className="text-sm font-semibold text-accent">
-                    ATS score {critique.atsScore}%
+                    Keyword match {critique.atsScore}%
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Heuristic overlap with the job description — not a live ATS
+                    vendor score.
                   </p>
                 </div>
                 <ResultList title="Strengths" items={critique.strengths} />

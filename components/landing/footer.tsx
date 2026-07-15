@@ -9,32 +9,36 @@ const columns = [
   {
     title: "Product",
     links: [
-      { label: "AI Resume Builder", href: "/#student-gateway" },
-      { label: "Live features", href: "/#features" },
-      { label: "Coming soon", href: "/#coming-soon" },
+      { label: "Tailor resume", href: "/dashboard/generate" },
+      { label: "Mock interview", href: "/dashboard/mock-interview" },
+      { label: "My applications", href: "/dashboard/applications" },
+      { label: "AI tools", href: "/dashboard/tools" },
       { label: "Interview prep", href: "/dashboard/interview" },
+      { label: "Job search", href: "/dashboard/jobs" },
+      { label: "Settings", href: "/dashboard/settings" },
       { label: "Pricing", href: "/#pricing" }
     ]
   },
   {
     title: "Guides",
     links: [
+      { label: "Company prep guides", href: "/prepare" },
+      { label: "TCS interview questions", href: "/prepare/tcs-interview-questions-2026" },
+      { label: "Amazon OA questions", href: "/prepare/amazon-oa-questions" },
       { label: "ATS resume tips", href: "/blog/ats-friendly-resume-india-2026" },
       {
         label: "Entry-level resume format",
         href: "/blog/fresher-resume-format-it-companies"
       },
-      { label: "Internship resume mistakes", href: "/blog/internship-resume-mistakes" },
       { label: "Blog", href: "/blog" }
     ]
   },
   {
-    title: "Legal",
+    title: "Desktop",
     links: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
-      { label: "Security", href: "#" },
-      { label: "Data export", href: "#" }
+      { label: "Interview Copilot (Coming soon)", href: "/downloads" },
+      { label: "Desktop roadmap", href: "/#coming-soon" },
+      { label: "Try web mock interview", href: "/dashboard/mock-interview" }
     ]
   },
   {
@@ -75,7 +79,7 @@ export function Footer() {
             First 5 resumes are free worldwide. Pro available when you need unlimited access.
           </p>
         </div>
-        <div className="grid gap-10 border-t border-border pt-12 md:grid-cols-[1.2fr_repeat(4,1fr)]">
+        <div className="grid gap-10 border-t border-border pt-12 md:grid-cols-[1.35fr_repeat(4,1fr)]">
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">

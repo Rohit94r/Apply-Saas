@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { Play, X } from "@phosphor-icons/react";
 import type { YouTubeVideo } from "@/lib/data/learning-resources";
@@ -30,11 +31,12 @@ export function YouTubeVideoGrid({
             className="group overflow-hidden rounded-xl border border-border bg-white text-left transition hover:border-primary/30 hover:shadow-soft"
           >
             <div className="relative aspect-video overflow-hidden bg-muted">
-              <img
+              <Image
                 src={youtubeThumbnail(video.id)}
                 alt={video.title}
-                className="h-full w-full object-cover transition group-hover:scale-105"
-                loading="lazy"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition group-hover:scale-105"
               />
               <span className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition group-hover:opacity-100">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 text-primary shadow-lg">

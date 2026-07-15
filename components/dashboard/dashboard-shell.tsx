@@ -11,13 +11,18 @@ import {
   ChartBar,
   Desktop,
   FileText,
+  GearSix,
   GraduationCap,
   House,
   MagicWand,
   MagnifyingGlass,
+  Microphone,
+  Scales,
   ShieldCheck,
   Sparkle,
-  Storefront
+  Storefront,
+  ListChecks,
+  Notepad
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/landing/logo";
@@ -31,27 +36,117 @@ const navItems: Array<{
   label: string;
   href: string;
   icon: PhosphorIcon;
+  /** Shorter label for the mobile chip row */
+  shortLabel?: string;
 }> = [
-  { label: "Overview", href: "/dashboard", icon: House },
-  { label: "My resumes", href: "/dashboard/resumes", icon: FileText },
-  { label: "AI Resume Builder", href: "/dashboard/generate", icon: Sparkle },
-  { label: "Job search", href: "/dashboard/jobs", icon: MagnifyingGlass },
+  { label: "Home", href: "/dashboard", icon: House },
+  { label: "My resumes", href: "/dashboard/resumes", icon: FileText, shortLabel: "Resumes" },
+  { label: "Tailor resume", href: "/dashboard/generate", icon: Sparkle, shortLabel: "Tailor" },
+  { label: "Job search", href: "/dashboard/jobs", icon: MagnifyingGlass, shortLabel: "Jobs" },
+  { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase, shortLabel: "Interview" },
+  { label: "Mock interview", href: "/dashboard/mock-interview", icon: Microphone, shortLabel: "Mock" },
+  { label: "My applications", href: "/dashboard/applications", icon: ListChecks, shortLabel: "Apps" },
+  { label: "Compare offers", href: "/dashboard/offers", icon: Scales, shortLabel: "Offers" },
+  { label: "AI tools", href: "/dashboard/tools", icon: MagicWand, shortLabel: "Tools" },
+  { label: "Cover letters", href: "/dashboard/cover-letters", icon: Notepad, shortLabel: "Letters" },
   { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
-  { label: "Learner prep", href: "/dashboard/learners", icon: GraduationCap },
-  { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase },
-  { label: "AI tools", href: "/dashboard/tools", icon: MagicWand },
-  { label: "Analytics", href: "/dashboard/analytics", icon: ChartBar },
-  { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle }
+  { label: "Learning", href: "/dashboard/learners", icon: GraduationCap },
+  { label: "Progress", href: "/dashboard/analytics", icon: ChartBar },
+  { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle },
+  { label: "Settings", href: "/dashboard/settings", icon: GearSix }
 ];
 
-const comingSoonItems: Array<{
-  label: string;
-  icon: PhosphorIcon;
-}> = [
-  { label: "Interview Copilot", icon: Desktop },
-  { label: "Mock interview", icon: Briefcase },
-  { label: "App tracker", icon: MagnifyingGlass }
+const pageTitles: Array<{ match: (path: string) => boolean; title: string; eyebrow: string }> = [
+  {
+    match: (p) => p === "/dashboard",
+    title: "Your Apply home",
+    eyebrow: "Placement prep"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/mock-interview"),
+    title: "Mock interview",
+    eyebrow: "Practice room"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/applications"),
+    title: "My applications",
+    eyebrow: "Tracker"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/offers"),
+    title: "Compare offers",
+    eyebrow: "Decide with clarity"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/tools"),
+    title: "AI tools",
+    eyebrow: "Cover letter & more"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/cover-letters"),
+    title: "Cover letters",
+    eyebrow: "Saved history"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/generate"),
+    title: "Tailor resume",
+    eyebrow: "Job-ready PDF"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/interview"),
+    title: "Interview prep",
+    eyebrow: "Questions & roadmap"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/jobs"),
+    title: "Job search",
+    eyebrow: "Find openings"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/resumes"),
+    title: "My resumes",
+    eyebrow: "Your library"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/freelancing"),
+    title: "Freelancing",
+    eyebrow: "Client outreach"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/learners"),
+    title: "Learning tracks",
+    eyebrow: "Skill gaps"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/analytics"),
+    title: "Progress",
+    eyebrow: "Readiness"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/settings"),
+    title: "Settings",
+    eyebrow: "Account"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/upgrade"),
+    title: "Upgrade",
+    eyebrow: "Pro access"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/admin"),
+    title: "Admin",
+    eyebrow: "Founder tools"
+  }
 ];
+
+function titleForPath(pathname: string) {
+  return (
+    pageTitles.find((entry) => entry.match(pathname)) ?? {
+      title: "Your Apply home",
+      eyebrow: "Placement prep"
+    }
+  );
+}
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   if (!clerkIsConfigured) {
@@ -95,6 +190,15 @@ function AuthenticatedDashboardShell({
         { label: "Admin", href: "/dashboard/admin", icon: ShieldCheck }
       ]
     : navItems;
+  const pageMeta = titleForPath(pathname);
+
+  /** Home is exact-only so `/dashboard/mock-interview` never highlights Overview. */
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
     <div className="min-h-screen bg-[#f7f4ee] dark:bg-[#131318]">
@@ -119,7 +223,7 @@ function AuthenticatedDashboardShell({
             )}
           </button>
         </div>
-        <nav className="mt-10 space-y-1">
+        <nav className="mt-10 space-y-1 overflow-y-auto pb-24" style={{ maxHeight: "calc(100vh - 8rem)" }}>
           {sidebarItems.map((item) => (
             <Link
               key={item.href}
@@ -128,7 +232,7 @@ function AuthenticatedDashboardShell({
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
                 collapsed && "justify-center px-0",
-                pathname === item.href && "bg-muted text-primary"
+                isActive(item.href) && "bg-muted text-primary"
               )}
             >
               <item.icon className="h-4 w-4" weight="regular" />
@@ -142,24 +246,22 @@ function AuthenticatedDashboardShell({
           ) : (
             <div className="my-3 border-t border-border" />
           )}
-          {comingSoonItems.map((item) => (
-            <div
-              key={item.label}
-              title={`${item.label} — coming soon`}
-              className={cn(
-                "flex cursor-default items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground/70",
-                collapsed && "justify-center px-0"
-              )}
-            >
-              <item.icon className="h-4 w-4" weight="regular" />
-              <span className={cn("flex min-w-0 items-center gap-2", collapsed && "sr-only")}>
-                <span className="truncate">{item.label}</span>
-                <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide">
-                  Soon
-                </span>
+          <Link
+            href="/downloads"
+            title="Apply Desktop — coming soon"
+            className={cn(
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground/80 transition hover:bg-muted hover:text-primary",
+              collapsed && "justify-center px-0"
+            )}
+          >
+            <Desktop className="h-4 w-4" weight="regular" />
+            <span className={cn("flex min-w-0 items-center gap-2", collapsed && "sr-only")}>
+              <span className="truncate">Interview Copilot</span>
+              <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide">
+                Soon
               </span>
-            </div>
-          ))}
+            </span>
+          </Link>
         </nav>
         {!collapsed ? (
           <div className="absolute bottom-5 left-4 right-4 space-y-3">
@@ -174,8 +276,8 @@ function AuthenticatedDashboardShell({
               <Logo />
             </div>
             <div className="hidden lg:block">
-              <p className="text-sm text-muted-foreground">Workspace</p>
-              <h1 className="text-lg font-semibold text-foreground">Apply dashboard</h1>
+              <p className="text-sm text-muted-foreground">{pageMeta.eyebrow}</p>
+              <h1 className="text-lg font-semibold text-foreground">{pageMeta.title}</h1>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-3 sm:flex">
@@ -204,13 +306,22 @@ function AuthenticatedDashboardShell({
                 href={item.href}
                 className={cn(
                   "flex shrink-0 items-center gap-2 rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-muted-foreground",
-                  pathname === item.href && "border-primary/30 text-primary"
+                  isActive(item.href) && "border-primary/30 text-primary"
                 )}
               >
                 <item.icon className="h-3.5 w-3.5" weight="regular" />
-                {item.label}
+                {"shortLabel" in item && item.shortLabel
+                  ? item.shortLabel
+                  : item.label}
               </Link>
             ))}
+            <Link
+              href="/downloads"
+              className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-muted-foreground"
+            >
+              <Desktop className="h-3.5 w-3.5" weight="regular" />
+              Desktop soon
+            </Link>
           </nav>
         </header>
         <main className="px-5 py-8 lg:px-8 lg:py-10 dark:text-foreground">{children}</main>

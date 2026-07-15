@@ -14,11 +14,15 @@ import {
   AppWindow,
   ArrowSquareOut,
   Brain,
+  Briefcase,
   CaretRight,
+  ChartBar,
   ChatCircle,
   Checks,
   Code,
   Copy,
+  FilmStrip,
+  GearSix,
   Globe,
   Lightbulb,
   ListChecks,
@@ -41,6 +45,8 @@ import {
   buildFindClientLinks,
   freelanceCities,
   freelanceDomains,
+  freelancePlatforms,
+  freelanceStarterTips,
   freelanceSubdomains,
   getFreelanceSubdomainsByDomain
 } from "@/features/freelancing";
@@ -56,7 +62,11 @@ const domainIcons: Record<FreelanceDomainIcon, PhosphorIcon> = {
   brain: Brain,
   palette: Palette,
   megaphone: Megaphone,
-  pen: Pen
+  pen: Pen,
+  chart: ChartBar,
+  gear: GearSix,
+  film: FilmStrip,
+  briefcase: Briefcase
 };
 
 const difficultyStyles: Record<
@@ -212,6 +222,79 @@ export function FreelanceWorkspace() {
       {selected ? (
         <SubdomainDetail subdomain={selected} city={city} />
       ) : null}
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Globe className="h-5 w-5 text-accent" weight="regular" />
+            <h3 className="text-lg font-semibold text-foreground">
+              Platforms (India + global)
+            </h3>
+          </div>
+          <p className="mb-4 text-sm leading-6 text-muted-foreground">
+            Mix outbound (Maps) with these marketplaces once you have 2–3 proof
+            projects. Prefer niches over generic “web developer” profiles.
+          </p>
+          <ul className="space-y-3">
+            {freelancePlatforms.map((platform) => (
+              <li
+                key={platform.id}
+                className="rounded-xl border border-border bg-[#fbfaf6] p-3"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <a
+                    href={platform.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm font-bold text-primary transition hover:text-accent"
+                  >
+                    {platform.name}
+                  </a>
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                    {platform.region}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  {platform.bestFor}
+                </p>
+                <p className="mt-2 text-xs leading-5 text-foreground">
+                  {platform.starterTip}
+                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {platform.feeNote}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card className="p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Lightbulb className="h-5 w-5 text-accent" weight="regular" />
+            <h3 className="text-lg font-semibold text-foreground">
+              Starter tips by stage
+            </h3>
+          </div>
+          <ul className="space-y-3">
+            {freelanceStarterTips.map((tip) => (
+              <li
+                key={tip.id}
+                className="rounded-xl border border-border bg-white p-3"
+              >
+                <p className="text-[10px] font-bold uppercase tracking-wide text-accent">
+                  {tip.stage.replace("-", " ")}
+                </p>
+                <p className="mt-1 text-sm font-bold text-foreground">
+                  {tip.title}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  {tip.body}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
     </div>
   );
 }

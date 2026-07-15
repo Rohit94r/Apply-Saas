@@ -11,6 +11,18 @@ export type CompanyProfile = {
   cultureNotes: string;
 };
 
+export type InterviewQuestion = {
+  round: string;
+  prompt: string;
+  difficulty?: "Easy" | "Medium" | "Hard";
+  hint?: string;
+};
+
+export type CompanyQuestionBank = {
+  companyId: string;
+  questions: InterviewQuestion[];
+};
+
 const companies: CompanyProfile[] = [
   {
     id: "google",
@@ -288,6 +300,23 @@ const companies: CompanyProfile[] = [
     cultureNotes: "Stability and correctness matter in financial systems."
   },
   {
+    id: "morgan-stanley",
+    name: "Morgan Stanley",
+    domain: "morganstanley.com",
+    industry: "Finance / Banking",
+    size: "80,000+",
+    headquarters: "New York, NY",
+    hiringFocus: ["DSA", "Java/C++", "Systems reliability", "Communication"],
+    commonRoles: [
+      "Technology Analyst",
+      "Software Engineer",
+      "Full Stack Developer",
+      "Infrastructure Engineer"
+    ],
+    interviewStyle: "OA coding + technical depth + behavioural fit for banking tech.",
+    cultureNotes: "Correctness, clarity, and ownership under regulated systems."
+  },
+  {
     id: "deloitte",
     name: "Deloitte",
     domain: "deloitte.com",
@@ -357,6 +386,338 @@ const companies: CompanyProfile[] = [
   }
 ];
 
+/** Question banks reused by /prepare/[slug] SEO pages and interview tooling. */
+export const companyQuestionBanks: CompanyQuestionBank[] = [
+  {
+    companyId: "tcs",
+    questions: [
+      {
+        round: "Technical",
+        prompt: "Explain OOPs using classes from your final-year project.",
+        difficulty: "Easy",
+        hint: "Pick encapsulation + inheritance from real code, not textbook defs."
+      },
+      {
+        round: "Technical",
+        prompt: "Write SQL to find students who enrolled but submitted zero assignments.",
+        difficulty: "Medium"
+      },
+      {
+        round: "Coding",
+        prompt: "Given a string, return the first non-repeating character.",
+        difficulty: "Easy"
+      },
+      {
+        round: "HR",
+        prompt: "Are you willing to relocate to any TCS location in India? Why?",
+        difficulty: "Easy"
+      },
+      {
+        round: "HR",
+        prompt: "Walk me through a conflict in a team project and how you resolved it.",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "infosys",
+    questions: [
+      {
+        round: "Technical",
+        prompt: "Difference between primary key and unique key — when would you use each?",
+        difficulty: "Easy"
+      },
+      {
+        round: "Puzzle",
+        prompt: "You have two ropes that each burn in 60 minutes unevenly. Measure 45 minutes.",
+        difficulty: "Medium",
+        hint: "Classic rope puzzle — think lighting both ends."
+      },
+      {
+        round: "Technical",
+        prompt: "How does HTTP differ from HTTPS? What does TLS protect?",
+        difficulty: "Easy"
+      },
+      {
+        round: "Project",
+        prompt: "Which module did you personally own, and how did you test it?",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "amazon",
+    questions: [
+      {
+        round: "OA / Coding",
+        prompt: "Find the top K frequent elements in an array.",
+        difficulty: "Medium",
+        hint: "Heap or bucket sort; state complexity."
+      },
+      {
+        round: "OA / Coding",
+        prompt: "Shortest path for a robot on a grid with obstacles (BFS).",
+        difficulty: "Medium"
+      },
+      {
+        round: "LP",
+        prompt: "Tell me about a time you disagreed with a teammate and still shipped.",
+        difficulty: "Medium",
+        hint: "Map to Earn Trust + Dive Deep with data."
+      },
+      {
+        round: "LP",
+        prompt: "Describe a customer (or user) problem you improved with a concrete metric.",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "capgemini",
+    questions: [
+      {
+        round: "Technical",
+        prompt: "What is the difference between ArrayList and LinkedList in Java?",
+        difficulty: "Easy"
+      },
+      {
+        round: "Technical",
+        prompt: "Explain normalisation — when would you stop at 3NF?",
+        difficulty: "Medium"
+      },
+      {
+        round: "Coding",
+        prompt: "Reverse a linked list iteratively and explain pointer updates.",
+        difficulty: "Easy"
+      },
+      {
+        round: "HR",
+        prompt: "Why Capgemini over other IT services companies?",
+        difficulty: "Easy"
+      }
+    ]
+  },
+  {
+    companyId: "microsoft",
+    questions: [
+      {
+        round: "Coding",
+        prompt: "Validate whether a binary tree is a BST.",
+        difficulty: "Medium"
+      },
+      {
+        round: "Coding",
+        prompt: "Design a rate limiter for an API (approach discussion).",
+        difficulty: "Medium",
+        hint: "Token bucket / sliding window — trade-offs OK for intern level."
+      },
+      {
+        round: "Behavioral",
+        prompt: "Tell me about feedback that changed how you write code.",
+        difficulty: "Easy"
+      },
+      {
+        round: "Project",
+        prompt: "What would you improve in your internship project if you had two more weeks?",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "google",
+    questions: [
+      {
+        round: "Coding",
+        prompt: "Given an array of intervals, merge overlapping intervals.",
+        difficulty: "Medium"
+      },
+      {
+        round: "Coding",
+        prompt: "Implement LRU cache with get/put in O(1) average time.",
+        difficulty: "Hard"
+      },
+      {
+        round: "Googliness",
+        prompt: "Describe a time you learned something difficult quickly — what was your process?",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "wipro",
+    questions: [
+      {
+        round: "Technical",
+        prompt: "Explain exception handling in your primary language with a project example.",
+        difficulty: "Easy"
+      },
+      {
+        round: "Coding",
+        prompt: "Count character frequencies in a string without built-in helpers if asked.",
+        difficulty: "Easy"
+      },
+      {
+        round: "SQL",
+        prompt: "Write a query with INNER JOIN between employees and departments.",
+        difficulty: "Easy"
+      },
+      {
+        round: "HR",
+        prompt: "What do you know about Wipro’s recent focus areas (digital, cloud, AI)?",
+        difficulty: "Easy"
+      }
+    ]
+  },
+  {
+    companyId: "cognizant",
+    questions: [
+      {
+        round: "Aptitude",
+        prompt: "A shopkeeper marks 20% above cost and gives 10% discount. What is profit %?",
+        difficulty: "Easy"
+      },
+      {
+        round: "Aptitude",
+        prompt: "Seating: 8 people in a circle, A opposite B — how many distinct arrangements for the rest?",
+        difficulty: "Medium"
+      },
+      {
+        round: "Technical",
+        prompt: "Difference between abstract class and interface — when did you use either?",
+        difficulty: "Easy"
+      },
+      {
+        round: "Communication",
+        prompt: "Explain your project to a non-technical HR in under two minutes.",
+        difficulty: "Easy"
+      }
+    ]
+  },
+  {
+    companyId: "accenture",
+    questions: [
+      {
+        round: "Technical",
+        prompt: "What is Agile? How did your team run stand-ups / sprints on a project?",
+        difficulty: "Easy"
+      },
+      {
+        round: "Technical",
+        prompt: "How would you explain cloud computing to a client stakeholder?",
+        difficulty: "Medium"
+      },
+      {
+        round: "HR",
+        prompt: "Describe a time you adapted when requirements changed mid-project.",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "morgan-stanley",
+    questions: [
+      {
+        round: "OA / Coding",
+        prompt: "Detect if a linked list has a cycle; return the start node if asked.",
+        difficulty: "Medium"
+      },
+      {
+        round: "OA / Coding",
+        prompt: "Find the longest substring without repeating characters.",
+        difficulty: "Medium"
+      },
+      {
+        round: "Technical",
+        prompt: "How would you make a service idempotent for payment-like requests?",
+        difficulty: "Hard",
+        hint: "Keys, retries, exactly-once vs at-least-once."
+      },
+      {
+        round: "Behavioral",
+        prompt: "Tell me about a time you owned a production or demo failure.",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "jpmorgan",
+    questions: [
+      {
+        round: "Coding",
+        prompt: "Two-sum / pair with target — discuss hashmap vs sorting approaches.",
+        difficulty: "Easy"
+      },
+      {
+        round: "Technical",
+        prompt: "How do you ensure correctness when handling money amounts in code?",
+        difficulty: "Medium",
+        hint: "Decimals, rounding, integers in paise/cents."
+      },
+      {
+        round: "Behavioral",
+        prompt: "Describe working with incomplete requirements — what did you clarify first?",
+        difficulty: "Medium"
+      },
+      {
+        round: "Project",
+        prompt: "Walk through auth and data validation in one of your applications.",
+        difficulty: "Medium"
+      }
+    ]
+  },
+  {
+    companyId: "deloitte",
+    questions: [
+      {
+        round: "Aptitude",
+        prompt: "Data interpretation: compute % change across two quarters from a table.",
+        difficulty: "Easy"
+      },
+      {
+        round: "Case / Situational",
+        prompt: "A client wants a feature in two weeks that needs six — what do you do?",
+        difficulty: "Medium"
+      },
+      {
+        round: "Technical",
+        prompt: "Explain REST vs SOAP at a high level — when might each appear in enterprises?",
+        difficulty: "Medium"
+      },
+      {
+        round: "HR",
+        prompt: "Why Deloitte, and which service line interests you?",
+        difficulty: "Easy"
+      }
+    ]
+  },
+  {
+    companyId: "flipkart",
+    questions: [
+      {
+        round: "Coding",
+        prompt: "Design search autocomplete for product titles (approach + data structures).",
+        difficulty: "Hard",
+        hint: "Trie / prefix maps; talk scale constraints."
+      },
+      {
+        round: "Coding",
+        prompt: "Find median of a stream of integers.",
+        difficulty: "Hard"
+      },
+      {
+        round: "System",
+        prompt: "How would you reduce latency on a product detail page under high traffic?",
+        difficulty: "Medium"
+      },
+      {
+        round: "GRiD / Project",
+        prompt: "Which module did you own in GRiD/hackathon, and what metric did you improve?",
+        difficulty: "Medium"
+      }
+    ]
+  }
+];
+
 export function searchCompanies(query: string, limit = 8): CompanyProfile[] {
   const normalized = query.trim().toLowerCase();
 
@@ -384,4 +745,12 @@ export function getCompanyByName(name: string): CompanyProfile | null {
 
 export function getCompanyById(id: string): CompanyProfile | null {
   return companies.find((company) => company.id === id) ?? null;
+}
+
+export function getCompanyQuestionBank(
+  companyId: string
+): CompanyQuestionBank | null {
+  return (
+    companyQuestionBanks.find((bank) => bank.companyId === companyId) ?? null
+  );
 }

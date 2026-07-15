@@ -57,10 +57,14 @@ export const seoConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: appUrl,
-  title: "AI Resume Builder, Job Search & Interview Prep | Apply",
+  title: "Placement Prep: Resume, Jobs & Interviews | Apply",
   description:
-    "All-in-one career platform: AI resume builder, live job search, interview prep, cover letters, freelancing, and learner tracks. Free for students — Interview Copilot coming soon.",
+    "India's placement preparation platform — tailor ATS resumes, find matching jobs, prep interviews, and learn skills. Free to start. Desktop Interview Copilot coming soon.",
   keywords: [
+    "India placement preparation platform",
+    "TCS interview questions",
+    "Infosys resume format",
+    "campus placement prep India",
     "free resume builder for students",
     "ATS resume optimizer",
     "internship resume builder free",
@@ -73,11 +77,14 @@ export const seoConfig = {
     "entry level resume builder",
     "college student resume builder",
     "cover letter generator",
+    "mock interview practice",
     "freelance jobs for students"
   ],
   publicRoutes: [
     "/",
-    "/blog"
+    "/blog",
+    "/prepare",
+    "/downloads"
   ]
 } as const;
 
@@ -110,23 +117,26 @@ export const softwareJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "@id": absoluteUrl("/#software"),
-  name: "Apply - AI Resume Builder",
+  name: "Apply — Placement Preparation Platform",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   url: seoConfig.url,
   description: seoConfig.description,
   audience: {
     "@type": "Audience",
-    audienceType: "Students, interns, and early-career job seekers worldwide"
+    audienceType: "Students, interns, and early-career job seekers in India and worldwide"
   },
   areaServed: {
     "@type": "Place",
-    name: "Worldwide"
+    name: "India"
   },
   featureList: [
     "ATS resume optimization",
     "Resume tailoring from job descriptions",
-    "Student resume builder",
+    "Mock interview practice",
+    "Application / placement tracker",
+    "Offer comparison",
+    "Company placement prep guides",
     "Interview preparation plans",
     "PDF resume export"
   ],

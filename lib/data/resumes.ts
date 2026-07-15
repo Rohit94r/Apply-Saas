@@ -734,7 +734,7 @@ export function buildDashboardStats(
 
   return [
     {
-      label: "ATS average",
+      label: "Keyword match avg",
       value: `${atsAverage}%`,
       detail: resumes.length
         ? `Across ${resumes.length} generated resume${resumes.length === 1 ? "" : "s"}`
@@ -827,7 +827,7 @@ export function buildReadinessScore(
     { label: "Master profile saved", done: hasResume, weight: 25 },
     { label: "Tailored to a role", done: hasTailored, weight: 30 },
     { label: "Interview prep plan", done: hasGuide, weight: 25 },
-    { label: "ATS score 70+", done: avgAts >= 70, weight: 20 }
+    { label: "Keyword match 70+", done: avgAts >= 70, weight: 20 }
   ];
 
   const score = steps.reduce(

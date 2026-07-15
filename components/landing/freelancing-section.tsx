@@ -3,7 +3,11 @@ import {
   AppWindow,
   ArrowRight,
   Brain,
+  Briefcase,
+  ChartBar,
   Code,
+  FilmStrip,
+  GearSix,
   MapPin,
   Megaphone,
   Palette,
@@ -27,7 +31,11 @@ const domainIcons: Record<FreelanceDomainIcon, PhosphorIcon> = {
   brain: Brain,
   palette: Palette,
   megaphone: Megaphone,
-  pen: Pen
+  pen: Pen,
+  chart: ChartBar,
+  gear: GearSix,
+  film: FilmStrip,
+  briefcase: Briefcase
 };
 
 export function FreelancingSection() {

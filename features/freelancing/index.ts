@@ -9,6 +9,8 @@ export type {
   FreelanceDomain,
   FreelanceDomainIcon,
   FreelanceDomainId,
+  FreelancePlatform,
+  FreelanceStarterTip,
   FreelanceSubdomain
 } from "@/features/freelancing/types";
 
@@ -23,7 +25,10 @@ export {
 
 export {
   freelanceDomains,
+  freelancePlatforms,
+  freelanceStarterTips,
   freelanceSubdomains,
+  getFreelancePlatformsByRegion,
   getFreelanceSubdomainById,
   getFreelanceSubdomainsByDomain
 } from "@/lib/data/freelance-catalog";

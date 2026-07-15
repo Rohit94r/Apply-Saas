@@ -9,7 +9,7 @@ const DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
 export type TextAIProvider = {
   client: OpenAI;
   model: string;
-  provider: "groq" | "openai";
+  provider: "groq" | "openai" | "gemini";
 };
 
 export function getTextAIClient(): TextAIProvider | null {
