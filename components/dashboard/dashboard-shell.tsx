@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import {
+  Briefcase,
   CaretLineLeft,
   CaretLineRight,
   Desktop,
@@ -13,6 +14,7 @@ import {
   House,
   ListChecks,
   MagicWand,
+  Microphone,
   ShieldCheck,
   Sparkle,
   Storefront
@@ -40,9 +42,21 @@ const navItems: Array<{
     icon: ListChecks,
     shortLabel: "Apps"
   },
-  { label: "AI tools", href: "/dashboard/tools", icon: MagicWand, shortLabel: "Tools" },
   { label: "Learning", href: "/dashboard/learners", icon: GraduationCap },
+  {
+    label: "Interview prep",
+    href: "/dashboard/interview",
+    icon: Briefcase,
+    shortLabel: "Prep"
+  },
+  {
+    label: "Mock interview",
+    href: "/dashboard/mock-interview",
+    icon: Microphone,
+    shortLabel: "Mock"
+  },
   { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
+  { label: "AI tools", href: "/dashboard/tools", icon: MagicWand, shortLabel: "Tools" },
   { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle }
 ];
 
@@ -79,7 +93,7 @@ const pageTitles: Array<{ match: (path: string) => boolean; title: string; eyebr
   },
   {
     match: (p) => p.startsWith("/dashboard/mock-interview"),
-    title: "Virtual interview",
+    title: "Mock interview",
     eyebrow: "Practice room"
   },
   {

@@ -4,14 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import {
-  ArrowRight,
-  Briefcase,
   Camera,
   DownloadSimple,
   EnvelopeSimple,
   FilePdf,
   MagicWand,
-  Microphone,
   Scales,
   Sparkle,
   SpinnerGap
@@ -240,44 +237,21 @@ export function ToolsWorkspace({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-white/70 p-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => selectTool(tab.id)}
-              className={cn(
-                "inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
-                activeTool === tab.id && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-              )}
-            >
-              <tab.icon className="h-4 w-4" weight="regular" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-            Prep
-          </p>
-          <Link
-            href="/dashboard/interview"
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#fbfaf6] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:text-primary"
+      <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-white/70 p-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => selectTool(tab.id)}
+            className={cn(
+              "inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
+              activeTool === tab.id && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+            )}
           >
-            <Briefcase className="h-4 w-4 text-accent" weight="regular" />
-            Interview prep
-            <ArrowRight className="h-3.5 w-3.5 text-accent" weight="regular" />
-          </Link>
-          <Link
-            href="/dashboard/mock-interview"
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#fbfaf6] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:text-primary"
-          >
-            <Microphone className="h-4 w-4 text-accent" weight="regular" />
-            Mock interview
-            <ArrowRight className="h-3.5 w-3.5 text-accent" weight="regular" />
-          </Link>
-        </div>
+            <tab.icon className="h-4 w-4" weight="regular" />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {activeTool === "cover" ? (
