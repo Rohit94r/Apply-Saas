@@ -10,6 +10,7 @@ import {
   type MockDifficulty,
   type MockInterviewType
 } from "@/lib/ai/mock-interview";
+import { isTranscriptionAvailable } from "@/lib/ai/transcribe";
 import {
   completeMockSession,
   createMockSession,
@@ -29,22 +30,36 @@ function isLocalSessionId(id: string) {
   return id.startsWith("local-");
 }
 
+function sttStatus() {
+  const available = isTranscriptionAvailable();
+  return {
+    available,
+    message: available
+      ? "Voice answers via Groq Whisper"
+      : "Voice needs GROQ_API_KEY for Whisper — type answers until set"
+  };
+}
+
+function sessionMeta() {
+  return { ai: getMockInterviewAIStatus(), stt: sttStatus() };
+}
+
 export async function GET(request: Request) {
   try {
     const userId = await getCurrentUserId();
     const { searchParams } = new URL(request.url);
 
     if (searchParams.get("status") === "1") {
-      return NextResponse.json({ ai: getMockInterviewAIStatus() });
+      return NextResponse.json(sessionMeta());
     }
 
     try {
       const sessions = await listMockSessions(userId);
-      return NextResponse.json({ sessions, ai: getMockInterviewAIStatus() });
+      return NextResponse.json({ sessions, ...sessionMeta() });
     } catch {
       return NextResponse.json({
         sessions: [],
-        ai: getMockInterviewAIStatus()
+        ...sessionMeta()
       });
     }
   } catch (error) {
@@ -120,6 +135,7 @@ async function handleStart(userId: string, body: unknown) {
         error:
           "Add GEMINI_API_KEY to enable the live AI interviewer (or GROQ_API_KEY as fallback). You can also start Demo mode.",
         ai,
+        stt: sttStatus(),
         code: "AI_UNAVAILABLE"
       },
       { status: 503 }
@@ -164,21 +180,22 @@ async function handleStart(userId: string, body: unknown) {
     demoMode: first.demoMode
   };
 
+  const meta = {
+    turn: turns[0],
+    questionIndex: 0,
+    totalQuestions,
+    provider: first.provider,
+    demoMode: first.demoMode,
+    ai,
+    stt: sttStatus(),
+    resumeContextAvailable: resumeContext.length >= 80,
+    // Client may send this back on answer/end; server also reloads if omitted.
+    resumeContext: resumeContext.slice(0, 12000)
+  };
+
   try {
     const session = await createMockSession(userId, payload);
-    return NextResponse.json(
-      {
-        session,
-        turn: turns[0],
-        questionIndex: 0,
-        totalQuestions,
-        provider: first.provider,
-        demoMode: first.demoMode,
-        ai,
-        resumeContextAvailable: resumeContext.length >= 80
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({ session, ...meta }, { status: 201 });
   } catch {
     return NextResponse.json(
       {
@@ -189,15 +206,8 @@ async function handleStart(userId: string, body: unknown) {
           durationSeconds: 0,
           createdAt: new Date().toISOString()
         },
-        turn: turns[0],
-        questionIndex: 0,
-        totalQuestions,
-        provider: first.provider,
-        demoMode: first.demoMode,
-        ai,
-        resumeContextAvailable: resumeContext.length >= 80,
-        persisted: false,
-        resumeContext
+        ...meta,
+        persisted: false
       },
       { status: 201 }
     );
@@ -329,7 +339,8 @@ async function handleAnswer(userId: string, body: unknown) {
     totalQuestions,
     provider: evaluation.provider,
     demoMode: evaluation.demoMode,
-    ai
+    ai,
+    stt: sttStatus()
   });
 }
 

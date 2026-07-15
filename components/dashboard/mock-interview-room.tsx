@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
@@ -12,7 +12,9 @@ import {
   Microphone,
   Play,
   Robot,
+  SpeakerHigh,
   Sparkle,
+  Stop,
   WarningCircle
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,14 @@ import type {
 
 type InterviewType = "hr" | "technical" | "mixed";
 type Difficulty = "easy" | "medium" | "hard";
+type Phase = "setup" | "live" | "summary";
+type RoomState =
+  | "asking"
+  | "speaking"
+  | "listening"
+  | "recording"
+  | "thinking"
+  | "coaching";
 
 type AIStatus = {
   available: boolean;
@@ -34,7 +44,10 @@ type AIStatus = {
   message: string;
 };
 
-type Phase = "setup" | "live" | "summary";
+type SttStatus = {
+  available: boolean;
+  message: string;
+};
 
 type Feedback = {
   strengths: string[];
@@ -64,6 +77,42 @@ function providerLabel(provider?: string | null, demoMode?: boolean) {
   return "AI interviewer";
 }
 
+function stopSpeaking() {
+  if (typeof window === "undefined") return;
+  window.speechSynthesis?.cancel();
+}
+
+function speakQuestion(text: string, onEnd?: () => void) {
+  if (typeof window === "undefined" || !window.speechSynthesis) {
+    onEnd?.();
+    return;
+  }
+  stopSpeaking();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.95;
+  utter.pitch = 1;
+  utter.lang = "en-IN";
+  const voices = window.speechSynthesis.getVoices();
+  const preferred =
+    voices.find((v) => /en-IN|Indian|Google UK|Samantha|Daniel/i.test(v.name)) ||
+    voices.find((v) => v.lang.toLowerCase().startsWith("en"));
+  if (preferred) utter.voice = preferred;
+  utter.onend = () => onEnd?.();
+  utter.onerror = () => onEnd?.();
+  window.speechSynthesis.speak(utter);
+}
+
+function pickRecorderMime() {
+  if (typeof MediaRecorder === "undefined") return "";
+  const candidates = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/mp4",
+    "audio/ogg"
+  ];
+  return candidates.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+}
+
 export function MockInterviewRoom() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [company, setCompany] = useState("");
@@ -73,6 +122,10 @@ export function MockInterviewRoom() {
   const [totalQuestions, setTotalQuestions] = useState(6);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [turns, setTurns] = useState<MockTurnRecord[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -83,16 +136,30 @@ export function MockInterviewRoom() {
   const [running, setRunning] = useState(false);
   const [history, setHistory] = useState<MockInterviewSessionRecord[]>([]);
   const [ai, setAi] = useState<AIStatus | null>(null);
+  const [stt, setStt] = useState<SttStatus | null>(null);
   const [demoMode, setDemoMode] = useState(false);
   const [provider, setProvider] = useState<string | null>(null);
   const [resumeContext, setResumeContext] = useState<string | undefined>();
   const [resumeContextAvailable, setResumeContextAvailable] = useState(false);
   const [pendingNextIndex, setPendingNextIndex] = useState<number | null>(null);
+  const [sessionDone, setSessionDone] = useState(false);
+
   const companyInputRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLTextAreaElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     void loadHistory();
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const synth = window.speechSynthesis;
+    const loadVoices = () => {
+      synth.getVoices();
+    };
+    loadVoices();
+    synth.addEventListener("voiceschanged", loadVoices);
+    return () => synth.removeEventListener("voiceschanged", loadVoices);
   }, []);
 
   useEffect(() => {
@@ -101,6 +168,22 @@ export function MockInterviewRoom() {
     return () => window.clearInterval(id);
   }, [running]);
 
+  useEffect(() => {
+    return () => {
+      stopSpeaking();
+      mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
+  const speakCurrentQuestion = useCallback(
+    (text: string) => {
+      if (!voiceEnabled || !text.trim()) return;
+      setSpeaking(true);
+      speakQuestion(text, () => setSpeaking(false));
+    },
+    [voiceEnabled]
+  );
+
   async function loadHistory() {
     try {
       const res = await fetch("/api/mock-interview");
@@ -108,9 +191,11 @@ export function MockInterviewRoom() {
       const data = (await res.json()) as {
         sessions: MockInterviewSessionRecord[];
         ai?: AIStatus;
+        stt?: SttStatus;
       };
       setHistory(data.sessions ?? []);
       if (data.ai) setAi(data.ai);
+      if (data.stt) setStt(data.stt);
     } catch {
       /* ignore */
     }
@@ -124,6 +209,8 @@ export function MockInterviewRoom() {
     setLoading(true);
     setFeedback(null);
     setSummary(null);
+    setSessionDone(false);
+    stopSpeaking();
     try {
       const res = await fetch("/api/mock-interview", {
         method: "POST",
@@ -143,12 +230,15 @@ export function MockInterviewRoom() {
         if (data.code === "AI_UNAVAILABLE" && data.ai) {
           setAi(data.ai);
         }
+        if (data.stt) setStt(data.stt);
         throw new Error(data.error || "Could not start session");
       }
 
       if (data.ai) setAi(data.ai);
+      if (data.stt) setStt(data.stt);
       setSessionId(data.session.id);
-      setTurns(data.session.turns ?? [data.turn]);
+      const firstTurns = data.session.turns ?? [data.turn];
+      setTurns(firstTurns);
       setQuestionIndex(0);
       setSeconds(0);
       setRunning(true);
@@ -164,11 +254,15 @@ export function MockInterviewRoom() {
       setPhase("live");
       toast.success(
         data.demoMode
-          ? "Demo interview started (static coach)"
+          ? "Demo interview started"
           : "Interview started — Apply Interviewer is ready"
       );
       void loadHistory();
-      window.setTimeout(() => answerRef.current?.focus(), 200);
+      const q = firstTurns[0]?.question;
+      if (q) {
+        window.setTimeout(() => speakCurrentQuestion(q), 350);
+      }
+      window.setTimeout(() => answerRef.current?.focus(), 400);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not start session"
@@ -180,9 +274,11 @@ export function MockInterviewRoom() {
 
   async function submitAnswer() {
     if (!sessionId || !answer.trim()) {
-      toast.error("Type your answer first");
+      toast.error("Speak or type your answer first");
       return;
     }
+    stopSpeaking();
+    setSpeaking(false);
     setSubmitting(true);
     try {
       const res = await fetch("/api/mock-interview", {
@@ -212,14 +308,16 @@ export function MockInterviewRoom() {
       setDemoMode(Boolean(data.demoMode));
       setProvider(data.provider ?? provider);
       if (data.ai) setAi(data.ai);
+      if (data.stt) setStt(data.stt);
       setAnswer("");
+      setFeedback(data.feedback);
 
       if (data.done) {
-        toast.success("Final question answered — wrapping up");
-        await endSession(data.turns ?? turns);
+        setSessionDone(true);
+        setPendingNextIndex(null);
+        toast.success("Final question answered — review feedback, then wrap up");
       } else {
-        setFeedback(data.feedback);
-        // Keep current question visible while feedback shows; advance on continue.
+        setSessionDone(false);
         setPendingNextIndex(data.questionIndex ?? questionIndex + 1);
       }
     } catch (error) {
@@ -233,6 +331,10 @@ export function MockInterviewRoom() {
 
   async function endSession(finalTurns?: MockTurnRecord[]) {
     setRunning(false);
+    stopSpeaking();
+    setSpeaking(false);
+    if (recording) stopRecording(false);
+
     const turnsToSave = finalTurns ?? turns;
     if (!sessionId) {
       setPhase("setup");
@@ -274,14 +376,143 @@ export function MockInterviewRoom() {
       setSummary({
         overallScore: 5,
         tips: ["Practice again with clearer STAR stories."],
-        highlights: ["Session ended locally — history may not have saved."]
+        highlights: ["Session ended — history may not have saved."]
       });
     } finally {
       setLoading(false);
     }
   }
 
+  async function startRecording() {
+    if (recording || submitting || feedback || transcribing) return;
+    stopSpeaking();
+    setSpeaking(false);
+
+    if (stt && !stt.available) {
+      toast.error(stt.message);
+      return;
+    }
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast.error("Microphone not supported in this browser — type your answer");
+      return;
+    }
+
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      chunksRef.current = [];
+      const mimeType = pickRecorderMime();
+      const recorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        void finalizeRecording();
+      };
+
+      recorder.start(250);
+      setRecording(true);
+      toast.message("Listening… speak your answer", { duration: 1800 });
+    } catch (error) {
+      stream?.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+      mediaRecorderRef.current = null;
+      const name =
+        error instanceof DOMException ? error.name : "";
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        toast.error("Allow microphone access to use voice answers");
+      } else if (name === "NotFoundError") {
+        toast.error("No microphone found — type your answer instead");
+      } else {
+        toast.error("Could not start the microphone — type your answer instead");
+      }
+    }
+  }
+
+  function stopRecording(transcribe = true) {
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) return;
+    if (!transcribe) {
+      recorder.ondataavailable = null;
+      recorder.onstop = null;
+      mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+      mediaRecorderRef.current = null;
+      chunksRef.current = [];
+      setRecording(false);
+      return;
+    }
+    if (recorder.state !== "inactive") {
+      recorder.stop();
+    }
+    setRecording(false);
+  }
+
+  async function finalizeRecording() {
+    const blob = new Blob(chunksRef.current, {
+      type: mediaRecorderRef.current?.mimeType || "audio/webm"
+    });
+    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+    mediaStreamRef.current = null;
+    mediaRecorderRef.current = null;
+    chunksRef.current = [];
+
+    if (blob.size < 900) {
+      toast.error("Recording too short — try again");
+      return;
+    }
+
+    setTranscribing(true);
+    try {
+      const form = new FormData();
+      form.append("audio", blob, "answer.webm");
+      const res = await fetch("/api/mock-interview/transcribe", {
+        method: "POST",
+        body: form
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Could not transcribe audio");
+      }
+      const text = String(data.text || "").trim();
+      setAnswer((prev) => (prev.trim() ? `${prev.trim()} ${text}` : text));
+      toast.success("Voice captured — review and submit");
+      window.setTimeout(() => answerRef.current?.focus(), 100);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Voice transcription failed"
+      );
+    } finally {
+      setTranscribing(false);
+    }
+  }
+
+  function goToNextQuestion() {
+    if (sessionDone) {
+      void endSession(turns);
+      return;
+    }
+    const next = pendingNextIndex ?? questionIndex + 1;
+    const nextQ = turns[next]?.question;
+    setFeedback(null);
+    setPendingNextIndex(null);
+    setQuestionIndex(next);
+    setAnswer("");
+    if (nextQ) {
+      window.setTimeout(() => speakCurrentQuestion(nextQ), 200);
+    }
+    window.setTimeout(() => answerRef.current?.focus(), 250);
+  }
+
   function resetToSetup() {
+    stopSpeaking();
+    stopRecording(false);
     setPhase("setup");
     setSessionId(null);
     setTurns([]);
@@ -292,12 +523,27 @@ export function MockInterviewRoom() {
     setSeconds(0);
     setRunning(false);
     setPendingNextIndex(null);
+    setSessionDone(false);
+    setSpeaking(false);
+    setRecording(false);
   }
 
   const current = turns[questionIndex];
   const progressPct = Math.round(
-    ((Math.min(questionIndex + 1, totalQuestions) / totalQuestions) * 100)
+    (Math.min(questionIndex + 1, totalQuestions) / totalQuestions) * 100
   );
+
+  const roomState: RoomState = feedback
+    ? "coaching"
+    : submitting || transcribing
+      ? "thinking"
+      : recording
+        ? "recording"
+        : speaking
+          ? "speaking"
+          : answer.trim()
+            ? "listening"
+            : "asking";
 
   return (
     <div className="space-y-8">
@@ -307,10 +553,28 @@ export function MockInterviewRoom() {
           <div>
             <p className="font-semibold">Live AI interviewer unavailable</p>
             <p className="mt-1 leading-6 text-amber-900/80">
-              Add <code className="rounded bg-white/70 px-1.5 py-0.5 text-xs">GEMINI_API_KEY</code>{" "}
-              to enable the live AI interviewer. Optional:{" "}
-              <code className="rounded bg-white/70 px-1.5 py-0.5 text-xs">GROQ_API_KEY</code>{" "}
-              as fallback. Or start a clearly labeled Demo mode below.
+              Add{" "}
+              <code className="rounded bg-white/70 px-1.5 py-0.5 text-xs">
+                GEMINI_API_KEY
+              </code>{" "}
+              (preferred) or ensure{" "}
+              <code className="rounded bg-white/70 px-1.5 py-0.5 text-xs">
+                GROQ_API_KEY
+              </code>{" "}
+              is set. Voice answers need Groq Whisper. You can still start Demo
+              mode.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      {ai?.available && stt && !stt.available && phase === "setup" ? (
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-50/80 px-5 py-4 text-sm text-amber-950">
+          <WarningCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+          <div>
+            <p className="font-semibold">Voice answers unavailable</p>
+            <p className="mt-1 leading-6 text-amber-900/80">
+              {stt.message}. Typed answers still work with the AI interviewer.
             </p>
           </div>
         </div>
@@ -324,14 +588,15 @@ export function MockInterviewRoom() {
                 Virtual interview room
               </CardTitle>
               <p className="text-sm leading-6 text-muted-foreground">
-                Apply Interviewer asks live questions for your company and role.
-                You answer in text, get brief coaching, then move to the next
-                question — full practice on the web.
+                Apply Interviewer asks out loud, you answer by voice or text, get
+                scored feedback, then move to the next question — full practice on
+                the web. Desktop is only for live assist later.
               </p>
               {ai?.available ? (
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
                   <Sparkle className="h-3.5 w-3.5" weight="fill" />
                   {ai.message}
+                  {stt?.available ? " · voice ready" : ""}
                 </p>
               ) : null}
             </CardHeader>
@@ -361,55 +626,53 @@ export function MockInterviewRoom() {
               </div>
 
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Interview type
-                </p>
+                </label>
                 <div className="flex flex-wrap gap-2">
-                  {(
-                    [
-                      ["hr", "HR / Behavioral"],
-                      ["technical", "Technical"],
-                      ["mixed", "Mixed"]
-                    ] as const
-                  ).map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setInterviewType(value)}
-                      className={cn(
-                        "rounded-xl border px-3.5 py-2 text-sm font-medium transition",
-                        interviewType === value
-                          ? "border-accent bg-accent/10 text-primary"
-                          : "border-border bg-white/70 text-muted-foreground hover:border-accent/40"
-                      )}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Difficulty
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {(["easy", "medium", "hard"] as const).map((value) => (
+                  {(["hr", "technical", "mixed"] as InterviewType[]).map(
+                    (value) => (
                       <button
                         key={value}
                         type="button"
-                        onClick={() => setDifficulty(value)}
+                        onClick={() => setInterviewType(value)}
                         className={cn(
                           "rounded-xl border px-3.5 py-2 text-sm font-medium capitalize transition",
-                          difficulty === value
+                          interviewType === value
                             ? "border-accent bg-accent/10 text-primary"
                             : "border-border bg-white/70 text-muted-foreground hover:border-accent/40"
                         )}
                       >
                         {value}
                       </button>
-                    ))}
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Difficulty
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {(["easy", "medium", "hard"] as Difficulty[]).map(
+                      (value) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setDifficulty(value)}
+                          className={cn(
+                            "rounded-xl border px-3.5 py-2 text-sm font-medium capitalize transition",
+                            difficulty === value
+                              ? "border-accent bg-accent/10 text-primary"
+                              : "border-border bg-white/70 text-muted-foreground hover:border-accent/40"
+                          )}
+                        >
+                          {value}
+                        </button>
+                      )
+                    )}
                   </div>
                 </div>
                 <div>
@@ -426,6 +689,16 @@ export function MockInterviewRoom() {
                   />
                 </div>
               </div>
+
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={voiceEnabled}
+                  onChange={(e) => setVoiceEnabled(e.target.checked)}
+                  className="h-4 w-4 rounded border-border accent-[hsl(var(--accent))]"
+                />
+                Speak questions aloud (browser voice)
+              </label>
 
               <div className="flex flex-wrap gap-3 pt-1">
                 <Button onClick={() => startSession(false)} disabled={loading}>
@@ -447,12 +720,8 @@ export function MockInterviewRoom() {
                 ) : null}
               </div>
               <p className="text-xs leading-5 text-muted-foreground">
-                Resume context is loaded automatically when you have a master
-                resume.{" "}
-                <Link href="/dashboard/tools" className="text-accent underline-offset-2 hover:underline">
-                  AI tools
-                </Link>{" "}
-                remain separate — this room is for live practice.
+                Uses your master resume when available. Hold the mic during the
+                round to answer by voice (Whisper via Groq).
               </p>
             </CardContent>
           </Card>
@@ -490,16 +759,8 @@ export function MockInterviewRoom() {
               ) : (
                 <div className="rounded-2xl border border-dashed border-border px-5 py-8 text-center">
                   <p className="text-sm leading-6 text-muted-foreground">
-                    No practice sessions yet — set up the room and start.
+                    No practice sessions yet — start one to build history in Mongo.
                   </p>
-                  <Button
-                    className="mt-4"
-                    size="sm"
-                    onClick={() => companyInputRef.current?.focus()}
-                  >
-                    <Play className="h-4 w-4" weight="fill" />
-                    Focus setup
-                  </Button>
                 </div>
               )}
             </div>
@@ -519,11 +780,12 @@ export function MockInterviewRoom() {
               </p>
               <p className="mt-0.5 text-xs capitalize text-muted-foreground">
                 {interviewType} · {difficulty}
-                {resumeContextAvailable ? " · resume context on" : ""}
-                {demoMode ? " · demo (not live AI)" : ""}
+                {resumeContextAvailable ? " · resume on" : ""}
+                {voiceEnabled ? " · voice Qs on" : ""}
+                {demoMode ? " · demo" : ""}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 text-sm font-semibold tabular-nums text-primary">
                 <Clock className="h-4 w-4" weight="regular" />
                 {formatTime(seconds)}
@@ -531,8 +793,24 @@ export function MockInterviewRoom() {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => {
+                  if (speaking) {
+                    stopSpeaking();
+                    setSpeaking(false);
+                  } else if (current.question) {
+                    speakCurrentQuestion(current.question);
+                  }
+                }}
+                disabled={!voiceEnabled || submitting}
+              >
+                <SpeakerHigh className="h-4 w-4" weight="regular" />
+                {speaking ? "Stop voice" : "Repeat question"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => void endSession()}
-                disabled={loading || submitting}
+                disabled={loading || submitting || recording}
               >
                 <CheckCircle className="h-4 w-4" weight="regular" />
                 End session
@@ -551,15 +829,7 @@ export function MockInterviewRoom() {
 
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
             <InterviewerPanel
-              state={
-                feedback
-                  ? "coaching"
-                  : submitting
-                    ? "thinking"
-                    : answer.trim()
-                      ? "listening"
-                      : "asking"
-              }
+              state={roomState}
               category={current.category ?? "general"}
               questionNumber={questionIndex + 1}
               total={totalQuestions}
@@ -619,40 +889,88 @@ export function MockInterviewRoom() {
                       </ul>
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      const next = pendingNextIndex ?? questionIndex + 1;
-                      setFeedback(null);
-                      setPendingNextIndex(null);
-                      setQuestionIndex(next);
-                      window.setTimeout(() => answerRef.current?.focus(), 150);
-                    }}
-                  >
-                    Next question
+                  <Button size="sm" onClick={goToNextQuestion} disabled={loading}>
+                    {sessionDone ? (
+                      loading ? (
+                        <CircleNotch className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <CheckCircle className="h-4 w-4" weight="fill" />
+                      )
+                    ) : null}
+                    {sessionDone
+                      ? loading
+                        ? "Saving summary…"
+                        : "View summary"
+                      : "Next question"}
                   </Button>
                 </motion.div>
               ) : (
                 <div className="mt-6 space-y-3">
-                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Your answer
-                  </label>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Your answer
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {!recording ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void startRecording()}
+                          disabled={
+                            submitting ||
+                            transcribing ||
+                            Boolean(stt && !stt.available)
+                          }
+                          title={
+                            stt && !stt.available
+                              ? stt.message
+                              : speaking
+                                ? "Stops the question voice and starts listening"
+                                : "Record your answer"
+                          }
+                        >
+                          <Microphone className="h-4 w-4" weight="fill" />
+                          Speak answer
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => stopRecording(true)}
+                        >
+                          <Stop className="h-4 w-4" weight="fill" />
+                          Stop &amp; transcribe
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                   <Textarea
                     ref={answerRef}
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
-                    placeholder="Type your answer as you would say it in the interview…"
+                    placeholder="Speak with the mic, or type as you would answer live…"
                     className="min-h-40"
-                    disabled={submitting}
+                    disabled={submitting || recording}
                   />
-                  <div className="flex flex-wrap justify-between gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className="text-xs text-muted-foreground">
-                      Voice answers can come later — text is enough for MVP.
+                      {recording
+                        ? "Recording… click Stop when finished."
+                        : transcribing
+                          ? "Transcribing with Whisper…"
+                          : stt && !stt.available
+                            ? "Voice unavailable — type your answer."
+                            : "Voice uses Groq Whisper · interviewer uses Gemini/Groq."}
                     </p>
                     <Button
                       onClick={() => void submitAnswer()}
-                      disabled={submitting || !answer.trim()}
+                      disabled={
+                        submitting ||
+                        recording ||
+                        transcribing ||
+                        !answer.trim()
+                      }
                     >
                       {submitting ? (
                         <CircleNotch className="h-4 w-4 animate-spin" />
@@ -753,8 +1071,8 @@ function InterviewerPreview() {
             Apply Interviewer
           </p>
           <p className="mt-1 text-sm leading-6 text-white/80">
-            Calm, professional AI coach — not a creepy avatar. Asks, listens,
-            coaches.
+            Speaks questions, listens to your voice or text, scores answers, and
+            coaches — practice mode on the web.
           </p>
         </div>
       </div>
@@ -768,20 +1086,29 @@ function InterviewerPanel({
   questionNumber,
   total
 }: {
-  state: "asking" | "listening" | "thinking" | "coaching";
+  state: RoomState;
   category: string;
   questionNumber: number;
   total: number;
 }) {
-  const active = state === "asking" || state === "thinking";
+  const active =
+    state === "asking" ||
+    state === "thinking" ||
+    state === "speaking" ||
+    state === "recording";
+
   const statusLabel =
-    state === "asking"
-      ? "Asking…"
-      : state === "thinking"
-        ? "Evaluating…"
-        : state === "coaching"
-          ? "Coaching feedback"
-          : "Listening to your answer";
+    state === "speaking"
+      ? "Speaking question…"
+      : state === "asking"
+        ? "Ready for your answer"
+        : state === "thinking"
+          ? "Evaluating…"
+          : state === "recording"
+            ? "Listening to your voice…"
+            : state === "coaching"
+              ? "Coaching feedback"
+              : "Listening";
 
   return (
     <div className="relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-[#0f2a3d] via-[#123447] to-[#0d5c56] p-6 text-white">
@@ -802,17 +1129,23 @@ function InterviewerPanel({
         <motion.div
           className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white/10 ring-1 ring-white/25"
           animate={
-            active
-              ? { scale: [1, 1.04, 1], rotate: [0, 1.5, -1.5, 0] }
-              : { y: [0, -3, 0] }
+            state === "recording"
+              ? { scale: [1, 1.08, 1] }
+              : active
+                ? { scale: [1, 1.04, 1], rotate: [0, 1.5, -1.5, 0] }
+                : { y: [0, -3, 0] }
           }
           transition={{
-            duration: active ? 1.8 : 3.2,
+            duration: state === "recording" ? 1.1 : active ? 1.8 : 3.2,
             repeat: Infinity,
             ease: "easeInOut"
           }}
         >
-          <Robot className="h-14 w-14 text-[#7fd9c7]" weight="duotone" />
+          {state === "recording" ? (
+            <Microphone className="h-14 w-14 text-[#ffb4a8]" weight="fill" />
+          ) : (
+            <Robot className="h-14 w-14 text-[#7fd9c7]" weight="duotone" />
+          )}
         </motion.div>
         <div className="mt-5 flex items-center gap-1.5">
           {[0, 1, 2].map((i) => (

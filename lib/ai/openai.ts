@@ -13,27 +13,29 @@ export type TextAIProvider = {
 };
 
 export function getTextAIClient(): TextAIProvider | null {
-  if (process.env.GROQ_API_KEY) {
+  const groqKey = process.env.GROQ_API_KEY?.trim();
+  if (groqKey) {
     groqClient ??= new OpenAI({
-      apiKey: process.env.GROQ_API_KEY,
+      apiKey: groqKey,
       baseURL: "https://api.groq.com/openai/v1"
     });
 
     return {
       client: groqClient,
-      model: process.env.GROQ_MODEL ?? DEFAULT_GROQ_MODEL,
+      model: process.env.GROQ_MODEL?.trim() || DEFAULT_GROQ_MODEL,
       provider: "groq"
     };
   }
 
-  if (process.env.OPENAI_API_KEY) {
+  const openaiKey = process.env.OPENAI_API_KEY?.trim();
+  if (openaiKey) {
     openAIClient ??= new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: openaiKey
     });
 
     return {
       client: openAIClient,
-      model: process.env.OPENAI_MODEL ?? DEFAULT_OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL?.trim() || DEFAULT_OPENAI_MODEL,
       provider: "openai"
     };
   }

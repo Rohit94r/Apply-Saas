@@ -7,7 +7,7 @@ export default function MockInterviewPage() {
       <PageHeader
         eyebrow="Virtual interview"
         title="Practice with Apply Interviewer."
-        description="Live AI mock interviews on the web — company, role, typed answers, coaching feedback. Desktop later is for live interview assist only."
+        description="Live AI mock interviews on the web — questions spoken aloud, answer by voice or text, get coaching feedback. Desktop later is for live interview assist only."
         cta="Back to interview prep"
         href="/dashboard/interview"
       />

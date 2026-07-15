@@ -1,4 +1,5 @@
 import { connectToDatabase } from "@/lib/mongodb";
+import { Types } from "mongoose";
 import { MockInterviewSession } from "@/models/MockInterviewSession";
 import type {
   MockDifficulty,
@@ -173,6 +174,7 @@ export async function listMockSessions(userId: string, limit = 10) {
 }
 
 export async function getMockSession(userId: string, id: string) {
+  if (!Types.ObjectId.isValid(id)) return null;
   await connectToDatabase();
   const row = await MockInterviewSession.findOne({ _id: id, userId }).lean();
   if (!row) return null;
@@ -206,6 +208,9 @@ export async function updateMockSession(
   id: string,
   input: UpdateSessionInput
 ) {
+  if (!Types.ObjectId.isValid(id)) {
+    throw new Error("Session not found");
+  }
   await connectToDatabase();
   const $set: Record<string, unknown> = {};
   if (input.turns) $set.turns = input.turns;

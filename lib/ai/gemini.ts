@@ -16,18 +16,19 @@ let geminiClient: OpenAI | null = null;
 const DEFAULT_GEMINI_MODEL = "gemini-1.5-flash";
 
 export function getGeminiClient(): TextAIProvider | null {
-  if (!process.env.GEMINI_API_KEY) {
+  const key = process.env.GEMINI_API_KEY?.trim();
+  if (!key) {
     return null;
   }
 
   geminiClient ??= new OpenAI({
-    apiKey: process.env.GEMINI_API_KEY,
+    apiKey: key,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
   });
 
   return {
     client: geminiClient,
-    model: process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL,
+    model: process.env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL,
     provider: "gemini"
   };
 }
