@@ -722,6 +722,13 @@ export function MockInterviewRoom() {
                 Uses your master resume when available. Hold the mic during the
                 round to answer by voice (Whisper via Groq).
               </p>
+              <a
+                href="/dashboard/interview"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+              >
+                Browse 64+ company coding question guides
+                <ArrowLeft className="h-3 w-3 rotate-180" weight="regular" />
+              </a>
             </CardContent>
           </Card>
 

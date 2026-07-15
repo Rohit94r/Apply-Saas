@@ -47,6 +47,15 @@ export default async function InterviewPage({
         initialRole={initialRole}
         initialResumeContent={initialResumeContent}
       />
+
+      <div className="mt-10 flex items-center gap-4">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Company PYQs Library
+        </span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
       <CompanyCodingQuestions />
     </div>
   );

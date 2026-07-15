@@ -11,7 +11,16 @@ import {
   BookOpen,
   ClipboardText,
   Lightbulb,
-  X
+  X,
+  GraduationCap,
+  FileText,
+  ChartBar,
+  RoadHorizon,
+  ChatCircleText,
+  Briefcase,
+  DownloadSimple,
+  Notebook,
+  LinkSimple
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Card } from "@/components/ui/card";
@@ -35,17 +44,29 @@ const filterTabs: Array<{ id: FilterId; label: string; icon: PhosphorIcon }> = [
   { id: "it-services", label: "IT Services", icon: Desktop }
 ];
 
+const resourceIcons: Record<string, PhosphorIcon> = {
+  "Free Mock Test": GraduationCap,
+  "ATS Score Checker & Resume Optimization": ChartBar,
+  "Developer Roadmaps": RoadHorizon,
+  "Interview Questions & Answers": ChatCircleText,
+  "Interview Experiences": Briefcase,
+  "Resume Templates": FileText,
+  "Free Study Notes": Notebook,
+  "Free Placement Material Drive": DownloadSimple,
+  "Job Opportunity Updates": Briefcase
+};
+
 function categoryAccent(category: CompanyCategory): string {
   if (category === "product-tech") {
-    return "border-l-violet-400 bg-violet-50/50";
+    return "border-l-violet-400 hover:border-violet-300";
   }
   if (category === "bfsi-consulting") {
-    return "border-l-sky-400 bg-sky-50/50";
+    return "border-l-sky-400 hover:border-sky-300";
   }
-  return "border-l-emerald-400 bg-emerald-50/50";
+  return "border-l-emerald-400 hover:border-emerald-300";
 }
 
-function categoryBadge(category: CompanyCategory): string {
+function categoryBadgeClass(category: CompanyCategory): string {
   if (category === "product-tech") {
     return "bg-violet-100 text-violet-700";
   }
@@ -55,9 +76,30 @@ function categoryBadge(category: CompanyCategory): string {
   return "bg-emerald-100 text-emerald-700";
 }
 
+function categoryAvatarBg(category: CompanyCategory): string {
+  if (category === "product-tech") {
+    return "from-violet-500 to-purple-600";
+  }
+  if (category === "bfsi-consulting") {
+    return "from-sky-500 to-blue-600";
+  }
+  return "from-emerald-500 to-teal-600";
+}
+
 function categoryLabel(category: CompanyCategory): string {
   const group = companyCategories.find((g) => g.id === category);
   return group?.label ?? category;
+}
+
+function companyInitials(name: string): string {
+  const cleaned = name.replace(/[()&]/g, "").trim();
+  const words = cleaned.split(/\s+/).filter(Boolean);
+
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+
+  return (words[0][0] + words[1][0]).toUpperCase();
 }
 
 function CompanyCard({ guide }: { guide: CompanyCodingGuide }) {
@@ -66,33 +108,41 @@ function CompanyCard({ guide }: { guide: CompanyCodingGuide }) {
       href={guide.url}
       target="_blank"
       rel="noreferrer"
-      className={`group flex flex-col rounded-xl border border-border border-l-4 p-4 transition hover:border-primary/40 hover:bg-white hover:shadow-soft ${categoryAccent(
+      className={`group flex flex-col rounded-xl border border-border border-l-4 bg-white p-4 transition hover:shadow-soft ${categoryAccent(
         guide.category
       )}`}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start gap-3">
+        <div
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br text-sm font-bold text-white shadow-sm ${categoryAvatarBg(
+            guide.category
+          )}`}
+        >
+          {companyInitials(guide.company)}
+        </div>
         <div className="min-w-0 flex-1">
+          <h4 className="truncate text-base font-bold text-foreground">
+            {guide.company}
+          </h4>
           <span
-            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${categoryBadge(
+            className={`mt-0.5 inline-block rounded-full px-2 py-0.5 text-[9px] font-bold ${categoryBadgeClass(
               guide.category
             )}`}
           >
             {categoryLabel(guide.category)}
           </span>
-          <h4 className="mt-2 truncate text-base font-bold text-foreground">
-            {guide.company}
-          </h4>
         </div>
         <ArrowSquareOut
           className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-primary"
           weight="regular"
         />
       </div>
-      <p className="mt-2 line-clamp-2 text-xs leading-5 text-muted-foreground">
+      <p className="mt-3 line-clamp-2 text-xs leading-5 text-muted-foreground">
         {guide.guideTitle}
       </p>
-      <div className="mt-3 border-t border-border/60 pt-2">
-        <p className="text-[11px] font-semibold text-muted-foreground">
+      <div className="mt-3 flex items-center gap-1.5 border-t border-border/60 pt-2.5">
+        <Briefcase className="h-3 w-3 shrink-0 text-muted-foreground/60" weight="regular" />
+        <p className="truncate text-[11px] font-semibold text-muted-foreground">
           {guide.roles}
         </p>
       </div>
@@ -103,10 +153,34 @@ function CompanyCard({ guide }: { guide: CompanyCodingGuide }) {
 function UsageStep({ step, index }: { step: string; index: number }) {
   return (
     <div className="flex gap-3">
-      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-[11px] font-bold text-accent">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
         {index + 1}
       </span>
-      <p className="text-sm leading-6 text-muted-foreground">{step}</p>
+      <p className="pt-0.5 text-sm leading-6 text-muted-foreground">{step}</p>
+    </div>
+  );
+}
+
+function StatCard({
+  value,
+  label,
+  icon: Icon
+}: {
+  value: string;
+  label: string;
+  icon: PhosphorIcon;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-white px-4 py-3">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <Icon className="h-4 w-4" weight="regular" />
+      </span>
+      <div>
+        <p className="text-lg font-bold leading-none text-foreground">{value}</p>
+        <p className="mt-0.5 text-[11px] font-semibold text-muted-foreground">
+          {label}
+        </p>
+      </div>
     </div>
   );
 }
@@ -151,14 +225,19 @@ export function CompanyCodingQuestions() {
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden p-0">
-        <div className="border-b border-border bg-[#fbfaf6] px-6 py-5">
+        <div className="border-b border-border bg-[#fbfaf6] px-6 py-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="fine-label mb-2">Company PYQs Library</p>
+            <div className="max-w-2xl">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Code className="h-4 w-4" weight="regular" />
+                </span>
+                <p className="fine-label">Company PYQs Library</p>
+              </div>
               <h3 className="font-serif text-3xl text-primary">
                 Previous Year Coding Questions
               </h3>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 Curated coding questions from {totalCompanyCount}+ top companies
                 — sourced from real candidate interview reports, online
                 assessments, and campus placement drives. Each guide includes
@@ -166,9 +245,24 @@ export function CompanyCodingQuestions() {
                 breakdowns.
               </p>
             </div>
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-primary/10 bg-white text-primary shadow-sm">
-              <Code className="h-6 w-6" weight="regular" />
-            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <StatCard
+              value={`${totalCompanyCount}`}
+              label="Companies covered"
+              icon={Buildings}
+            />
+            <StatCard
+              value="3"
+              label="Industry categories"
+              icon={Bank}
+            />
+            <StatCard
+              value="9"
+              label="Bonus resources"
+              icon={BookOpen}
+            />
           </div>
         </div>
 
@@ -257,7 +351,7 @@ export function CompanyCodingQuestions() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_0.7fr]">
         <Card className="p-6">
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-5 flex items-center gap-2 border-b border-border pb-4">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 text-accent">
               <Lightbulb className="h-4 w-4" weight="regular" />
             </span>
@@ -273,7 +367,7 @@ export function CompanyCodingQuestions() {
         </Card>
 
         <Card className="p-6">
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-5 flex items-center gap-2 border-b border-border pb-4">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <BookOpen className="h-4 w-4" weight="regular" />
             </span>
@@ -282,23 +376,30 @@ export function CompanyCodingQuestions() {
             </h4>
           </div>
           <div className="space-y-2">
-            {additionalResources.map((resource) => (
-              <a
-                key={resource.url}
-                href={resource.url}
-                target="_blank"
-                rel="noreferrer"
-                className="group flex items-center justify-between gap-2 rounded-lg border border-border bg-[#fbfaf6] px-3 py-2.5 text-sm transition hover:border-primary/40 hover:bg-white hover:shadow-sm"
-              >
-                <span className="font-semibold text-foreground">
-                  {resource.label}
-                </span>
-                <ArrowSquareOut
-                  className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition group-hover:text-primary"
-                  weight="regular"
-                />
-              </a>
-            ))}
+            {additionalResources.map((resource) => {
+              const Icon = resourceIcons[resource.label] ?? LinkSimple;
+
+              return (
+                <a
+                  key={resource.url}
+                  href={resource.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex items-center gap-3 rounded-lg border border-border bg-[#fbfaf6] px-3 py-2.5 text-sm transition hover:border-primary/40 hover:bg-white hover:shadow-sm"
+                >
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition group-hover:bg-primary/15">
+                    <Icon className="h-3.5 w-3.5" weight="regular" />
+                  </span>
+                  <span className="min-w-0 flex-1 truncate font-semibold text-foreground">
+                    {resource.label}
+                  </span>
+                  <ArrowSquareOut
+                    className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition group-hover:text-primary"
+                    weight="regular"
+                  />
+                </a>
+              );
+            })}
           </div>
         </Card>
       </div>
@@ -306,7 +407,7 @@ export function CompanyCodingQuestions() {
       <Card className="p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <ClipboardText className="h-4 w-4 text-muted-foreground" weight="regular" />
+            <ClipboardText className="h-4 w-4 shrink-0 text-muted-foreground" weight="regular" />
             <p className="text-xs text-muted-foreground">
               <span className="font-semibold text-foreground">
                 Research & data extraction:
