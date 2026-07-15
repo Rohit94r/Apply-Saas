@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ApplicationsTracker } from "@/components/dashboard/applications-tracker";
+import { MockInterviewProgress } from "@/components/dashboard/mock-interview-progress";
 import {
   ActivityFeed,
   KeywordCoverageChart
@@ -50,6 +51,10 @@ export default async function ApplicationsProgressPage() {
           <h2 className="font-serif text-3xl text-primary">Where you applied</h2>
         </div>
         <ApplicationsTracker initialApplications={applications} />
+      </section>
+
+      <section className="space-y-4">
+        <MockInterviewProgress />
       </section>
 
       <section className="space-y-6">
