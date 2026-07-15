@@ -1492,5 +1492,400 @@ export const preparePages: PreparePage[] = [
         ]
       }
     ]
+  },
+  {
+    slug: "phonepe-interview-questions-2026",
+    title: "PhonePe Interview Questions 2026: SDE, Backend & Coding Guide",
+    description:
+      "PhonePe interview questions for SDE 1, SDE 2, and backend engineer roles. Covers OA coding, system design, technical interview, and HR rounds with preparation strategy.",
+    companyId: "phonepe",
+    companyName: "PhonePe",
+    category: "interview",
+    targetKeyword: "PhonePe interview questions 2026",
+    keywords: [
+      "PhonePe interview questions 2026",
+      "PhonePe SDE interview",
+      "PhonePe backend engineer interview",
+      "PhonePe coding questions",
+      "PhonePe online assessment",
+      "PhonePe interview experience India",
+      "PhonePe hiring process",
+      "fintech interview questions India"
+    ],
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "9 min",
+    excerpt:
+      "PhonePe hires SDE 1, SDE 2, and backend engineers for its Bengaluru fintech platform. Here is the complete interview process — OA, coding, system design, and HR — with preparation tips.",
+    sections: [
+      {
+        heading: "PhonePe interview process overview",
+        body: [
+          "PhonePe typically conducts 3-4 rounds: online assessment (OA), 1-2 technical interviews, and a hiring manager / HR round. The process takes 1-2 weeks.",
+          "OA: 2-3 coding problems (medium/hard) on HackerRank or similar platform. 60-90 minutes. DSA focus: arrays, strings, trees, graphs, DP.",
+          "Technical round 1: Coding problem + core CS fundamentals (OS, DBMS, OOP). Deep dive into one of your projects.",
+          "Technical round 2: System design (for SDE 2+) or harder coding problem. Questions on scalability, caching, databases.",
+          "HR / hiring manager: Behavioral, past experience, why PhonePe, compensation discussion."
+        ]
+      },
+      {
+        heading: "PhonePe coding questions (previous year)",
+        body: [
+          "Array manipulation: subarray sum, two pointers, sliding window",
+          "Graph problems: shortest path, connected components, BFS/DFS",
+          "String problems: pattern matching, anagram groups, palindrome variations",
+          "Tree problems: level order traversal, LCA, diameter",
+          "DP problems: knapsack, LIS, coin change variations",
+          "Check PhonePe previous year coding questions on Apply PYQs for exact problems asked."
+        ]
+      },
+      {
+        heading: "System design questions at PhonePe",
+        body: [
+          "Design a UPI payment system — handle transactions, idempotency, reconciliation",
+          "Design a wallet system — balance management, concurrency, ledger",
+          "Design a notification system — push notifications, SMS, email aggregation",
+          "Focus on: database choice (SQL vs NoSQL), caching (Redis), message queues (Kafka), and failure handling"
+        ]
+      },
+      {
+        heading: "How to prepare for PhonePe interviews",
+        body: [
+          "Practice 50+ medium LeetCode problems focusing on arrays, strings, trees, and graphs. PhonePe loves DSA fundamentals.",
+          "Read about fintech architecture: UPI, payment gateways, idempotency, distributed transactions.",
+          "Prepare 2 projects with clear tech stack explanations — PhonePe values hands-on building.",
+          "Use Apply's mock interview at /mock-interview with company set to PhonePe for realistic practice."
+        ]
+      },
+      {
+        heading: "PhonePe interview tips",
+        body: [
+          "PhonePe values clean, production-quality code. Write readable code with good variable names.",
+          "Know your projects inside out — be ready to explain architecture, trade-offs, and what you'd do differently.",
+          "For system design, start with requirements clarification, then high-level design, then deep dive.",
+          "Research PhonePe's products: UPI, Wallet, Switch, POS. Reference them in your answers."
+        ]
+      },
+      {
+        heading: "How Apply helps for PhonePe",
+        body: [
+          "Tailor your resume with PhonePe JD keywords (Java, Spring Boot, Kafka, Redis, distributed systems). Use Interview prep with company set to PhonePe.",
+          "Browse PhonePe PYQs at /pyqs. Practice mock interview at /mock-interview."
+        ]
+      }
+    ],
+    primaryCta: { label: "Tailor resume for PhonePe", href: "/dashboard/generate" },
+    secondaryCtas: [
+      { label: "PhonePe PYQs", href: "/pyqs" },
+      { label: "Practice mock interview", href: "/mock-interview" }
+    ],
+    relatedSlugs: ["amazon-sde-internship-india", "razorpay-interview-questions-2026", "swiggy-interview-questions-2026"]
+  },
+  {
+    slug: "razorpay-interview-questions-2026",
+    title: "Razorpay Interview Questions 2026: SDE, Backend & Coding Guide",
+    description:
+      "Razorpay interview questions for SDE 1, SDE 2, and full stack roles. Covers coding OA, system design, technical interview, and hiring process for India's leading fintech.",
+    companyId: "razorpay",
+    companyName: "Razorpay",
+    category: "interview",
+    targetKeyword: "Razorpay interview questions 2026",
+    keywords: [
+      "Razorpay interview questions 2026",
+      "Razorpay SDE interview",
+      "Razorpay coding questions",
+      "Razorpay backend engineer interview",
+      "Razorpay online assessment",
+      "Razorpay interview experience",
+      "Razorpay hiring process India",
+      "fintech SDE interview questions"
+    ],
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "9 min",
+    excerpt:
+      "Razorpay hires SDE 1 and SDE 2 for its Bengaluru fintech platform. Here is the complete interview guide — OA coding, system design, technical rounds, and preparation strategy.",
+    sections: [
+      {
+        heading: "Razorpay interview process overview",
+        body: [
+          "Razorpay typically conducts 3-4 rounds: online coding assessment, 2 technical interviews, and a hiring manager round. The process takes 1-2 weeks.",
+          "OA: 2 coding problems (medium/hard) on HackerRank/CodeSignal. 75 minutes. Focus on DSA and problem-solving.",
+          "Technical round 1: Coding problem + CS fundamentals (OS, DBMS, OOP, computer networks).",
+          "Technical round 2: System design or harder coding problem + project deep dive.",
+          "Hiring manager: Behavioral, culture fit, why Razorpay, compensation."
+        ]
+      },
+      {
+        heading: "Razorpay coding questions (previous year)",
+        body: [
+          "Array + hash map: frequency counting, two-sum variations, group anagrams",
+          "Tree + graph: BST operations, graph traversal, shortest path",
+          "DP: coin change, LIS, edit distance",
+          "String: regex matching, substring search, compression",
+          "Check Razorpay previous year coding questions on Apply PYQs for exact problems."
+        ]
+      },
+      {
+        heading: "System design at Razorpay",
+        body: [
+          "Design a payment gateway — handle webhooks, idempotency, retry logic",
+          "Design a subscription billing system — recurring payments, invoicing",
+          "Design a loan eligibility system — credit scoring, risk assessment",
+          "Key concepts: distributed systems, ACID vs BASE, message queues, caching strategies"
+        ]
+      },
+      {
+        heading: "How to prepare for Razorpay interviews",
+        body: [
+          "Solve 60+ medium/hard LeetCode problems. Razorpay asks real DSA problems, not just easy ones.",
+          "Understand payment systems: gateways, UPI, cards, net banking, settlement, reconciliation.",
+          "Prepare 2 strong projects — Razorpay values builders and side projects.",
+          "Practice with Apply's mock interview at /mock-interview with company set to Razorpay."
+        ]
+      },
+      {
+        heading: "How Apply helps for Razorpay",
+        body: [
+          "Tailor your resume with Razorpay JD keywords (React, Node.js, TypeScript, PostgreSQL, Kafka). Browse Razorpay PYQs at /pyqs."
+        ]
+      }
+    ],
+    primaryCta: { label: "Tailor resume for Razorpay", href: "/dashboard/generate" },
+    secondaryCtas: [
+      { label: "Razorpay PYQs", href: "/pyqs" },
+      { label: "Practice mock interview", href: "/mock-interview" }
+    ],
+    relatedSlugs: ["phonepe-interview-questions-2026", "swiggy-interview-questions-2026", "amazon-sde-internship-india"]
+  },
+  {
+    slug: "swiggy-interview-questions-2026",
+    title: "Swiggy Interview Questions 2026: SDE, Backend & Data Science Guide",
+    description:
+      "Swiggy interview questions for SDE 1, SDE 2, backend engineer, and data scientist roles. Covers coding OA, system design, and technical interview rounds with prep strategy.",
+    companyId: "swiggy",
+    companyName: "Swiggy",
+    category: "interview",
+    targetKeyword: "Swiggy interview questions 2026",
+    keywords: [
+      "Swiggy interview questions 2026",
+      "Swiggy SDE interview",
+      "Swiggy coding questions",
+      "Swiggy backend engineer interview",
+      "Swiggy data scientist interview",
+      "Swiggy online assessment",
+      "Swiggy interview experience India",
+      "food tech interview questions"
+    ],
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "9 min",
+    excerpt:
+      "Swiggy hires SDE 1, SDE 2, backend engineers, and data scientists in Bengaluru. Here is the complete interview guide — OA, system design, and technical rounds.",
+    sections: [
+      {
+        heading: "Swiggy interview process overview",
+        body: [
+          "Swiggy conducts 3-4 rounds: online assessment, 2 technical interviews, and a hiring manager round. Process takes 1-2 weeks.",
+          "OA: 2 coding problems (medium/hard) on HackerRank. 60-90 minutes.",
+          "Technical round 1: Coding + CS fundamentals + project discussion.",
+          "Technical round 2: System design (for SDE 2+) or advanced coding + architecture discussion.",
+          "Hiring manager: Behavioral, culture fit, past experience."
+        ]
+      },
+      {
+        heading: "Swiggy coding questions (previous year)",
+        body: [
+          "Graph problems: delivery route optimization, shortest path, BFS/DFS",
+          "Array + greedy: scheduling, interval problems, optimization",
+          "DP: knapsack, matrix DP, string DP",
+          "System design: design food delivery system, design restaurant search, design order tracking",
+          "Check Swiggy previous year coding questions on Apply PYQs for exact problems."
+        ]
+      },
+      {
+        heading: "Swiggy system design questions",
+        body: [
+          "Design a food delivery app — order placement, restaurant catalog, delivery assignment",
+          "Design a real-time order tracking system — GPS updates, ETA prediction",
+          "Design a restaurant recommendation engine — ranking, personalization",
+          "Key concepts: geospatial indexing, real-time updates (WebSockets), caching, load balancing"
+        ]
+      },
+      {
+        heading: "How to prepare for Swiggy interviews",
+        body: [
+          "Practice DSA with focus on graphs and greedy — Swiggy's domain involves routing and optimization.",
+          "Understand food delivery architecture: order management, catalog, dispatch, tracking.",
+          "For data science roles: practice SQL, Python, statistics, A/B testing, and ML case studies.",
+          "Use Apply's mock interview at /mock-interview with company set to Swiggy."
+        ]
+      },
+      {
+        heading: "How Apply helps for Swiggy",
+        body: [
+          "Tailor your resume with Swiggy JD keywords (React, Node.js, MongoDB, Kafka, system design). Browse Swiggy PYQs at /pyqs."
+        ]
+      }
+    ],
+    primaryCta: { label: "Tailor resume for Swiggy", href: "/dashboard/generate" },
+    secondaryCtas: [
+      { label: "Swiggy PYQs", href: "/pyqs" },
+      { label: "Practice mock interview", href: "/mock-interview" }
+    ],
+    relatedSlugs: ["phonepe-interview-questions-2026", "razorpay-interview-questions-2026", "zomato-interview-questions-2026"]
+  },
+  {
+    slug: "zomato-interview-questions-2026",
+    title: "Zomato Interview Questions 2026: SDE, Backend & Coding Guide",
+    description:
+      "Zomato interview questions for SDE 1, SDE 2, backend engineer, and UI/UX roles. Covers coding OA, system design, and technical interview rounds with preparation tips.",
+    companyId: "zomato",
+    companyName: "Zomato",
+    category: "interview",
+    targetKeyword: "Zomato interview questions 2026",
+    keywords: [
+      "Zomato interview questions 2026",
+      "Zomato SDE interview",
+      "Zomato coding questions",
+      "Zomato backend engineer interview",
+      "Zomato online assessment",
+      "Zomato interview experience India",
+      "Zomato hiring process",
+      "food delivery interview questions"
+    ],
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "8 min",
+    excerpt:
+      "Zomato hires SDE 1, SDE 2, and backend engineers in Gurugram and Bengaluru. Here is the complete interview guide — OA, coding, system design, and HR rounds.",
+    sections: [
+      {
+        heading: "Zomato interview process overview",
+        body: [
+          "Zomato conducts 3-4 rounds: online assessment, 1-2 technical interviews, and a cultural fit / HR round. Process takes 1-2 weeks.",
+          "OA: 2 coding problems (medium/hard) on HackerRank. 60-75 minutes.",
+          "Technical round: Coding + CS fundamentals + project deep dive.",
+          "HR round: Culture fit, why Zomato, behavioral questions."
+        ]
+      },
+      {
+        heading: "Zomato coding questions (previous year)",
+        body: [
+          "Array problems: sorting, searching, frequency counting",
+          "String problems: pattern matching, parsing, compression",
+          "Graph problems: shortest path, traversal, connectivity",
+          "DP: classic problems like knapsack, LIS, coin change",
+          "Check Zomato previous year coding questions on Apply PYQs for exact problems."
+        ]
+      },
+      {
+        heading: "Zomato system design questions",
+        body: [
+          "Design a restaurant search and discovery system",
+          "Design an order tracking and delivery system",
+          "Design a review and rating system with fraud detection",
+          "Key concepts: search indexing, geospatial queries, caching, recommendation systems"
+        ]
+      },
+      {
+        heading: "How to prepare for Zomato interviews",
+        body: [
+          "Practice DSA fundamentals — Zomato asks medium difficulty problems consistently.",
+          "Understand food delivery domain: catalog, search, orders, delivery, ratings.",
+          "Research Zomato's products: food delivery, Zomato Gold, Hyperpure. Reference them in answers.",
+          "Use Apply's mock interview at /mock-interview with company set to Zomato."
+        ]
+      },
+      {
+        heading: "How Apply helps for Zomato",
+        body: [
+          "Tailor your resume with Zomato JD keywords (React, Node.js, Python, MongoDB, system design). Browse Zomato PYQs at /pyqs."
+        ]
+      }
+    ],
+    primaryCta: { label: "Tailor resume for Zomato", href: "/dashboard/generate" },
+    secondaryCtas: [
+      { label: "Zomato PYQs", href: "/pyqs" },
+      { label: "Practice mock interview", href: "/mock-interview" }
+    ],
+    relatedSlugs: ["swiggy-interview-questions-2026", "phonepe-interview-questions-2026", "razorpay-interview-questions-2026"]
+  },
+  {
+    slug: "paytm-interview-questions-2026",
+    title: "Paytm Interview Questions 2026: SDE, Backend & Coding Guide",
+    description:
+      "Paytm interview questions for SDE 1, SDE 2, and backend engineer roles. Covers coding OA, system design, technical interview, and HR rounds with preparation strategy.",
+    companyId: "paytm",
+    companyName: "Paytm",
+    category: "interview",
+    targetKeyword: "Paytm interview questions 2026",
+    keywords: [
+      "Paytm interview questions 2026",
+      "Paytm SDE interview",
+      "Paytm coding questions",
+      "Paytm backend engineer interview",
+      "Paytm online assessment",
+      "Paytm interview experience India",
+      "Paytm hiring process",
+      "fintech interview questions India"
+    ],
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "8 min",
+    excerpt:
+      "Paytm hires SDE 1, SDE 2, and backend engineers for its Noida fintech platform. Here is the complete interview guide — OA, coding, system design, and HR rounds.",
+    sections: [
+      {
+        heading: "Paytm interview process overview",
+        body: [
+          "Paytm conducts 3-4 rounds: online assessment, 2 technical interviews, and an HR round. Process takes 1-2 weeks.",
+          "OA: 2-3 coding problems (medium) on HackerRank. 60-90 minutes.",
+          "Technical round 1: Coding + CS fundamentals (Java, Spring Boot, microservices for backend roles).",
+          "Technical round 2: System design + project deep dive.",
+          "HR round: Behavioral, why Paytm, compensation."
+        ]
+      },
+      {
+        heading: "Paytm coding questions (previous year)",
+        body: [
+          "Array + hash map: frequency, two-sum, group problems",
+          "String: parsing, matching, compression",
+          "Tree: traversal, BST operations, level order",
+          "System design: design payment system, design wallet, design UPI integration",
+          "Check Paytm previous year coding questions on Apply PYQs for exact problems."
+        ]
+      },
+      {
+        heading: "System design at Paytm",
+        body: [
+          "Design a UPI payment system — transaction flow, idempotency, reconciliation",
+          "Design a wallet system — balance, ledger, concurrency control",
+          "Design a merchant onboarding system — KYC, verification, activation",
+          "Key concepts: distributed transactions, message queues (Kafka), caching (Redis), microservices"
+        ]
+      },
+      {
+        heading: "How to prepare for Paytm interviews",
+        body: [
+          "For backend roles: master Java, Spring Boot, microservices, Kafka, SQL. Paytm backend is Java-heavy.",
+          "Practice 50+ medium LeetCode problems. Paytm coding is moderate difficulty.",
+          "Understand fintech: UPI, wallets, payments, settlements, KYC.",
+          "Use Apply's mock interview at /mock-interview with company set to Paytm."
+        ]
+      },
+      {
+        heading: "How Apply helps for Paytm",
+        body: [
+          "Tailor your resume with Paytm JD keywords (Java, Spring Boot, Microservices, SQL, Kafka). Browse Paytm PYQs at /pyqs."
+        ]
+      }
+    ],
+    primaryCta: { label: "Tailor resume for Paytm", href: "/dashboard/generate" },
+    secondaryCtas: [
+      { label: "Paytm PYQs", href: "/pyqs" },
+      { label: "Practice mock interview", href: "/mock-interview" }
+    ],
+    relatedSlugs: ["phonepe-interview-questions-2026", "razorpay-interview-questions-2026", "amazon-sde-internship-india"]
   }
 ];

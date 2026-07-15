@@ -378,5 +378,480 @@ export const blogPosts = [
         ]
       }
     ]
+  },
+  {
+    slug: "campus-placement-guide-india-2026",
+    title: "Campus Placement Guide 2026: How to Crack TCS, Infosys, Amazon & More",
+    description:
+      "Complete campus placement preparation guide for Indian engineering students — aptitude, coding, interviews, resume, and company-wise strategy from first year to placement season.",
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "12 min",
+    category: "Placement Strategy",
+    targetKeyword: "campus placement guide India",
+    keywords: [
+      "campus placement guide India",
+      "campus placement preparation strategy",
+      "how to crack campus placements",
+      "TCS campus placement preparation",
+      "Infosys campus placement tips",
+      "Amazon campus placement India",
+      "placement preparation for engineering students",
+      "campus placement aptitude preparation"
+    ],
+    excerpt:
+      "Campus placement season starts in your 3rd year. Here is a month-by-month plan covering aptitude, coding, resume, and company-wise interview prep — with links to PYQs and mock interviews.",
+    sections: [
+      {
+        heading: "When does campus placement preparation start",
+        body: [
+          "Most Indian engineering colleges start campus placements in the 7th semester (4th year), but companies like TCS, Infosys, and Cognizant run mass hiring from the 6th semester onward through NQT, InfyTQ, and Superset.",
+          "Start preparing in your 2nd year — learn one programming language, build 2 projects, and solve 30 easy LeetCode problems. By 3rd year, focus on DSA patterns, aptitude, and company-specific PYQs.",
+          "Apply provides company-wise previous year coding questions for 64+ companies at /pyqs — use them to identify what each company actually asks in OA rounds."
+        ]
+      },
+      {
+        heading: "The four pillars of placement preparation",
+        body: [
+          "1. Aptitude — Quantitative, logical reasoning, and verbal. TCS NQT, Infosys SP, and Wipro NLTH all test aptitude in round 1. Practice 50+ aptitude questions per topic from platforms like IndiaBix and PrepInsta.",
+          "2. Coding — DSA fundamentals (arrays, strings, trees, graphs, DP). Product companies like Amazon and Microsoft ask medium/hard LeetCode questions. Service companies like TCS and Wipro ask easy/medium coding questions.",
+          "3. Technical interview — Core CS subjects (OS, DBMS, OOP, CN) + project deep dive. Prepare 2 projects with clear architecture explanations.",
+          "4. HR interview — Behavioral questions, strength/weakness, why this company, and case studies. Use STAR format for all answers."
+        ]
+      },
+      {
+        heading: "Company-wise preparation strategy",
+        body: [
+          "TCS: Focus on NQT aptitude (30 quant + 30 logical + 30 verbal) + 2 coding problems (easy/medium). Interview is mostly HR + basic technical. Check TCS NQT preparation guide on Apply.",
+          "Infosys: SP role requires harder coding + system design. DSE role focuses on Java + advanced DSA. Basic Infosys role needs aptitude + simple coding. Check Infosys SP DSE PYQs on Apply.",
+          "Amazon: 1-2 online assessments (OA) with medium/hard coding, followed by 3-4 interviews covering LP-based behavioral + coding + system design. Check Amazon OA questions on Apply.",
+          "Wipro: NLTH (national level talent hunt) has aptitude + coding. Elite NLTH is harder. Interview is technical + HR. Check Wipro Elite NTH preparation on Apply."
+        ]
+      },
+      {
+        heading: "Resume tips for campus placements",
+        body: [
+          "Keep your resume to one page. Include: name + contact, education (with CGPA), 2-3 projects with tech stack and impact, skills (languages + tools), and 1-2 achievements.",
+          "Tailor your resume for each company. TCS looks for consistency and basic skills. Amazon looks for impact metrics and leadership principles. Use Apply's free resume tailoring tool to customize per job description.",
+          "Upload your resume to Apply, paste the JD, and get an ATS-optimized version in seconds — free for the first 5 generations."
+        ]
+      },
+      {
+        heading: "Mock interview practice",
+        body: [
+          "Before the real interview, practice with Apply's AI mock interview at /mock-interview. It speaks questions aloud (ElevenLabs voice), captures your voice answers, and gives scored feedback.",
+          "Pick your target company, role, and difficulty. The interviewer asks HR, technical, or mixed questions — just like a real campus placement interview.",
+          "Pair every mock with company PYQs from /pyqs for maximum readiness. Practice 3-5 mock interviews before your first real placement interview."
+        ]
+      },
+      {
+        heading: "Timeline: 6-month placement preparation plan",
+        body: [
+          "Month 1-2: Master one language + basic DSA (arrays, strings, sorting, searching). Solve 50 easy problems on LeetCode/HackerRank.",
+          "Month 3-4: Intermediate DSA (trees, graphs, DP) + aptitude practice (IndiaBix, PrepInsta). Start company-specific PYQ practice.",
+          "Month 5: Resume finalization + project deep dive prep + mock interviews (3-5 sessions).",
+          "Month 6: Company-wise OA and interview practice. Apply to companies via Superset, NQT, and direct referrals."
+        ]
+      },
+      {
+        heading: "Start your placement prep free",
+        body: [
+          "Apply gives you everything in one place: ATS resume builder, 64+ company PYQs, AI mock interview, and company prep guides. Free to start — no credit card needed.",
+          "Open apply.neexmeet.com, build your resume, browse company PYQs at /pyqs, and practice mock interviews at /mock-interview."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "aptitude-questions-for-campus-placements",
+    title: "Aptitude Questions for Campus Placements: Topics, Patterns & Practice Tips",
+    description:
+      "Complete guide to campus placement aptitude tests — quantitative, logical reasoning, and verbal. Covers TCS NQT, Infosys, Wipro, Cognizant aptitude patterns with practice tips.",
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "10 min",
+    category: "Aptitude",
+    targetKeyword: "aptitude questions for placements",
+    keywords: [
+      "aptitude questions for placements",
+      "TCS NQT aptitude questions",
+      "campus placement aptitude preparation",
+      "Infosys aptitude questions",
+      "Wipro aptitude questions",
+      "Cognizant aptitude questions",
+      "quantitative aptitude for campus placements",
+      "logical reasoning placement preparation"
+    ],
+    excerpt:
+      "Aptitude is the first filter in most campus placements. Here are the exact topics, question patterns, and practice strategies for TCS NQT, Infosys, Wipro, and Cognizant aptitude rounds.",
+    sections: [
+      {
+        heading: "Why aptitude matters for campus placements",
+        body: [
+          "Every major Indian IT company — TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini — starts with an aptitude test. If you fail aptitude, you never reach the coding or interview round.",
+          "Aptitude tests typically have 30-50 questions in 60-80 minutes. The cut-off varies by company: TCS NQT requires ~60% correct, Infosys requires ~70%, and product companies can require 80%+."
+        ]
+      },
+      {
+        heading: "Quantitative aptitude topics",
+        body: [
+          "Number system, HCF/LCM, divisibility — basic but always tested",
+          "Time, speed, distance — 2-3 questions guaranteed in TCS and Infosys",
+          "Time and work — pipes, cisterns, efficiency problems",
+          "Percentages, profit/loss, simple/compound interest",
+          "Ratio, proportion, and mixture — alligations",
+          "Permutations, combinations, and probability — 1-2 questions",
+          "Geometry and mensuration — areas, volumes",
+          "Data interpretation — tables, bar charts, pie charts (common in Infosys)"
+        ]
+      },
+      {
+        heading: "Logical reasoning topics",
+        body: [
+          "Syllogisms — 3-5 questions in every service company aptitude test",
+          "Blood relations — 2-3 questions, easy if you practice",
+          "Direction sense — 1-2 questions",
+          "Coding-decoding — letter/number series, very common",
+          "Seating arrangement — linear and circular, 3-5 questions",
+          "Data sufficiency — 2-3 questions in Infosys and Cognizant",
+          "Statement and assumptions/conclusions — common in Wipro"
+        ]
+      },
+      {
+        heading: "Verbal ability topics",
+        body: [
+          "Reading comprehension — 1 passage with 5 questions in TCS NQT",
+          "Sentence correction — grammar, tense, articles",
+          "Synonyms and antonyms — 3-5 questions",
+          "Fill in the blanks — prepositions, conjunctions",
+          "Para jumbles — sentence rearrangement (Infosys favorite)"
+        ]
+      },
+      {
+        heading: "Company-wise aptitude patterns",
+        body: [
+          "TCS NQT: 20 quant + 20 logical + 20 verbal (80 min). Cut-off ~60%. Questions are moderate difficulty. Check TCS NQT preparation guide on Apply.",
+          "Infosys: 10 quant + 15 logical + 15 verbal + 10 DI (95 min). Cut-off ~70%. Harder than TCS, especially DI and logical.",
+          "Wipro: 15 quant + 15 logical + 15 verbal (60 min). Moderate difficulty. Elite NLTH has harder aptitude.",
+          "Cognizant: 24 quant + 24 logical + 24 verbal (56 min). Time pressure is the biggest challenge — practice speed.",
+          "Accenture: Similar to TCS pattern. Check Accenture coding questions on Apply for the next round."
+        ]
+      },
+      {
+        heading: "How to practice aptitude effectively",
+        body: [
+          "Start with IndiaBix — free, topic-wise practice with solutions. Do 50 questions per topic.",
+          "Take timed mock tests on PrepInsta and FacePrep to simulate real test conditions.",
+          "Focus on speed: aim for 1 question per minute. Skip hard questions and return later.",
+          "Keep an error notebook: track topics where you make mistakes and revisit weekly.",
+          "Practice daily for 30 minutes starting 3 months before placement season."
+        ]
+      },
+      {
+        heading: "After aptitude: coding and interview",
+        body: [
+          "Once you clear aptitude, the next round is coding (OA) — check company PYQs at /pyqs for exact coding questions asked by each company.",
+          "Then prepare for the technical + HR interview using Apply's AI mock interview at /mock-interview."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "dsa-interview-questions-for-freshers",
+    title: "DSA Interview Questions for Freshers: Top 30 Patterns with Solutions",
+    description:
+      "Master DSA interview questions for campus placements — arrays, strings, trees, graphs, DP. Top 30 patterns with approach hints, complexity, and links to practice problems.",
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "15 min",
+    category: "DSA",
+    targetKeyword: "DSA interview questions for freshers",
+    keywords: [
+      "DSA interview questions for freshers",
+      "data structures interview questions",
+      "algorithms interview questions India",
+      "coding interview patterns",
+      "LeetCode patterns for beginners",
+      "DSA for campus placements",
+      "array interview questions",
+      "dynamic programming interview questions",
+      "graph interview questions",
+      "tree interview questions"
+    ],
+    excerpt:
+      "DSA is the core of every coding interview. Here are the top 30 patterns — from two pointers to dynamic programming — that appear in TCS, Amazon, Microsoft, and Google interviews.",
+    sections: [
+      {
+        heading: "Why patterns matter more than memorizing problems",
+        body: [
+          "Most coding interview questions are variations of 15-20 core patterns. If you recognize the pattern, you can solve any variation — even under pressure.",
+          "Companies like Amazon and Microsoft don't expect you to memorize 500 LeetCode problems. They expect you to recognize the pattern and apply it to a new problem in 30 minutes."
+        ]
+      },
+      {
+        heading: "Array patterns (most frequently asked)",
+        body: [
+          "Two pointers — pair sum, three sum, container with most water. Start with sorted arrays, move pointers based on sum comparison.",
+          "Sliding window — maximum subarray sum K, longest substring without repeating characters. Maintain a window [left, right] and shrink/expand based on condition.",
+          "Prefix sum — range sum queries, equilibrium index. Precompute cumulative sums for O(1) range queries.",
+          "Kadane's algorithm — maximum subarray sum. Track current max and global max as you iterate.",
+          "Dutch national flag — sort 0s, 1s, 2s in-place. Three-way partitioning."
+        ]
+      },
+      {
+        heading: "String patterns",
+        body: [
+          "Hash map counting — character frequency, anagram check. Use Map or object for O(n) lookups.",
+          "Palindrome — expand from center, or reverse and compare. Two-pointer approach from both ends.",
+          "String matching — KMP algorithm, Rabin-Karp. Know at least one efficient string search algorithm.",
+          "Anagram grouping — sort each string as key, group by sorted key."
+        ]
+      },
+      {
+        heading: "Tree and graph patterns",
+        body: [
+          "BFS / DFS — tree traversal, graph traversal. Use queue for BFS, stack/recursion for DFS.",
+          "Binary search tree — search, insert, delete. Know the BST property and in-order traversal.",
+          "Tree DP — diameter of binary tree, maximum path sum. Post-order traversal with return values.",
+          "Graph shortest path — Dijkstra for weighted, BFS for unweighted. Know when to use each.",
+          "Topological sort — course schedule, task dependency. Use DFS or Kahn's algorithm (BFS-based)."
+        ]
+      },
+      {
+        heading: "Dynamic programming patterns",
+        body: [
+          "1D DP — Fibonacci, climbing stairs, house robber. Identify subproblems and overlapping computations.",
+          "2D DP — longest common subsequence, edit distance, 0/1 knapsack. Build a table from base cases.",
+          "DP on arrays — maximum subarray, jump game. Track state at each position.",
+          "DP on strings — longest palindromic substring, word break. Process substrings from shortest to longest.",
+          "Bitmask DP — traveling salesman, subset sum. Use bitmasks when state includes which elements are used."
+        ]
+      },
+      {
+        heading: "Linked list and stack patterns",
+        body: [
+          "Fast/slow pointers — detect cycle, find middle, merge point. Floyd's algorithm.",
+          "Reverse linked list — iterative and recursive. Fundamental operation tested everywhere.",
+          "Merge sorted lists — two-pointer merge. Extension: merge K sorted lists with heap.",
+          "Monotonic stack — next greater element, largest rectangle in histogram. Maintain a stack of indices.",
+          "Valid parentheses — stack-based matching. Extension: generate all valid parentheses combinations."
+        ]
+      },
+      {
+        heading: "Company-wise DSA expectations",
+        body: [
+          "TCS / Wipro / Cognizant: Easy/medium arrays, strings, basic sorting. Check TCS coding questions on Apply PYQs.",
+          "Amazon / Microsoft: Medium arrays, trees, graphs, DP. 2-3 problems in OA. Check Amazon OA questions on Apply.",
+          "Google / Meta: Hard problems, often 2 patterns combined. System design may accompany coding.",
+          "Goldman Sachs / JP Morgan: Medium DP + array problems. Focus on correctness over optimization."
+        ]
+      },
+      {
+        heading: "How to practice DSA for placements",
+        body: [
+          "Start with NeetCode Blind 75 — covers all 15 core patterns with video explanations.",
+          "Practice on LeetCode with company tags — filter by your target company.",
+          "Solve under timed conditions: 30 minutes for easy, 45 for medium, 60 for hard.",
+          "Keep a pattern notebook: write the pattern name, approach, and time complexity for each problem.",
+          "Use Apply's company PYQs at /pyqs to see exactly which DSA problems each company asked in previous years."
+        ]
+      },
+      {
+        heading: "After DSA: interview preparation",
+        body: [
+          "DSA clears the coding round. The interview round tests communication, project knowledge, and behavioral fit.",
+          "Practice with Apply's AI mock interview at /mock-interview — it simulates real interview conditions with voice questions and scored feedback."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "best-resume-builder-india-students-comparison",
+    title: "Best Resume Builder for Students in India (2026): Free, ATS-Friendly & AI-Powered",
+    description:
+      "Compare the best resume builders for Indian students — Apply, Novoresume, Zety, Canva. Features, pricing, ATS compatibility, and which one works best for campus placements.",
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "8 min",
+    category: "Resume Tools",
+    targetKeyword: "best resume builder India students",
+    keywords: [
+      "best resume builder India students",
+      "free resume builder for freshers",
+      "ATS friendly resume builder India",
+      "AI resume builder for students",
+      "campus placement resume builder",
+      "resume builder for engineering students India",
+      "free ATS resume optimizer",
+      "resume tailoring tool India",
+      "Apply vs Novoresume",
+      "resume builder for TCS Infosys"
+    ],
+    excerpt:
+      "Which resume builder is best for Indian students preparing for campus placements? We compare features, ATS compatibility, and pricing — and why Apply is built specifically for India.",
+    sections: [
+      {
+        heading: "What Indian students need from a resume builder",
+        body: [
+          "Indian campus placements have unique requirements: one-page resumes, CGPA display, project descriptions with tech stack, and ATS compatibility for companies like TCS, Infosys, and Amazon.",
+          "Most global resume builders (Novoresume, Zety, Canva) are built for US/EU job markets — they don't support Indian placement formats, company-specific tailoring, or free PDF downloads without watermarks."
+        ]
+      },
+      {
+        heading: "Apply — built for India placements",
+        body: [
+          "Apply is a free AI resume builder designed for Indian engineering students. Key features: upload PDF/Word resume → AI tailors it to any JD → download clean ATS-friendly PDF.",
+          "Free plan: 5 resume generations (per account + per device). No credit card needed. ATS keyword matching score included.",
+          "Unique to Apply: company-specific PYQs library (64+ companies), AI mock interview with voice, and campus placement prep guides — all in one platform.",
+          "Best for: Students preparing for TCS, Infosys, Wipro, Amazon, Microsoft, and 60+ other companies hiring in India."
+        ]
+      },
+      {
+        heading: "Novoresume — visual templates",
+        body: [
+          "Novoresume offers beautiful visual templates but the free plan is limited to 1-page resumes with a Novoresume watermark. Premium starts at €6/month.",
+          "No ATS scoring, no company-specific tailoring, no Indian placement features. Better suited for European job seekers."
+        ]
+      },
+      {
+        heading: "Zety — US-focused",
+        body: [
+          "Zety has a strong resume builder with cover letter integration, but it's US-focused with pricing starting at $5.45/month. No free PDF download.",
+          "Templates are ATS-friendly but not optimized for Indian campus placement formats. No company-specific tailoring."
+        ]
+      },
+      {
+        heading: "Canva — design-focused",
+        body: [
+          "Canva has the best-looking templates but most are NOT ATS-friendly. Graphic resumes with columns and images get rejected by ATS systems used by TCS, Infosys, and Amazon.",
+          "Use Canva for creative portfolios, not for campus placement resumes. ATS systems cannot parse Canva's visual layouts."
+        ]
+      },
+      {
+        heading: "Comparison table",
+        body: [
+          "Apply: Free 5 resumes, ATS scoring, AI tailoring, company PYQs, mock interview, India-focused. Best for campus placements.",
+          "Novoresume: Free 1-page (watermarked), visual templates, no ATS. Best for EU creative roles.",
+          "Zety: $5.45/mo, US templates, cover letters. Best for US job seekers.",
+          "Canva: Free, beautiful but NOT ATS-friendly. Best for design portfolios only."
+        ]
+      },
+      {
+        heading: "Why ATS compatibility matters",
+        body: [
+          "ATS (Applicant Tracking System) software scans your resume for keywords from the job description. If keywords don't match, your resume is rejected before a human sees it.",
+          "TCS, Infosys, Wipro, Amazon, and most large companies use ATS. Apply's resume tailoring tool reads the JD, extracts keywords, and rewrites your resume to match — automatically.",
+          "Check your ATS score free on Apply: upload your resume, paste a JD, and see your keyword match percentage before downloading."
+        ]
+      },
+      {
+        heading: "Start building your placement resume free",
+        body: [
+          "Open apply.neexmeet.com, upload your current resume (PDF, Word, or text), paste any job description, and get a tailored ATS-friendly resume in seconds.",
+          "Then browse 64+ company PYQs at /pyqs and practice mock interviews at /mock-interview — all free to start."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "interview-tips-for-freshers-first-job",
+    title: "Interview Tips for Freshers: How to Crack Your First Job Interview in India",
+    description:
+      "Practical interview tips for freshers — HR round answers, technical round strategy, dress code, body language, and how to handle nervousness in your first campus placement interview.",
+    publishedAt: "2026-07-16",
+    updatedAt: "2026-07-16",
+    readingTime: "9 min",
+    category: "Interview Tips",
+    targetKeyword: "interview tips for freshers",
+    keywords: [
+      "interview tips for freshers",
+      "first job interview tips India",
+      "HR interview questions for freshers",
+      "campus placement interview tips",
+      "how to crack interview for first job",
+      "technical interview tips for freshers",
+      "interview preparation for engineering students",
+      "body language interview tips",
+      "TCS HR interview tips",
+      "freshers interview mistakes to avoid"
+    ],
+    excerpt:
+      "Your first job interview is stressful. Here are practical, proven tips for freshers — what to say in HR rounds, how to approach technical questions, and how to project confidence even when nervous.",
+    sections: [
+      {
+        heading: "Before the interview: preparation checklist",
+        body: [
+          "Research the company: read their website, recent news, and Glassdoor reviews. Know their products, values, and why you want to join specifically them.",
+          "Review your resume: you should be able to explain every project, every skill, and every line on your resume in 2-3 sentences.",
+          "Prepare 3 STAR stories: Situation, Task, Action, Result. One for teamwork, one for problem-solving, one for leadership/initiative.",
+          "Practice with Apply's AI mock interview at /mock-interview — it simulates real interview conditions with voice and scored feedback."
+        ]
+      },
+      {
+        heading: "HR round: most common questions for freshers",
+        body: [
+          "\"Tell me about yourself\" — 2-minute structured answer: education → skills → projects → why this role. Don't recite your resume; summarize it.",
+          "\"Why do you want to join our company?\" — Reference specific products, values, or recent news. Never say \"because it's a good company.\"",
+          "\"What are your strengths and weaknesses?\" — Pick 2 strengths with examples. For weakness, pick something real but with a fix (e.g., \"I used to struggle with public speaking, so I joined Toastmasters\").",
+          "\"Where do you see yourself in 5 years?\" — Show growth aligned with the company. \"I want to grow as a developer and take on more responsibility in backend systems.\"",
+          "\"Why should we hire you?\" — Connect your skills + projects to what the company needs. \"My experience with React and Node.js matches your frontend role, and my fintech project shows I understand your domain.\""
+        ]
+      },
+      {
+        heading: "Technical round: how to approach coding questions",
+        body: [
+          "Listen to the full question before speaking. Ask clarifying questions: input format, constraints, edge cases.",
+          "Think out loud — interviewers want to see your thought process. Even if you don't solve it, showing structured thinking gets partial credit.",
+          "Start with brute force, then optimize. Say \"First, I can solve this with a nested loop in O(n²). Can I do better? Yes, with a hash map in O(n).\"",
+          "Write clean code. Use meaningful variable names. Handle edge cases (empty input, null, negative numbers).",
+          "If stuck, ask for a hint. Interviewers prefer candidates who communicate over those who sit silently for 20 minutes."
+        ]
+      },
+      {
+        heading: "Body language and presentation",
+        body: [
+          "Dress formally: for campus placements, a clean shirt + trousers is standard. For product companies, smart casual is usually fine. When in doubt, overdress slightly.",
+          "Eye contact: look at the interviewer when speaking and listening. If it's a video interview, look at the camera, not the screen.",
+          "Posture: sit up straight, don't slouch. Lean slightly forward to show engagement.",
+          "Hand gestures: natural, moderate. Don't fidget with pens or papers.",
+          "Smile: a genuine smile at the start and end of the interview sets a positive tone."
+        ]
+      },
+      {
+        heading: "How to handle nervousness",
+        body: [
+          "Nervousness is normal — even experienced professionals get nervous. The key is to channel it into alertness, not panic.",
+          "Take 3 deep breaths before entering the interview room. Breathing slows your heart rate and calms your voice.",
+          "If you don't know an answer, say \"I'm not sure, but I would approach it by...\" — show your problem-solving process.",
+          "If you freeze, say \"Let me take a moment to think\" — 10 seconds of silence is better than rambling.",
+          "Remember: the interviewer wants you to succeed. They're investing time to find a good candidate, not to trick you."
+        ]
+      },
+      {
+        heading: "Common fresher interview mistakes to avoid",
+        body: [
+          "Don't memorize answers word-for-word — interviewers can tell. Memorize key points, not sentences.",
+          "Don't badmouth previous employers, professors, or colleges — it reflects poorly on you.",
+          "Don't say \"I don't know\" and stop — say \"I don't know, but I can learn it\" or \"I'd approach it by...\"",
+          "Don't ask about salary in the first interview — wait until the HR negotiation round.",
+          "Don't forget to ask questions at the end — \"What does a typical day look like?\" or \"What technologies does the team use?\""
+        ]
+      },
+      {
+        heading: "After the interview",
+        body: [
+          "Send a thank-you email within 24 hours if you have the interviewer's contact. Keep it short: thank them, reiterate your interest, and mention one specific thing from the interview.",
+          "If rejected, ask for feedback. Most companies won't give detailed feedback, but some will — use it to improve.",
+          "Practice again with Apply's mock interview at /mock-interview. Every interview makes you better — even failed ones."
+        ]
+      },
+      {
+        heading: "Practice before the real thing",
+        body: [
+          "The best way to prepare for interviews is to practice in realistic conditions. Apply's AI mock interview speaks questions aloud, captures your voice answers, and gives scored feedback — just like a real interview.",
+          "Open /mock-interview, pick your target company and role, and practice 3-5 sessions before your first real placement interview."
+        ]
+      }
+    ]
   }
 ] satisfies BlogPost[];
