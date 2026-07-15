@@ -1,52 +1,18 @@
 import { PageHeader } from "@/components/dashboard/page-header";
-import { InterviewGuideForm } from "@/components/dashboard/interview-guide-form";
+import { InterviewPrepMatcher } from "@/components/dashboard/interview-prep-matcher";
 import { CompanyCodingQuestions } from "@/components/dashboard/company-coding-questions";
-import { getCurrentUserId } from "@/lib/auth";
-import { resumeText } from "@/lib/dashboard-links";
-import {
-  getGeneratedResume,
-  getInterviewGuides,
-  getLatestMasterResume,
-  masterResumeToText
-} from "@/lib/data/resumes";
 
-export default async function InterviewPage({
-  searchParams
-}: {
-  searchParams: Promise<{ resumeId?: string; company?: string; role?: string }>;
-}) {
-  const userId = await getCurrentUserId();
-  const params = await searchParams;
-  const [guides, masterResume, linkedResume] = await Promise.all([
-    getInterviewGuides(userId, 1).catch(() => []),
-    getLatestMasterResume(userId).catch(() => null),
-    params.resumeId
-      ? getGeneratedResume(userId, params.resumeId).catch(() => null)
-      : Promise.resolve(null)
-  ]);
-
-  const initialCompany = linkedResume?.company ?? params.company ?? "";
-  const initialRole = linkedResume?.role ?? params.role ?? "";
-  const initialResumeContent =
-    (linkedResume ? resumeText(linkedResume) : "") ||
-    masterResumeToText(masterResume) ||
-    "";
-
+export default function InterviewPage() {
   return (
     <div>
       <PageHeader
         eyebrow="Interview prep"
-        title="Practice plan from your tailored resume."
-        description="Your master profile and saved resumes prefill here. Add a job description to get company research, coding drills, and behavioral questions mapped to this role — or jump into a live mock interview."
+        title="Find companies. Get shortlisted. Start preparing."
+        description="Tell us what kind of job you want — company type, domain, role, city — and we'll shortlist matching companies with coding question guides, interview styles, and the best videos to watch."
         cta="Try mock interview"
         href="/dashboard/mock-interview"
       />
-      <InterviewGuideForm
-        initialGuide={guides[0] ?? null}
-        initialCompany={initialCompany}
-        initialRole={initialRole}
-        initialResumeContent={initialResumeContent}
-      />
+      <InterviewPrepMatcher />
 
       <div className="mt-10 flex items-center gap-4">
         <div className="h-px flex-1 bg-border" />
