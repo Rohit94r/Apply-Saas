@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { analyzeResumeAts } from "@/lib/ai/resume-engine";
+import { analyzeResumeAts, explainAtsGaps } from "@/lib/ai/resume-engine";
 import { getCurrentUserId } from "@/lib/auth";
 import { z } from "zod";
 
@@ -26,6 +26,17 @@ export async function POST(request: Request) {
         )
       : 0;
 
+    let gapExplanations: Array<{ keyword: string; why: string; how: string }> = [];
+    try {
+      gapExplanations = await explainAtsGaps({
+        missingKeywords: analysis.missingKeywords,
+        jobDescription: input.jobDescription,
+        role: input.role
+      });
+    } catch {
+      // Heuristic recommendations still work without AI
+    }
+
     return NextResponse.json({
       analysis: {
         atsScore: analysis.score,
@@ -34,6 +45,7 @@ export async function POST(request: Request) {
         matchedKeywords: analysis.matchedKeywords,
         missingKeywords: analysis.missingKeywords,
         requiredSkills: analysis.jobKeywords.slice(0, 8),
+        gapExplanations,
         recommendations: analysis.missingKeywords.length
           ? [
               `Add supported evidence for: ${analysis.missingKeywords.slice(0, 4).join(", ")}`,

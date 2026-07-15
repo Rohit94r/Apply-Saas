@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { analyzeResumeAts, refineGeneratedResume } from "@/lib/ai/resume-engine";
+import { analyzeResumeAts, refineGeneratedResume, refineResumeSection } from "@/lib/ai/resume-engine";
 import { logFeatureUse } from "@/lib/admin/session";
 import { getCurrentUserId } from "@/lib/auth";
 import {
@@ -31,6 +31,50 @@ export async function POST(request: Request) {
     const jobDescription =
       input.jobDescription?.trim() ||
       `${existing.role} role at ${existing.company}. Match keywords and responsibilities for this target application.`;
+
+    if (input.section) {
+      const sectionResult = await refineResumeSection({
+        resumeId: input.resumeId,
+        prompt: input.prompt,
+        section: input.section,
+        jobDescription,
+        company: existing.company,
+        role: existing.role,
+        currentResume: currentText
+      });
+
+      const afterAnalysis = analyzeResumeAts({
+        resumeText: sectionResult.afterText,
+        jobDescription,
+        role: existing.role
+      });
+
+      const resume = await updateGeneratedResume(userId, input.resumeId, {
+        summary: sectionResult.summary,
+        skills: sectionResult.skills,
+        bullets: sectionResult.bullets,
+        beforeText: existing.generatedContent.beforeText ?? currentText,
+        afterText: sectionResult.afterText,
+        changeSummary: [
+          `Refined ${input.section}: ${input.prompt.slice(0, 120)}`,
+          ...(sectionResult.changeSummary ?? []).slice(0, 3)
+        ],
+        beforeAtsScore: existing.generatedContent.beforeAtsScore ?? existing.atsScore,
+        keywords: afterAnalysis.matchedKeywords.length
+          ? afterAnalysis.matchedKeywords.slice(0, 12)
+          : sectionResult.keywords,
+        atsScore: afterAnalysis.score,
+        template: existing.generatedContent.template
+      });
+
+      if (!resume) {
+        return NextResponse.json({ error: "Resume not found" }, { status: 404 });
+      }
+
+      void logFeatureUse("tools", `refine · ${existing.company} · ${existing.role} · ${input.section}`);
+
+      return NextResponse.json({ resume });
+    }
 
     const refined = await refineGeneratedResume({
       resumeId: input.resumeId,
