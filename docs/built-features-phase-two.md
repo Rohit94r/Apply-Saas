@@ -1,24 +1,83 @@
 # Apply — Built Features & Phase 2 Plan
 
 > **apply.neexmeet.com** · Founder: Rohit Jadhav · CTO execution doc · July 2026  
-> **Rule:** Finish Section 1 quality upgrades first (~50% → 100%). Then start Section 2 new features.
+> **Rule:** Finish Section 1 quality upgrades first (~50% → 100%). Then start Section 2 new features / ecosystem.
 
-InterviewLift: The Product
-InterviewLift is an AI-powered interview assistant founded in 2023, based in Dehradun, India. Their core product is "Jarvis" — a desktop app that provides real-time, sub-second AI answers during live interviews (Zoom, Teams, Google Meet) via an invisible overlay. They pair this with human coaches/Customer Success Managers who reply within 4 hours. 
-Key features:
-Real-time transcription + contextual AI answers based on your resume + job description
-"Invisible" overlay (claims to be undetectable via screen-share, task manager, network traffic)
-LaTeX ATS-optimized resume builder
-1:1 coaching with senior engineers (ex-Stripe, Notion, Figma)
-50+ languages supported
-Company-specific question banks
-Pricing (INR-focused):
-Silver (3 months): ₹24,000 (~$280)
-Gold (6 months): ₹48,000 (~$560)
-Diamond (12 months): ₹96,000 (~$1,120)
-Claims: 100,000+ candidates placed, 95% su about my project 
+**Related docs:** [futureupgradation.md](./futureupgradation.md) · [system-design.md](./system-design.md) · [folder-guide.md](./folder-guide.md) · [next-15-days-plan.md](./next-15-days-plan.md) (current 15-day web sprint)
 
-**Related docs:** [futureupgradation.md](./futureupgradation.md) · [system-design.md](./system-design.md) · [folder-guide.md](./folder-guide.md)
+---
+
+## North Star — what Apply becomes
+
+**Do not think:** “AI Resume Builder.”  
+**Think:** **India’s biggest placement preparation platform.**
+
+That changes everything — positioning, SEO, product surface, pricing, and what we build next.
+
+| Wrong framing | Right framing |
+|---------------|---------------|
+| One tool (tailor PDF) | Full placement ecosystem |
+| One landing page | Hundreds of company / exam / process pages |
+| Traffic → “try resume AI” | Traffic → prepare for **this company** → enter Apply funnel |
+| Compete with ChatGPT resume prompts | Own placement journey end-to-end |
+
+Apply wins **not only** because of resume tailoring — because of the **ecosystem** around it.
+
+### The ecosystem (product loop)
+
+```
+Resume Builder
+    ↓
+ATS Checker
+    ↓
+Resume Tailoring
+    ↓
+Cover Letter
+    ↓
+Interview Questions (company-specific)
+    ↓
+Mock Interview
+    ↓
+Desktop Interview Assistant
+    ↓
+Placement Tracker
+    ↓
+Job Applications
+    ↓
+Company Preparation packs
+    ↓
+Offer Comparison
+```
+
+At that point Apply is **not a tool**. It is the **placement OS** for students and early-career India.
+
+### SEO content engine — hundreds of pages, not one homepage
+
+Instead of one marketing page, ship **programmatic + editorial SEO pages**. Every page ranks for a search intent, then CTA → signup / Tailor / Interview / Jobs.
+
+| Example page | Intent | Push user into |
+|--------------|--------|----------------|
+| TCS Interview Questions 2026 | Company prep | Interview prep + Tailor |
+| Infosys Resume Format | Resume format | AI Resume Builder |
+| Amazon OA Questions | Online assessment | Learner + Interview |
+| Capgemini Hiring Process | Process guide | Jobs + Tailor |
+| Microsoft Internship Guide | Internship | Jobs + Tailor |
+| Google STEP Resume | Role-specific resume | Tailor |
+| Wipro Technical Interview | Tech round | Interview prep |
+| Cognizant Aptitude Questions | Aptitude | Learner tracks |
+| Accenture Resume Template | Template | Resume Builder |
+| Morgan Stanley OA | Finance OA | Interview + Tailor |
+| JP Morgan Interview Experience | Experience blog | Interview + Cover letter |
+
+**Flywheel:** Every page brings Google traffic → every page pushes users into Apply → more usage → more content / company packs → more traffic.
+
+Routes (target): `/blog/...` today · later `/companies/[slug]`, `/interview-questions/[company]`, `/resume-format/[company]`, `/oa/[company]`.
+
+Content lives in `content/` (editable) — not hard-coded in React. Aligns with [folder-guide.md](./folder-guide.md).
+
+### Competitive note (context, not a clone)
+
+Products like InterviewLift prove demand for **desktop interview assist + company packs + high-ticket coaching**. Apply’s path is different: **free/cheap AI placement platform + SEO ecosystem + desktop practice mode**, then Premium — not ₹24k–96k coach packages on day one.
 
 ---
 
@@ -26,8 +85,9 @@ Claims: 100,000+ candidates placed, 95% su about my project
 
 | Section | Purpose | When |
 |---------|---------|------|
-| **Section 1** | Features already built — how they work, APIs, data flow, quality gaps, upgrade tasks | **Now** — improve output before adding new scope |
-| **Section 2** | Phase 2 — new features, infrastructure, desktop app | **After** Section 1 core AI + PDF quality is solid |
+| **North Star** | Positioning — platform + SEO ecosystem (above) | Always — decisions filter through this |
+| **Section 1** | Features already built — how they work, APIs, quality gaps | **Now** — improve output before adding new scope |
+| **Section 2** | Phase 2 — new features, SEO pages, desktop, tracker, infra | **After** Section 1 core AI + PDF quality is solid |
 
 ### Quality scale (used in Section 1)
 
@@ -688,9 +748,10 @@ Week C — User-facing polish
 
 ---
 
-# SECTION 2 — Phase 2 (New Features & Infrastructure)
+# SECTION 2 — Phase 2 (Ecosystem, SEO & Infrastructure)
 
-> Start only after Section 1 exit criteria met. Full infra detail in [futureupgradation.md](./futureupgradation.md).
+> Start only after Section 1 exit criteria met. Full infra detail in [futureupgradation.md](./futureupgradation.md).  
+> **Phase 2 goal:** Move from “resume tool” → **placement preparation platform** (product + SEO pages + desktop).
 
 ---
 
@@ -698,19 +759,57 @@ Week C — User-facing polish
 
 | Feature | Route / surface | Description | Depends on |
 |---------|-----------------|-------------|------------|
+| **Company SEO pages** | `/companies/[slug]`, `/interview-questions/[company]` | Hundreds of ranking pages (TCS Qs, Infosys format, Amazon OA…) → CTA into Apply | `content/` + sitemap |
+| **Resume format hubs** | `/resume-format/[company]` | Company-specific resume guidance → Tailor | Blog / content module |
+| **OA & aptitude banks** | `/oa/[company]`, learner packs | Cognizant aptitude, Morgan Stanley OA, Amazon OA | Learning content |
 | **Downloads page** | `/downloads` | Windows + macOS desktop app cards, version, system requirements | Desktop build |
-| **Apply Desktop** | Tauri app | Live interview assistant: mic → Whisper → Llama answers | `/api/desktop/auth`, Groq proxy |
-| **Settings page** | `/dashboard/settings` | Profile, billing, preferences, API keys | Better Auth |
-| **Mock interview room** | `/dashboard/mock-interview` | Timed practice with AI interviewer | Interview API + WebRTC optional |
+| **Apply Desktop** | Tauri app | Live interview assistant: mic → Whisper → Llama answers (practice-first) | `/api/desktop/auth`, Groq proxy |
+| **Settings page** | `/dashboard/settings` | Profile, billing, preferences | Better Auth |
+| **Mock interview room** | `/dashboard/mock-interview` | Timed practice with AI interviewer | Interview API |
 | **Live interview API** | `POST /api/interview/live` | Streaming STT + answer chunks for desktop | Redis, Groq proxy |
-| **Application tracker** | `/dashboard/applications` | Job → status → notes → reminders | Postgres |
-| **Saved cover letters** | `/dashboard/cover-letters` | History per company | Postgres migration |
+| **Placement / application tracker** | `/dashboard/applications` | Job → status → notes → reminders (placement tracker) | Postgres |
+| **Offer comparison** | `/dashboard/offers` | Compare CTC, location, role, deadline side-by-side | Tracker + Postgres |
+| **Company preparation packs** | Dashboard + SEO | Packs linking resume format + Qs + OA + hiring process | Content + interview API |
+| **Saved cover letters** | `/dashboard/cover-letters` | History per company | Postgres |
 | **Stripe billing** | `/dashboard/upgrade` | Automated Pro/Premium | Stripe webhooks |
 | **Affiliate program** | `/affiliate` | Referral links + commission | Stripe Connect |
-| **Session recordings** | Premium feature | Store interview audio snippets | R2 storage |
+| **Session recordings** | Premium | Store interview practice audio snippets | R2 |
 | **Coding assistant** | Premium | IDE-style hints during mock | Groq Mixtral |
-| **Email notifications** | — | Onboarding, billing, job alerts | Resend |
-| **Settings: desktop sync** | — | Show linked devices, revoke | `desktop_licenses` table |
+| **Email notifications** | — | Onboarding, billing, job alerts, “new TCS questions” | Resend |
+| **Settings: desktop sync** | — | Linked devices, revoke | `desktop_licenses` |
+
+### 2A-1. SEO page factory (ecosystem growth)
+
+| Step | Action | Owner |
+|------|--------|-------|
+| 1 | Define 50 seed pages (top India recruiters + OA + resume format) | Founder + content |
+| 2 | Schema in `content/companies/` or extend `content/blog/` | Interns |
+| 3 | Dynamic routes + sitemap + internal CTAs to Tailor / Interview / Jobs | Eng |
+| 4 | Ship 10 pages/week until 100+, then 200+ | Content cadence |
+| 5 | Measure: impressions → signup → first tailor | Analytics |
+
+**Template for every SEO page**
+
+1. Answer the search query (questions / format / process)  
+2. Short “How Apply helps for this company”  
+3. Primary CTA → `/dashboard/generate` or `/dashboard/interview`  
+4. Related links to other company pages (internal SEO)
+
+### 2A-2. Ecosystem map vs what exists today
+
+| Ecosystem step | Today (Section 1) | Phase 2 |
+|----------------|-------------------|---------|
+| Resume Builder | Partial (tailor primary; build removed) | Strengthen builder + templates |
+| ATS Checker | Analyze API + score UX (~needs P1) | Clear ATS product surface |
+| Resume Tailoring | Live — improve quality first | Diff, version history |
+| Cover Letter | Live tools | Saved history page |
+| Interview Questions | Guides + blog | Company banks + SEO pages |
+| Mock Interview | — | `/dashboard/mock-interview` |
+| Desktop Interview Assistant | — | Apply Desktop |
+| Placement Tracker | — | `/dashboard/applications` |
+| Job Applications | Job search match | Tracker + reminders |
+| Company Preparation | Static `companies.ts` | Packs + SEO hub |
+| Offer Comparison | — | `/dashboard/offers` |
 
 ---
 
@@ -746,7 +845,9 @@ subscriptions                      → Stripe + legacy manual
 interview_sessions                 → Desktop live sessions
 desktop_licenses                   → Per-device entitlements
 saved_cover_letters
-job_applications
+job_applications                   → Placement tracker
+offers                             → Offer comparison
+company_content_meta               → Optional: track SEO page performance per company slug
 ```
 
 ---
@@ -756,11 +857,12 @@ job_applications
 | Weeks | Focus | Deliverable |
 |-------|-------|-------------|
 | 1–2 | Section 1 quality | Gemini, PDF, tailor diff |
-| 3–4 | Downloads + Postgres | `/downloads` page, Drizzle schema, dual-write |
-| 5–6 | Better Auth | Replace Clerk, desktop auth stub |
+| 3–4 | **SEO seed batch** + Postgres | 20 company/OA/resume-format pages live + sitemap; Drizzle dual-write |
+| 5–6 | Better Auth + content pipeline | Replace Clerk; content folder + intern playbook for 10 pages/week |
 | 7–8 | Desktop MVP | Tauri login, mock interview, API proxy |
-| 9–10 | Stripe + launch | Paid plans, beta desktop release |
-| 11+ | Realtime + Premium | WebSocket, GPT-4o for Premium, recordings |
+| 9–10 | Stripe + Placement tracker | Paid plans; applications board beta |
+| 11–12 | Company packs + Offer comparison | Packs linked from SEO pages; offer compare |
+| 13+ | Realtime + Premium | WebSocket, recordings, scale to 100–200+ SEO pages |
 
 ---
 
@@ -800,16 +902,33 @@ NEXT_PUBLIC_DESKTOP_APP_VERSION=
 
 | Area | Section 1 (improve) | Section 2 (new) |
 |------|---------------------|-----------------|
-| Resume tailor | Gemini, diff, ATS UX | Version history |
-| Build studio | Section AI, PDF | Import to sections |
-| Interview prep | Quality, links | Mock room, live desktop |
+| Positioning | Ship quality in product | **Placement platform** brand + SEO ecosystem |
+| Resume tailor | Gemini, diff, ATS UX | Version history, company templates |
+| ATS | Score UX | Dedicated checker narrative on landing/SEO pages |
+| Interview prep | Quality, links | Mock room, company Q banks, live desktop |
 | Cover letter | Gemini, save | History page |
-| Jobs | More listings | Live APIs |
+| Jobs | More listings | Live APIs + placement tracker |
+| Company prep | Small `companies.ts` | **Hundreds of SEO pages** + packs |
+| Offers | — | Offer comparison |
 | Auth | Settings page | Better Auth |
 | Database | — | Postgres migration |
 | Billing | Per-feature limits | Stripe |
-| Desktop | — | Full Tauri app |
+| Desktop | — | Full Tauri Interview Copilot |
 | Downloads | — | `/downloads` page |
+
+---
+
+## Success metrics (placement platform)
+
+| Metric | Why it matters |
+|--------|----------------|
+| Organic sessions from company/SEO pages | Proves flywheel (not ads-only) |
+| SEO page → signup conversion | Pages must push into Apply |
+| First tailor within 24h of signup | Activation |
+| Interview guides / mock sessions | Depth beyond resume |
+| Applications tracked | Placement OS behavior |
+| Desktop downloads (when live) | Ecosystem second surface |
+| Paid conversion | Pro ₹299 / Premium ₹499 |
 
 ---
 
@@ -844,4 +963,17 @@ NEXT_PUBLIC_DESKTOP_APP_VERSION=
 
 ---
 
-*Apply · Built Features & Phase 2 · Founder + CTO working doc · July 2026*
+---
+
+## Document history
+
+| Date | Change |
+|------|--------|
+| July 2026 | Initial Section 1 + Section 2 plan |
+| July 2026 | North Star: placement platform + SEO page engine + ecosystem loop; cleaned competitor scratch notes |
+| July 2026 | Execution sprint: [next-15-days-plan.md](./next-15-days-plan.md) — web-only 15-day founder plan (desktop later) |
+| July 2026 | **Web Phase 2 features shipped** — mock interview, applications tracker, offer compare, settings, `/prepare` company SEO pages (13), `/downloads` Desktop Coming Soon placeholder, graceful Mongo fallbacks; Desktop/Tauri still later |
+
+---
+
+*Apply · India’s placement preparation platform (building) · Built Features & Phase 2 · Founder + CTO · July 2026*

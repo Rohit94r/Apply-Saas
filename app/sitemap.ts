@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog";
+import { preparePages } from "@/lib/prepare";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -16,8 +17,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.75
   }));
+  const prepareRoutes = preparePages.map((page) => ({
+    url: absoluteUrl(`/prepare/${page.slug}`),
+    lastModified: new Date(page.updatedAt),
+    changeFrequency: "weekly" as const,
+    priority: 0.8
+  }));
 
-  return [...publicRoutes, ...blogRoutes];
+  return [...publicRoutes, ...blogRoutes, ...prepareRoutes];
 }
 
 /** Refresh sitemap daily so Google sees updated lastmod dates. */
