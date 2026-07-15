@@ -1,20 +1,6 @@
-import { PageHeader } from "@/components/dashboard/page-header";
-import { OffersCompare } from "@/components/dashboard/offers-compare";
-import { getCurrentUserId } from "@/lib/auth";
-import { listOffers } from "@/lib/data/offers";
+import { redirect } from "next/navigation";
 
-export default async function OffersPage() {
-  const userId = await getCurrentUserId();
-  const offers = await listOffers(userId).catch(() => []);
-
-  return (
-    <div>
-      <PageHeader
-        eyebrow="Compare offers"
-        title="Compare offers side by side."
-        description="Add CTC, location, and notes — then pick two or three to compare."
-      />
-      <OffersCompare initialOffers={offers} />
-    </div>
-  );
+/** Compare offers lives under AI tools — keep this path for bookmarks. */
+export default function OffersPage() {
+  redirect("/dashboard/tools?tool=offers");
 }

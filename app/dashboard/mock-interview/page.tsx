@@ -5,9 +5,11 @@ export default function MockInterviewPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Mock interview"
-        title="Practice before the real interview."
-        description="Pick a company and role, answer timed questions, and review tips when you need them."
+        eyebrow="Virtual interview"
+        title="Practice with Apply Interviewer."
+        description="Live AI mock interviews on the web — company, role, typed answers, coaching feedback. Desktop later is for live interview assist only."
+        cta="Back to interview prep"
+        href="/dashboard/interview"
       />
       <MockInterviewRoom />
     </div>

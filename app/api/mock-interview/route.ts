@@ -2,24 +2,50 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { getCurrentUserId } from "@/lib/auth";
 import {
-  buildMockQuestions,
+  evaluateAnswerAndContinue,
+  generateFirstQuestion,
+  generateSessionSummary,
+  getMockInterviewAIStatus,
+  loadResumeContextForUser,
+  type MockDifficulty,
+  type MockInterviewType
+} from "@/lib/ai/mock-interview";
+import {
   completeMockSession,
   createMockSession,
-  listMockSessions
+  getMockSession,
+  listMockSessions,
+  updateMockSession,
+  type MockTurnRecord
 } from "@/lib/data/mock-interviews";
 import {
+  mockInterviewAnswerSchema,
   mockInterviewCompleteSchema,
+  mockInterviewEndSchema,
   mockInterviewStartSchema
 } from "@/lib/validations";
 
-export async function GET() {
+function isLocalSessionId(id: string) {
+  return id.startsWith("local-");
+}
+
+export async function GET(request: Request) {
   try {
     const userId = await getCurrentUserId();
+    const { searchParams } = new URL(request.url);
+
+    if (searchParams.get("status") === "1") {
+      return NextResponse.json({ ai: getMockInterviewAIStatus() });
+    }
+
     try {
       const sessions = await listMockSessions(userId);
-      return NextResponse.json({ sessions });
+      return NextResponse.json({ sessions, ai: getMockInterviewAIStatus() });
     } catch {
-      return NextResponse.json({ sessions: [] });
+      return NextResponse.json({
+        sessions: [],
+        ai: getMockInterviewAIStatus()
+      });
     }
   } catch (error) {
     const message =
@@ -33,8 +59,17 @@ export async function POST(request: Request) {
   try {
     const userId = await getCurrentUserId();
     const body = await request.json();
+    const action = body?.action as string | undefined;
 
-    if (body?.action === "complete") {
+    if (action === "answer") {
+      return handleAnswer(userId, body);
+    }
+
+    if (action === "end") {
+      return handleEnd(userId, body);
+    }
+
+    if (action === "complete") {
       const input = mockInterviewCompleteSchema.parse(body);
       try {
         const session = await completeMockSession(
@@ -54,35 +89,8 @@ export async function POST(request: Request) {
       }
     }
 
-    const input = mockInterviewStartSchema.parse(body);
-    const questions = buildMockQuestions(input.company, input.role);
-
-    try {
-      const session = await createMockSession(userId, {
-        company: input.company,
-        role: input.role,
-        questions
-      });
-      return NextResponse.json({ session, questions }, { status: 201 });
-    } catch {
-      // Practice still works without Mongo — history just won't persist.
-      return NextResponse.json(
-        {
-          session: {
-            id: `local-${Date.now()}`,
-            userId,
-            company: input.company,
-            role: input.role,
-            questions,
-            durationSeconds: 0,
-            createdAt: new Date().toISOString()
-          },
-          questions,
-          persisted: false
-        },
-        { status: 201 }
-      );
-    }
+    // Default: start (action omitted or "start")
+    return handleStart(userId, body);
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -91,7 +99,7 @@ export async function POST(request: Request) {
       );
     }
     const message =
-      error instanceof Error ? error.message : "Unable to start mock interview";
+      error instanceof Error ? error.message : "Unable to run mock interview";
     const status =
       message === "Unauthorized"
         ? 401
@@ -100,4 +108,333 @@ export async function POST(request: Request) {
           : 500;
     return NextResponse.json({ error: message }, { status });
   }
+}
+
+async function handleStart(userId: string, body: unknown) {
+  const input = mockInterviewStartSchema.parse(body);
+  const ai = getMockInterviewAIStatus();
+
+  if (!ai.available && !input.allowDemo) {
+    return NextResponse.json(
+      {
+        error:
+          "Add GEMINI_API_KEY to enable the live AI interviewer (or GROQ_API_KEY as fallback). You can also start Demo mode.",
+        ai,
+        code: "AI_UNAVAILABLE"
+      },
+      { status: 503 }
+    );
+  }
+
+  const resumeContext = await loadResumeContextForUser(userId);
+  const totalQuestions = input.totalQuestions;
+
+  const first = await generateFirstQuestion({
+    company: input.company,
+    role: input.role,
+    interviewType: input.interviewType,
+    difficulty: input.difficulty,
+    totalQuestions,
+    resumeContext
+  });
+
+  const turns: MockTurnRecord[] = [
+    {
+      question: first.question.question,
+      category: first.question.category
+    }
+  ];
+
+  const payload = {
+    company: input.company,
+    role: input.role,
+    interviewType: input.interviewType as MockInterviewType,
+    difficulty: input.difficulty as MockDifficulty,
+    totalQuestions,
+    turns,
+    questions: [
+      {
+        question: first.question.question,
+        tip: "",
+        sampleAnswer: "",
+        category: first.question.category
+      }
+    ],
+    provider: first.provider,
+    demoMode: first.demoMode
+  };
+
+  try {
+    const session = await createMockSession(userId, payload);
+    return NextResponse.json(
+      {
+        session,
+        turn: turns[0],
+        questionIndex: 0,
+        totalQuestions,
+        provider: first.provider,
+        demoMode: first.demoMode,
+        ai,
+        resumeContextAvailable: resumeContext.length >= 80
+      },
+      { status: 201 }
+    );
+  } catch {
+    return NextResponse.json(
+      {
+        session: {
+          id: `local-${Date.now()}`,
+          userId,
+          ...payload,
+          durationSeconds: 0,
+          createdAt: new Date().toISOString()
+        },
+        turn: turns[0],
+        questionIndex: 0,
+        totalQuestions,
+        provider: first.provider,
+        demoMode: first.demoMode,
+        ai,
+        resumeContextAvailable: resumeContext.length >= 80,
+        persisted: false,
+        resumeContext
+      },
+      { status: 201 }
+    );
+  }
+}
+
+async function handleAnswer(userId: string, body: unknown) {
+  const input = mockInterviewAnswerSchema.parse(body);
+  const ai = getMockInterviewAIStatus();
+
+  let company = input.company ?? "";
+  let role = input.role ?? "";
+  let interviewType = (input.interviewType ?? "mixed") as MockInterviewType;
+  let difficulty = (input.difficulty ?? "medium") as MockDifficulty;
+  let totalQuestions = input.totalQuestions ?? 6;
+  let turns: MockTurnRecord[] = input.turns ?? [];
+  let resumeContext = input.resumeContext ?? "";
+
+  if (!isLocalSessionId(input.sessionId)) {
+    try {
+      const existing = await getMockSession(userId, input.sessionId);
+      if (existing) {
+        company = existing.company;
+        role = existing.role;
+        interviewType = existing.interviewType;
+        difficulty = existing.difficulty;
+        totalQuestions = existing.totalQuestions;
+        turns = existing.turns.length ? existing.turns : turns;
+      }
+    } catch {
+      /* use client payload */
+    }
+  }
+
+  if (!company || !role) {
+    return NextResponse.json(
+      { error: "Session context missing — restart the interview." },
+      { status: 400 }
+    );
+  }
+
+  if (!resumeContext) {
+    resumeContext = await loadResumeContextForUser(userId);
+  }
+
+  const questionIndex =
+    input.questionIndex ??
+    Math.max(
+      0,
+      turns.findIndex((t) => !t.answer?.trim())
+    );
+  const current =
+    input.currentQuestion ??
+    turns[questionIndex]?.question ??
+    turns[turns.length - 1]?.question;
+
+  if (!current) {
+    return NextResponse.json(
+      { error: "No active question in this session." },
+      { status: 400 }
+    );
+  }
+
+  const history = turns.slice(0, questionIndex).map((t) => ({
+    question: t.question,
+    answer: t.answer,
+    category: t.category
+  }));
+
+  const evaluation = await evaluateAnswerAndContinue({
+    ctx: {
+      company,
+      role,
+      interviewType,
+      difficulty,
+      totalQuestions,
+      resumeContext
+    },
+    history,
+    currentQuestion: current,
+    answer: input.answer,
+    questionIndex
+  });
+
+  const updatedTurns: MockTurnRecord[] = [...turns];
+  updatedTurns[questionIndex] = {
+    ...updatedTurns[questionIndex],
+    question: current,
+    category: updatedTurns[questionIndex]?.category ?? "general",
+    answer: input.answer,
+    strengths: evaluation.result.feedback.strengths,
+    improvements: evaluation.result.feedback.improvements,
+    score: evaluation.result.feedback.score
+  };
+
+  let nextTurn: MockTurnRecord | null = null;
+  if (!evaluation.result.done && evaluation.result.nextQuestion) {
+    nextTurn = {
+      question: evaluation.result.nextQuestion.question,
+      category: evaluation.result.nextQuestion.category
+    };
+    updatedTurns.push(nextTurn);
+  }
+
+  if (!isLocalSessionId(input.sessionId)) {
+    try {
+      await updateMockSession(userId, input.sessionId, {
+        turns: updatedTurns,
+        questions: updatedTurns.map((t) => ({
+          question: t.question,
+          tip: t.tip ?? "",
+          sampleAnswer: t.sampleAnswer ?? "",
+          category: t.category ?? "general"
+        })),
+        provider: evaluation.provider,
+        demoMode: evaluation.demoMode
+      });
+    } catch {
+      /* persist best-effort */
+    }
+  }
+
+  return NextResponse.json({
+    feedback: evaluation.result.feedback,
+    nextTurn,
+    done: evaluation.result.done,
+    turns: updatedTurns,
+    questionIndex: nextTurn ? questionIndex + 1 : questionIndex,
+    totalQuestions,
+    provider: evaluation.provider,
+    demoMode: evaluation.demoMode,
+    ai
+  });
+}
+
+async function handleEnd(userId: string, body: unknown) {
+  const input = mockInterviewEndSchema.parse(body);
+  const ai = getMockInterviewAIStatus();
+
+  let company = input.company ?? "";
+  let role = input.role ?? "";
+  let interviewType = (input.interviewType ?? "mixed") as MockInterviewType;
+  let difficulty = (input.difficulty ?? "medium") as MockDifficulty;
+  let totalQuestions = input.totalQuestions ?? 6;
+  let turns: MockTurnRecord[] = input.turns ?? [];
+  let resumeContext = input.resumeContext ?? "";
+
+  if (!isLocalSessionId(input.sessionId)) {
+    try {
+      const existing = await getMockSession(userId, input.sessionId);
+      if (existing) {
+        company = existing.company || company;
+        role = existing.role || role;
+        interviewType = existing.interviewType;
+        difficulty = existing.difficulty;
+        totalQuestions = existing.totalQuestions;
+        turns = existing.turns.length ? existing.turns : turns;
+      }
+    } catch {
+      /* use client payload */
+    }
+  }
+
+  if (!resumeContext) {
+    resumeContext = await loadResumeContextForUser(userId);
+  }
+
+  const summary = await generateSessionSummary({
+    ctx: {
+      company: company || "Company",
+      role: role || "Role",
+      interviewType,
+      difficulty,
+      totalQuestions,
+      resumeContext
+    },
+    history: turns.map((t) => ({
+      question: t.question,
+      answer: t.answer,
+      category: t.category
+    })),
+    turnScores: turns
+      .map((t) => t.score)
+      .filter((s): s is number => typeof s === "number")
+  });
+
+  const sessionPayload = {
+    turns,
+    durationSeconds: input.durationSeconds,
+    overallScore: summary.summary.overallScore,
+    tips: summary.summary.tips,
+    highlights: summary.summary.highlights,
+    provider: summary.provider,
+    demoMode: summary.demoMode,
+    completed: true
+  };
+
+  if (!isLocalSessionId(input.sessionId)) {
+    try {
+      const session = await updateMockSession(
+        userId,
+        input.sessionId,
+        sessionPayload
+      );
+      return NextResponse.json({
+        session,
+        summary: summary.summary,
+        provider: summary.provider,
+        demoMode: summary.demoMode,
+        ai
+      });
+    } catch {
+      /* fall through to local response */
+    }
+  }
+
+  return NextResponse.json({
+    session: {
+      id: input.sessionId,
+      company,
+      role,
+      interviewType,
+      difficulty,
+      totalQuestions,
+      turns,
+      durationSeconds: input.durationSeconds,
+      overallScore: summary.summary.overallScore,
+      tips: summary.summary.tips,
+      highlights: summary.summary.highlights,
+      provider: summary.provider,
+      demoMode: summary.demoMode,
+      completedAt: new Date().toISOString()
+    },
+    summary: summary.summary,
+    provider: summary.provider,
+    demoMode: summary.demoMode,
+    ai,
+    persisted: false
+  });
 }

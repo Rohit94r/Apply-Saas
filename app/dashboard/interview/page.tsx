@@ -36,9 +36,9 @@ export default async function InterviewPage({
       <PageHeader
         eyebrow="Interview prep"
         title="Practice plan from your tailored resume."
-        description="Your master profile and saved resumes prefill here. Add a job description to get company research, coding drills, and behavioral questions mapped to this role."
-        cta="Create prep plan"
-        href="/dashboard/interview"
+        description="Your master profile and saved resumes prefill here. Add a job description to get company research, coding drills, and behavioral questions mapped to this role — or jump into a live mock interview."
+        cta="Try mock interview"
+        href="/dashboard/mock-interview"
       />
       <InterviewGuideForm
         initialGuide={guides[0] ?? null}
