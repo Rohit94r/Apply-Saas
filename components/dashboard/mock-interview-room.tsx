@@ -37,6 +37,12 @@ type AIStatus = {
 
 type SttStatus = {
   available: boolean;
+  whisper?: boolean;
+  message: string;
+};
+
+type TtsStatus = {
+  available: boolean;
   message: string;
 };
 
@@ -51,6 +57,28 @@ type Summary = {
   tips: string[];
   highlights: string[];
 };
+
+type SpeechRecognitionLike = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: { error?: string }) => void) | null;
+  onend: (() => void) | null;
+};
+
+type SpeechRecognitionEventLike = {
+  resultIndex: number;
+  results: ArrayLike<{
+    isFinal: boolean;
+    0: { transcript: string };
+  }>;
+};
+
+type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
 
 function formatTime(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60)
@@ -68,29 +96,13 @@ function providerLabel(provider?: string | null, demoMode?: boolean) {
   return "AI interviewer";
 }
 
-function stopSpeaking() {
-  if (typeof window === "undefined") return;
-  window.speechSynthesis?.cancel();
-}
-
-function speakQuestion(text: string, onEnd?: () => void) {
-  if (typeof window === "undefined" || !window.speechSynthesis) {
-    onEnd?.();
-    return;
-  }
-  stopSpeaking();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = 0.95;
-  utter.pitch = 1;
-  utter.lang = "en-IN";
-  const voices = window.speechSynthesis.getVoices();
-  const preferred =
-    voices.find((v) => /en-IN|Indian|Google UK|Samantha|Daniel/i.test(v.name)) ||
-    voices.find((v) => v.lang.toLowerCase().startsWith("en"));
-  if (preferred) utter.voice = preferred;
-  utter.onend = () => onEnd?.();
-  utter.onerror = () => onEnd?.();
-  window.speechSynthesis.speak(utter);
+function getSpeechRecognitionCtor(): SpeechRecognitionCtor | null {
+  if (typeof window === "undefined") return null;
+  const w = window as Window & {
+    SpeechRecognition?: SpeechRecognitionCtor;
+    webkitSpeechRecognition?: SpeechRecognitionCtor;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
 function pickRecorderMime() {
@@ -102,6 +114,32 @@ function pickRecorderMime() {
     "audio/ogg"
   ];
   return candidates.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+}
+
+function stopBrowserSpeech() {
+  if (typeof window === "undefined") return;
+  window.speechSynthesis?.cancel();
+}
+
+function speakBrowserFallback(text: string, onEnd?: () => void) {
+  if (typeof window === "undefined" || !window.speechSynthesis) {
+    onEnd?.();
+    return;
+  }
+  stopBrowserSpeech();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 1;
+  utter.pitch = 1.05;
+  utter.lang = "en-US";
+  const voices = window.speechSynthesis.getVoices();
+  const preferred =
+    voices.find((v) =>
+      /Samantha|Karen|Moira|Google US English|Female|Woman/i.test(v.name)
+    ) || voices.find((v) => v.lang.toLowerCase().startsWith("en"));
+  if (preferred) utter.voice = preferred;
+  utter.onend = () => onEnd?.();
+  utter.onerror = () => onEnd?.();
+  window.speechSynthesis.speak(utter);
 }
 
 export function MockInterviewRoom() {
@@ -117,10 +155,12 @@ export function MockInterviewRoom() {
   const [recording, setRecording] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [captionsEnabled, setCaptionsEnabled] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [turns, setTurns] = useState<MockTurnRecord[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState("");
+  const [liveCaption, setLiveCaption] = useState("");
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [seconds, setSeconds] = useState(0);
@@ -128,20 +168,43 @@ export function MockInterviewRoom() {
   const [history, setHistory] = useState<MockInterviewSessionRecord[]>([]);
   const [ai, setAi] = useState<AIStatus | null>(null);
   const [stt, setStt] = useState<SttStatus | null>(null);
+  const [tts, setTts] = useState<TtsStatus | null>(null);
   const [demoMode, setDemoMode] = useState(false);
   const [provider, setProvider] = useState<string | null>(null);
   const [resumeContext, setResumeContext] = useState<string | undefined>();
   const [resumeContextAvailable, setResumeContextAvailable] = useState(false);
   const [pendingNextIndex, setPendingNextIndex] = useState<number | null>(null);
   const [sessionDone, setSessionDone] = useState(false);
+  const [browserSpeechAvailable, setBrowserSpeechAvailable] = useState(false);
+  const [cameraOn, setCameraOn] = useState(true);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   const companyInputRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLTextAreaElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const usingWebSpeechRef = useRef(false);
+  const finalTranscriptRef = useRef("");
+  const autoSubmitTimerRef = useRef<number | null>(null);
+  const autoAdvanceTimerRef = useRef<number | null>(null);
+  const autoListenTimerRef = useRef<number | null>(null);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
+  const answerSnapshotRef = useRef("");
+  const submitAnswerRef = useRef<() => Promise<void>>(async () => undefined);
+  const startListeningRef = useRef<() => Promise<void>>(async () => undefined);
+  const speakQuestionRef = useRef<(text: string) => void>(() => undefined);
 
   useEffect(() => {
+    answerSnapshotRef.current = answer;
+  }, [answer]);
+
+  useEffect(() => {
+    setBrowserSpeechAvailable(Boolean(getSpeechRecognitionCtor()));
     void loadHistory();
     if (typeof window === "undefined" || !window.speechSynthesis) return;
     const synth = window.speechSynthesis;
@@ -159,30 +222,179 @@ export function MockInterviewRoom() {
     return () => window.clearInterval(id);
   }, [running]);
 
+  const clearAudio = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+    stopBrowserSpeech();
+  }, []);
+
+  const clearTimers = useCallback(() => {
+    if (autoSubmitTimerRef.current) {
+      window.clearTimeout(autoSubmitTimerRef.current);
+      autoSubmitTimerRef.current = null;
+    }
+    if (autoAdvanceTimerRef.current) {
+      window.clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
+    if (autoListenTimerRef.current) {
+      window.clearTimeout(autoListenTimerRef.current);
+      autoListenTimerRef.current = null;
+    }
+  }, []);
+
+  const stopCamera = useCallback(() => {
+    cameraStreamRef.current?.getTracks().forEach((t) => t.stop());
+    cameraStreamRef.current = null;
+    setCameraStream(null);
+  }, []);
+
+  const startCamera = useCallback(async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraError("Camera not supported in this browser");
+      setCameraOn(false);
+      return;
+    }
+    try {
+      stopCamera();
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      cameraStreamRef.current = stream;
+      setCameraStream(stream);
+      setCameraError(null);
+      setCameraOn(true);
+    } catch (error) {
+      const name = error instanceof DOMException ? error.name : "";
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        setCameraError("Camera permission denied — using avatar");
+      } else if (name === "NotFoundError") {
+        setCameraError("No camera found — using avatar");
+      } else {
+        setCameraError("Could not open camera — using avatar");
+      }
+      setCameraOn(false);
+      stopCamera();
+    }
+  }, [stopCamera]);
+
+  const toggleCamera = useCallback(() => {
+    if (cameraOn && cameraStreamRef.current) {
+      stopCamera();
+      setCameraOn(false);
+      return;
+    }
+    void startCamera();
+  }, [cameraOn, startCamera, stopCamera]);
+
   useEffect(() => {
     return () => {
-      stopSpeaking();
+      clearAudio();
+      clearTimers();
       mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+      recognitionRef.current?.abort();
+      stopCamera();
     };
-  }, []);
+  }, [clearAudio, clearTimers, stopCamera]);
 
   useEffect(() => {
     if (phase !== "live") return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    void startCamera();
     return () => {
       document.body.style.overflow = prev;
+      stopCamera();
     };
-  }, [phase]);
+  }, [phase, startCamera, stopCamera]);
+
+  const stopWebSpeech = useCallback(() => {
+    const rec = recognitionRef.current;
+    if (rec) {
+      rec.onresult = null;
+      rec.onerror = null;
+      rec.onend = null;
+      try {
+        rec.stop();
+      } catch {
+        try {
+          rec.abort();
+        } catch {
+          /* ignore */
+        }
+      }
+      recognitionRef.current = null;
+    }
+    usingWebSpeechRef.current = false;
+  }, []);
 
   const speakCurrentQuestion = useCallback(
     (text: string) => {
-      if (!voiceEnabled || !text.trim()) return;
+      if (!voiceEnabled || !text.trim()) {
+        setSpeaking(false);
+        autoListenTimerRef.current = window.setTimeout(() => {
+          void startListeningRef.current();
+        }, 400);
+        return;
+      }
+
+      clearAudio();
       setSpeaking(true);
-      speakQuestion(text, () => setSpeaking(false));
+
+      const finishSpeaking = () => {
+        setSpeaking(false);
+        autoListenTimerRef.current = window.setTimeout(() => {
+          void startListeningRef.current();
+        }, 450);
+      };
+
+      void (async () => {
+        try {
+          const res = await fetch("/api/mock-interview/speak", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
+          });
+
+          if (!res.ok) {
+            throw new Error("tts unavailable");
+          }
+
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          audioUrlRef.current = url;
+          const audio = new Audio(url);
+          audioRef.current = audio;
+          audio.onended = () => {
+            clearAudio();
+            finishSpeaking();
+          };
+          audio.onerror = () => {
+            clearAudio();
+            speakBrowserFallback(text, finishSpeaking);
+          };
+          await audio.play();
+        } catch {
+          speakBrowserFallback(text, finishSpeaking);
+        }
+      })();
     },
-    [voiceEnabled]
+    [voiceEnabled, clearAudio]
   );
+
+  useEffect(() => {
+    speakQuestionRef.current = speakCurrentQuestion;
+  }, [speakCurrentQuestion]);
 
   async function loadHistory() {
     try {
@@ -192,10 +404,12 @@ export function MockInterviewRoom() {
         sessions: MockInterviewSessionRecord[];
         ai?: AIStatus;
         stt?: SttStatus;
+        tts?: TtsStatus;
       };
       setHistory(data.sessions ?? []);
       if (data.ai) setAi(data.ai);
       if (data.stt) setStt(data.stt);
+      if (data.tts) setTts(data.tts);
     } catch {
       /* ignore */
     }
@@ -210,7 +424,9 @@ export function MockInterviewRoom() {
     setFeedback(null);
     setSummary(null);
     setSessionDone(false);
-    stopSpeaking();
+    clearTimers();
+    clearAudio();
+    stopWebSpeech();
     try {
       const res = await fetch("/api/mock-interview", {
         method: "POST",
@@ -231,11 +447,13 @@ export function MockInterviewRoom() {
           setAi(data.ai);
         }
         if (data.stt) setStt(data.stt);
+        if (data.tts) setTts(data.tts);
         throw new Error(data.error || "Could not start session");
       }
 
       if (data.ai) setAi(data.ai);
       if (data.stt) setStt(data.stt);
+      if (data.tts) setTts(data.tts);
       setSessionId(data.session.id);
       const firstTurns = data.session.turns ?? [data.turn];
       setTurns(firstTurns);
@@ -243,6 +461,7 @@ export function MockInterviewRoom() {
       setSeconds(0);
       setRunning(true);
       setAnswer("");
+      setLiveCaption("");
       setDemoMode(Boolean(data.demoMode));
       setProvider(data.provider ?? null);
       setResumeContextAvailable(Boolean(data.resumeContextAvailable));
@@ -260,9 +479,8 @@ export function MockInterviewRoom() {
       void loadHistory();
       const q = firstTurns[0]?.question;
       if (q) {
-        window.setTimeout(() => speakCurrentQuestion(q), 350);
+        window.setTimeout(() => speakQuestionRef.current(q), 350);
       }
-      window.setTimeout(() => answerRef.current?.focus(), 400);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not start session"
@@ -272,13 +490,15 @@ export function MockInterviewRoom() {
     }
   }
 
-  async function submitAnswer() {
-    if (!sessionId || !answer.trim()) {
+  async function submitAnswer(overrideAnswer?: string) {
+    const text = (overrideAnswer ?? answerSnapshotRef.current).trim();
+    if (!sessionId || !text) {
       toast.error("Speak or type your answer first");
       return;
     }
-    stopSpeaking();
+    clearAudio();
     setSpeaking(false);
+    stopWebSpeech();
     setSubmitting(true);
     try {
       const res = await fetch("/api/mock-interview", {
@@ -287,7 +507,7 @@ export function MockInterviewRoom() {
         body: JSON.stringify({
           action: "answer",
           sessionId,
-          answer: answer.trim(),
+          answer: text,
           turns,
           company,
           role,
@@ -309,17 +529,26 @@ export function MockInterviewRoom() {
       setProvider(data.provider ?? provider);
       if (data.ai) setAi(data.ai);
       if (data.stt) setStt(data.stt);
+      if (data.tts) setTts(data.tts);
       setAnswer("");
+      setLiveCaption("");
       setFeedback(data.feedback);
 
       if (data.done) {
         setSessionDone(true);
         setPendingNextIndex(null);
-        toast.success("Final question answered — review feedback, then wrap up");
       } else {
         setSessionDone(false);
         setPendingNextIndex(data.questionIndex ?? questionIndex + 1);
       }
+
+      // Auto-advance after a short coaching beat
+      if (autoAdvanceTimerRef.current) {
+        window.clearTimeout(autoAdvanceTimerRef.current);
+      }
+      autoAdvanceTimerRef.current = window.setTimeout(() => {
+        goToNextQuestionRef.current();
+      }, data.done ? 3200 : 2800);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not submit answer"
@@ -329,11 +558,254 @@ export function MockInterviewRoom() {
     }
   }
 
+  useEffect(() => {
+    submitAnswerRef.current = () => submitAnswer();
+  });
+
+  const scheduleAutoSubmit = useCallback((text: string) => {
+    if (autoSubmitTimerRef.current) {
+      window.clearTimeout(autoSubmitTimerRef.current);
+    }
+    autoSubmitTimerRef.current = window.setTimeout(() => {
+      if (text.trim()) {
+        void submitAnswerRef.current();
+      }
+    }, 900);
+  }, []);
+
+  async function transcribeWithWhisper(blob: Blob) {
+    setTranscribing(true);
+    try {
+      const form = new FormData();
+      form.append("audio", blob, "answer.webm");
+      const res = await fetch("/api/mock-interview/transcribe", {
+        method: "POST",
+        body: form
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Could not transcribe audio");
+      }
+      const text = String(data.text || "").trim();
+      if (!text) {
+        toast.error("Could not hear clear speech — try again");
+        return;
+      }
+      setAnswer(text);
+      setLiveCaption(text);
+      toast.success("Answer captured");
+      scheduleAutoSubmit(text);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Voice transcription failed"
+      );
+    } finally {
+      setTranscribing(false);
+    }
+  }
+
+  async function startWhisperRecording() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast.error("Microphone not supported — type your answer");
+      return;
+    }
+    if (stt && stt.whisper === false && !browserSpeechAvailable) {
+      toast.error(stt.message);
+      return;
+    }
+
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      chunksRef.current = [];
+      const mimeType = pickRecorderMime();
+      const recorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, {
+          type: mediaRecorderRef.current?.mimeType || "audio/webm"
+        });
+        mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+        mediaStreamRef.current = null;
+        mediaRecorderRef.current = null;
+        chunksRef.current = [];
+        if (blob.size < 900) {
+          toast.error("Recording too short — try again");
+          return;
+        }
+        void transcribeWithWhisper(blob);
+      };
+
+      recorder.start(200);
+      setRecording(true);
+      setLiveCaption("Listening…");
+    } catch (error) {
+      stream?.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+      mediaRecorderRef.current = null;
+      const name = error instanceof DOMException ? error.name : "";
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        toast.error("Allow microphone access to use voice answers");
+      } else {
+        toast.error("Could not start the microphone — type your answer");
+      }
+    }
+  }
+
+  const startListening = useCallback(async () => {
+    if (recording || submitting || feedback || transcribing || speaking) return;
+    clearAudio();
+    setSpeaking(false);
+    finalTranscriptRef.current = "";
+    setLiveCaption("");
+    setAnswer("");
+
+    const Ctor = getSpeechRecognitionCtor();
+    if (Ctor) {
+      usingWebSpeechRef.current = true;
+      const recognition = new Ctor();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+      recognitionRef.current = recognition;
+
+      recognition.onresult = (event) => {
+        let interim = "";
+        let finalText = finalTranscriptRef.current;
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          const chunk = result[0]?.transcript ?? "";
+          if (result.isFinal) {
+            finalText = `${finalText} ${chunk}`.trim();
+          } else {
+            interim += chunk;
+          }
+        }
+        finalTranscriptRef.current = finalText;
+        const display = `${finalText} ${interim}`.trim();
+        setLiveCaption(display);
+        setAnswer(display);
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === "aborted" || event.error === "no-speech") return;
+        if (event.error === "not-allowed") {
+          toast.error("Allow microphone access to use voice answers");
+          setRecording(false);
+          stopWebSpeech();
+          return;
+        }
+      };
+
+      recognition.onend = () => {
+        // Browser often ends after a pause — finalize if we still own the session
+        if (!usingWebSpeechRef.current) return;
+        const text = (
+          finalTranscriptRef.current || answerSnapshotRef.current
+        ).trim();
+        if (text) {
+          usingWebSpeechRef.current = false;
+          recognitionRef.current = null;
+          setRecording(false);
+          setAnswer(text);
+          setLiveCaption(text);
+          toast.success("Answer captured");
+          scheduleAutoSubmit(text);
+          return;
+        }
+        // Keep listening if nothing captured yet
+        try {
+          recognition.start();
+        } catch {
+          usingWebSpeechRef.current = false;
+          recognitionRef.current = null;
+          setRecording(false);
+        }
+      };
+
+      try {
+        recognition.start();
+        setRecording(true);
+        setLiveCaption("Listening…");
+        return;
+      } catch {
+        stopWebSpeech();
+      }
+    }
+
+    // Fallback: Whisper MediaRecorder path
+    await startWhisperRecording();
+  }, [
+    recording,
+    submitting,
+    feedback,
+    transcribing,
+    speaking,
+    clearAudio,
+    stopWebSpeech,
+    scheduleAutoSubmit,
+    stt,
+    browserSpeechAvailable
+  ]);
+
+  useEffect(() => {
+    startListeningRef.current = startListening;
+  }, [startListening]);
+
+  function stopRecording(transcribe = true) {
+    if (usingWebSpeechRef.current || recognitionRef.current) {
+      const finalText = (finalTranscriptRef.current || answerSnapshotRef.current).trim();
+      stopWebSpeech();
+      setRecording(false);
+      if (!transcribe) {
+        setLiveCaption("");
+        return;
+      }
+      if (!finalText) {
+        toast.error("No speech captured — try again");
+        return;
+      }
+      setAnswer(finalText);
+      setLiveCaption(finalText);
+      toast.success("Answer captured");
+      scheduleAutoSubmit(finalText);
+      return;
+    }
+
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) return;
+    if (!transcribe) {
+      recorder.ondataavailable = null;
+      recorder.onstop = null;
+      mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+      mediaRecorderRef.current = null;
+      chunksRef.current = [];
+      setRecording(false);
+      setLiveCaption("");
+      return;
+    }
+    if (recorder.state !== "inactive") {
+      recorder.stop();
+    }
+    setRecording(false);
+  }
+
   async function endSession(finalTurns?: MockTurnRecord[]) {
     setRunning(false);
-    stopSpeaking();
+    clearTimers();
+    clearAudio();
     setSpeaking(false);
     if (recording) stopRecording(false);
+    stopWebSpeech();
+    stopCamera();
 
     const turnsToSave = finalTurns ?? turns;
     if (!sessionId) {
@@ -383,117 +855,11 @@ export function MockInterviewRoom() {
     }
   }
 
-  async function startRecording() {
-    if (recording || submitting || feedback || transcribing) return;
-    stopSpeaking();
-    setSpeaking(false);
-
-    if (stt && !stt.available) {
-      toast.error(stt.message);
-      return;
-    }
-
-    if (!navigator.mediaDevices?.getUserMedia) {
-      toast.error("Microphone not supported in this browser — type your answer");
-      return;
-    }
-
-    let stream: MediaStream | null = null;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStreamRef.current = stream;
-      chunksRef.current = [];
-      const mimeType = pickRecorderMime();
-      const recorder = mimeType
-        ? new MediaRecorder(stream, { mimeType })
-        : new MediaRecorder(stream);
-      mediaRecorderRef.current = recorder;
-
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) chunksRef.current.push(event.data);
-      };
-      recorder.onstop = () => {
-        void finalizeRecording();
-      };
-
-      recorder.start(250);
-      setRecording(true);
-      toast.message("Listening… speak your answer", { duration: 1800 });
-    } catch (error) {
-      stream?.getTracks().forEach((t) => t.stop());
-      mediaStreamRef.current = null;
-      mediaRecorderRef.current = null;
-      const name =
-        error instanceof DOMException ? error.name : "";
-      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
-        toast.error("Allow microphone access to use voice answers");
-      } else if (name === "NotFoundError") {
-        toast.error("No microphone found — type your answer instead");
-      } else {
-        toast.error("Could not start the microphone — type your answer instead");
-      }
-    }
-  }
-
-  function stopRecording(transcribe = true) {
-    const recorder = mediaRecorderRef.current;
-    if (!recorder) return;
-    if (!transcribe) {
-      recorder.ondataavailable = null;
-      recorder.onstop = null;
-      mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
-      mediaStreamRef.current = null;
-      mediaRecorderRef.current = null;
-      chunksRef.current = [];
-      setRecording(false);
-      return;
-    }
-    if (recorder.state !== "inactive") {
-      recorder.stop();
-    }
-    setRecording(false);
-  }
-
-  async function finalizeRecording() {
-    const blob = new Blob(chunksRef.current, {
-      type: mediaRecorderRef.current?.mimeType || "audio/webm"
-    });
-    mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
-    mediaStreamRef.current = null;
-    mediaRecorderRef.current = null;
-    chunksRef.current = [];
-
-    if (blob.size < 900) {
-      toast.error("Recording too short — try again");
-      return;
-    }
-
-    setTranscribing(true);
-    try {
-      const form = new FormData();
-      form.append("audio", blob, "answer.webm");
-      const res = await fetch("/api/mock-interview/transcribe", {
-        method: "POST",
-        body: form
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Could not transcribe audio");
-      }
-      const text = String(data.text || "").trim();
-      setAnswer((prev) => (prev.trim() ? `${prev.trim()} ${text}` : text));
-      toast.success("Voice captured — review and submit");
-      window.setTimeout(() => answerRef.current?.focus(), 100);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Voice transcription failed"
-      );
-    } finally {
-      setTranscribing(false);
-    }
-  }
-
   function goToNextQuestion() {
+    if (autoAdvanceTimerRef.current) {
+      window.clearTimeout(autoAdvanceTimerRef.current);
+      autoAdvanceTimerRef.current = null;
+    }
     if (sessionDone) {
       void endSession(turns);
       return;
@@ -504,20 +870,27 @@ export function MockInterviewRoom() {
     setPendingNextIndex(null);
     setQuestionIndex(next);
     setAnswer("");
+    setLiveCaption("");
     if (nextQ) {
-      window.setTimeout(() => speakCurrentQuestion(nextQ), 200);
+      window.setTimeout(() => speakQuestionRef.current(nextQ), 200);
     }
-    window.setTimeout(() => answerRef.current?.focus(), 250);
   }
 
+  const goToNextQuestionRef = useRef(goToNextQuestion);
+  goToNextQuestionRef.current = goToNextQuestion;
+
   function resetToSetup() {
-    stopSpeaking();
+    clearTimers();
+    clearAudio();
     stopRecording(false);
+    stopWebSpeech();
+    stopCamera();
     setPhase("setup");
     setSessionId(null);
     setTurns([]);
     setQuestionIndex(0);
     setAnswer("");
+    setLiveCaption("");
     setFeedback(null);
     setSummary(null);
     setSeconds(0);
@@ -560,20 +933,7 @@ export function MockInterviewRoom() {
               <code className="rounded bg-white/70 px-1.5 py-0.5 text-xs">
                 GROQ_API_KEY
               </code>{" "}
-              is set. Voice answers need Groq Whisper. You can still start Demo
-              mode.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
-      {ai?.available && stt && !stt.available && phase === "setup" ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-50/80 px-5 py-4 text-sm text-amber-950">
-          <WarningCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
-          <div>
-            <p className="font-semibold">Voice answers unavailable</p>
-            <p className="mt-1 leading-6 text-amber-900/80">
-              {stt.message}. Typed answers still work with the AI interviewer.
+              is set. You can still start Demo mode.
             </p>
           </div>
         </div>
@@ -587,15 +947,16 @@ export function MockInterviewRoom() {
                 Virtual interview room
               </CardTitle>
               <p className="text-sm leading-6 text-muted-foreground">
-                Click start to join a Meet-style call with Apply Interviewer —
-                spoken questions, voice or text answers, and live coaching.
-                Desktop later is for live interview assist only.
+                Join a light Meet-style call — camera on the left, Apply
+                Interviewer on the right. Questions speak aloud; answers are
+                captioned live as you talk.
               </p>
               {ai?.available ? (
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
                   <Sparkle className="h-3.5 w-3.5" weight="fill" />
                   {ai.message}
-                  {stt?.available ? " · voice ready" : ""}
+                  {tts?.available ? " · ElevenLabs voice" : ""}
+                  {browserSpeechAvailable ? " · live captions" : ""}
                 </p>
               ) : null}
             </CardHeader>
@@ -696,7 +1057,7 @@ export function MockInterviewRoom() {
                   onChange={(e) => setVoiceEnabled(e.target.checked)}
                   className="h-4 w-4 rounded border-border accent-[hsl(var(--accent))]"
                 />
-                Speak questions aloud (browser voice)
+                Speak questions aloud (ElevenLabs · browser fallback)
               </label>
 
               <div className="flex flex-wrap gap-3 pt-1">
@@ -719,8 +1080,8 @@ export function MockInterviewRoom() {
                 ) : null}
               </div>
               <p className="text-xs leading-5 text-muted-foreground">
-                Uses your master resume when available. Hold the mic during the
-                round to answer by voice (Whisper via Groq).
+                After start, the flow is automatic: hear the question → speak →
+                live captions → auto-submit → next question. End call anytime.
               </p>
               <a
                 href="/dashboard/interview"
@@ -793,25 +1154,21 @@ export function MockInterviewRoom() {
           answerRef={answerRef}
           feedback={feedback}
           sessionDone={sessionDone}
-          voiceEnabled={voiceEnabled}
           speaking={speaking}
           recording={recording}
           submitting={submitting}
           transcribing={transcribing}
           loading={loading}
-          sttAvailable={!stt || stt.available}
-          sttMessage={stt?.message}
-          resumeContextAvailable={resumeContextAvailable}
-          onStartRecording={() => void startRecording()}
+          captionsEnabled={captionsEnabled}
+          onToggleCaptions={() => setCaptionsEnabled((v) => !v)}
+          cameraOn={cameraOn}
+          cameraStream={cameraStream}
+          cameraError={cameraError}
+          onToggleCamera={toggleCamera}
+          liveCaption={liveCaption}
+          onStartRecording={() => void startListening()}
           onStopRecording={() => stopRecording(true)}
           onSubmitAnswer={() => void submitAnswer()}
-          onReplayQuestion={() => {
-            if (current.question) speakCurrentQuestion(current.question);
-          }}
-          onStopVoice={() => {
-            stopSpeaking();
-            setSpeaking(false);
-          }}
           onEndInterview={() => void endSession()}
           onNext={goToNextQuestion}
         />
@@ -882,16 +1239,16 @@ export function MockInterviewRoom() {
 
 function InterviewerPreview() {
   return (
-    <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-[#0f2a3d] via-[#123447] to-[#0d5c56] p-5 text-white shadow-sm">
+    <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-[#edf6f5] via-[#f7faf9] to-[#e8f0f2] p-5 shadow-sm">
       <div className="relative flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
         <MockInterviewRobot mood="idle" size="sm" />
         <div className="text-center sm:text-left">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7fd9c7]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
             Apply Interviewer
           </p>
-          <p className="mt-1 text-sm leading-6 text-white/80">
-            Starts a Google Meet–style room — speaks questions, listens to your
-            voice or text, then coaches you live.
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            Light Meet-style room with your camera, a speaking interviewer, live
+            answer captions, and automatic next questions.
           </p>
         </div>
       </div>

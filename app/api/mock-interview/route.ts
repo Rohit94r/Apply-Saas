@@ -10,6 +10,7 @@ import {
   type MockDifficulty,
   type MockInterviewType
 } from "@/lib/ai/mock-interview";
+import { getElevenLabsTtsStatus } from "@/lib/ai/elevenlabs-tts";
 import { isTranscriptionAvailable } from "@/lib/ai/transcribe";
 import {
   completeMockSession,
@@ -31,17 +32,22 @@ function isLocalSessionId(id: string) {
 }
 
 function sttStatus() {
-  const available = isTranscriptionAvailable();
+  const whisper = isTranscriptionAvailable();
   return {
-    available,
-    message: available
-      ? "Voice answers via Groq Whisper"
-      : "Voice needs GROQ_API_KEY for Whisper — type answers until set"
+    available: true,
+    whisper,
+    message: whisper
+      ? "Live captions via browser speech; Whisper refine available"
+      : "Live captions via browser speech (Web Speech API). Add GROQ_API_KEY for Whisper fallback."
   };
 }
 
 function sessionMeta() {
-  return { ai: getMockInterviewAIStatus(), stt: sttStatus() };
+  return {
+    ai: getMockInterviewAIStatus(),
+    stt: sttStatus(),
+    tts: getElevenLabsTtsStatus()
+  };
 }
 
 export async function GET(request: Request) {
