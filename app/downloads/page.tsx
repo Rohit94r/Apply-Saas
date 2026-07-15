@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: absoluteUrl("/downloads")
   },
+  robots: {
+    index: false,
+    follow: true
+  },
   openGraph: {
     title: "Apply Desktop / Interview Copilot — Coming Soon",
     description:

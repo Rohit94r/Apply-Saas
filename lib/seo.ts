@@ -80,11 +80,18 @@ export const seoConfig = {
     "Infosys previous year coding questions",
     "Amazon OA previous year questions",
     "Zoho previous year coding questions",
+    "Wipro coding questions",
+    "Accenture coding questions",
+    "Cognizant coding questions",
+    "Goldman Sachs OA questions",
+    "Morgan Stanley OA questions",
     "mock interview practice online",
     "AI mock interview for freshers",
     "campus placement mock interview",
     "TCS interview questions",
     "Infosys resume format",
+    "Wipro interview questions",
+    "Accenture interview questions",
     "campus placement prep India",
     "free resume builder for students",
     "ATS resume optimizer",
@@ -100,15 +107,29 @@ export const seoConfig = {
     "cover letter generator",
     "mock interview practice",
     "freelance jobs for students",
-    "online assessment previous year papers"
+    "online assessment previous year papers",
+    "TCS NQT preparation",
+    "Infosys SP DSE coding questions",
+    "fresher resume format India",
+    "best resume builder India",
+    "placement preparation guide India",
+    "aptitude questions for placements",
+    "DSA interview questions for freshers",
+    "coding interview questions India",
+    "company interview experience India",
+    "TCS NQT aptitude questions",
+    "Deloitte interview questions",
+    "Capgemini hiring process freshers",
+    "campus placement tips India",
+    "interview tips for freshers",
+    "resume format for freshers IT companies"
   ],
   publicRoutes: [
     "/",
     "/blog",
     "/prepare",
     "/pyqs",
-    "/mock-interview",
-    "/downloads"
+    "/mock-interview"
   ]
 } as const;
 

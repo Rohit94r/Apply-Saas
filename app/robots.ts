@@ -14,11 +14,9 @@ export default function robots(): MetadataRoute.Robots {
         "/pyqs",
         "/pyqs/",
         "/mock-interview",
-        "/mock-interview/",
-        "/downloads",
-        "/downloads/"
+        "/mock-interview/"
       ],
-      disallow: ["/api/", "/dashboard/", "/admin/", "/sign-in/", "/sign-up/"]
+      disallow: ["/api/", "/dashboard/", "/admin/", "/sign-in/", "/sign-up/", "/downloads"]
     },
     sitemap: absoluteUrl("/sitemap.xml")
   };

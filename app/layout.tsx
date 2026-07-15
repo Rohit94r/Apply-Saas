@@ -5,7 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { clerkIsConfigured, clerkPublishableKey } from "@/lib/clerk-config";
-import { absoluteUrl, seoConfig } from "@/lib/seo";
+import { absoluteUrl, seoConfig, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -112,6 +112,13 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geist.variable} ${instrumentSerif.variable}`}>
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([organizationJsonLd, websiteJsonLd])
+          }}
+        />
         <Providers>{children}</Providers>
         {umamiSrc && umamiWebsiteId ? (
           <Script
