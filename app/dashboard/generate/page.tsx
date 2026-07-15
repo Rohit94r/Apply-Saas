@@ -17,9 +17,9 @@ export default async function GeneratePage({
   return (
     <div>
       <PageHeader
-        eyebrow="Tailor resume"
-        title="Upload once. Tailor with AI prompts. Export and prep."
-        description="Add your master profile, paste a job description, optionally steer AI with a prompt, then refine, cover letter, and interview prep from the same role."
+        eyebrow="Resume builder"
+        title="Upload once. Tailor for each job."
+        description="Paste a job description, download an ATS-ready PDF, then prep cover letter and interview from the same role."
       />
       <GenerateResumeForm
         initialMasterResume={masterResume}

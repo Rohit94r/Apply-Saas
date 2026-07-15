@@ -37,7 +37,7 @@ export default async function AnalyticsPage() {
       <PageHeader
         eyebrow="Resume analytics"
         title="Know what is improving."
-        description="Track ATS scores, keyword coverage, readiness progress, and activity across your job search."
+        description="Track keyword match scores, coverage, readiness progress, and activity across your job search."
       />
 
       {resumes.length ? (
@@ -53,7 +53,7 @@ export default async function AnalyticsPage() {
               <p className="fine-label mb-2">Readiness score</p>
               <p className="font-serif text-6xl text-primary">{readiness.score}%</p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Average ATS: {readiness.avgAts}%
+                Average keyword match: {readiness.avgAts}%
               </p>
               <ul className="mt-5 space-y-2">
                 {readiness.steps.map((step) => (
@@ -129,7 +129,7 @@ export default async function AnalyticsPage() {
           <div className="flex justify-center">
             <Button asChild variant="outline">
               <Link href="/dashboard">
-                Back to overview
+                Back to home
                 <ArrowRight className="h-4 w-4" weight="regular" />
               </Link>
             </Button>
@@ -138,9 +138,9 @@ export default async function AnalyticsPage() {
       ) : (
         <EmptyState
           icon={ChartBar}
-          title="No analytics yet"
-          description="Analytics appear after you generate and save resumes or interview guides."
-          action="Tailor resume"
+          title="No progress yet"
+          description="Tailor one resume to start tracking your placement progress."
+          action="Open resume builder"
         />
       )}
     </div>

@@ -4,6 +4,7 @@ import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { Footer } from "@/components/landing/footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { blogPostUrl, blogPosts } from "@/lib/blog";
+import { preparePages } from "@/lib/prepare";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -105,6 +106,46 @@ export default function BlogPage() {
                 </div>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="border-t border-border py-16">
+          <div className="section-shell">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="fine-label mb-3">Company prep</p>
+                <h2 className="max-w-2xl font-serif text-4xl leading-[1.05] text-primary">
+                  Placement guides by company.
+                </h2>
+                <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
+                  Interview questions, OA patterns, and resume formats for TCS,
+                  Amazon, Infosys, and more — then continue inside Apply.
+                </p>
+              </div>
+              <Link
+                href="/prepare"
+                className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-accent"
+              >
+                View all company guides
+                <ArrowRight className="h-4 w-4" weight="regular" />
+              </Link>
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {preparePages.slice(0, 6).map((page) => (
+                <Link
+                  key={page.slug}
+                  href={`/prepare/${page.slug}`}
+                  className="rounded-xl border border-border bg-[#fbfaf6] p-5 transition hover:border-accent/40"
+                >
+                  <p className="text-xs font-semibold text-accent">
+                    {page.companyName}
+                  </p>
+                  <p className="mt-2 text-sm font-bold leading-6 text-primary">
+                    {page.title}
+                  </p>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       </main>

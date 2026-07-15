@@ -1,4 +1,5 @@
 import { BlogPreviewSection } from "@/components/landing/blog-preview-section";
+import { CompanyPrepSection } from "@/components/landing/company-prep-section";
 import { ComparisonSection } from "@/components/landing/comparison-section";
 import { EngineShowcase } from "@/components/landing/engine-showcase";
 import { FaqSection } from "@/components/landing/faq-section";
@@ -28,6 +29,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: seoConfig.title,
   description: seoConfig.description,
+  keywords: [...seoConfig.keywords],
   alternates: {
     canonical: absoluteUrl("/")
   },
@@ -68,14 +70,15 @@ export default function Home() {
       <SiteHeader />
       <main>
         <HeroSection />
-        <StudentGatewaySection />
         <ProductFeaturesSection />
+        <CompanyPrepSection />
+        <ComingSoonSection />
         <HowItWorks />
+        <StudentGatewaySection />
         <ComparisonSection />
         <EngineShowcase />
         <InterviewPrepSection />
         <FreelancingSection />
-        <ComingSoonSection />
         <Testimonials />
         <FaqSection />
         <BlogPreviewSection />
