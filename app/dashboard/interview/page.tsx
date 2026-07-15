@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/dashboard/page-header";
 import { InterviewGuideForm } from "@/components/dashboard/interview-guide-form";
+import { CompanyCodingQuestions } from "@/components/dashboard/company-coding-questions";
 import { getCurrentUserId } from "@/lib/auth";
 import { resumeText } from "@/lib/dashboard-links";
 import {
@@ -46,6 +47,7 @@ export default async function InterviewPage({
         initialRole={initialRole}
         initialResumeContent={initialResumeContent}
       />
+      <CompanyCodingQuestions />
     </div>
   );
 }
