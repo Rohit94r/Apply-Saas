@@ -136,7 +136,7 @@ export function ApplicationsTracker({
             : "Got an offer letter? Compare CTC, location, and deadlines side by side."}
         </p>
         <Button asChild size="sm" variant="outline">
-          <Link href="/dashboard/offers">
+          <Link href="/dashboard/tools?tool=offers">
             Got an offer? Compare
             <ArrowRight className="h-4 w-4" weight="regular" />
           </Link>

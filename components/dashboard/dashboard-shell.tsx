@@ -5,24 +5,17 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import {
-  Briefcase,
   CaretLineLeft,
   CaretLineRight,
-  ChartBar,
   Desktop,
   FileText,
-  GearSix,
   GraduationCap,
   House,
+  ListChecks,
   MagicWand,
-  MagnifyingGlass,
-  Microphone,
-  Scales,
   ShieldCheck,
   Sparkle,
-  Storefront,
-  ListChecks,
-  Notepad
+  Storefront
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/landing/logo";
@@ -41,19 +34,16 @@ const navItems: Array<{
 }> = [
   { label: "Home", href: "/dashboard", icon: House },
   { label: "My resumes", href: "/dashboard/resumes", icon: FileText, shortLabel: "Resumes" },
-  { label: "Tailor resume", href: "/dashboard/generate", icon: Sparkle, shortLabel: "Tailor" },
-  { label: "Job search", href: "/dashboard/jobs", icon: MagnifyingGlass, shortLabel: "Jobs" },
-  { label: "Interview prep", href: "/dashboard/interview", icon: Briefcase, shortLabel: "Interview" },
-  { label: "Mock interview", href: "/dashboard/mock-interview", icon: Microphone, shortLabel: "Mock" },
-  { label: "My applications", href: "/dashboard/applications", icon: ListChecks, shortLabel: "Apps" },
-  { label: "Compare offers", href: "/dashboard/offers", icon: Scales, shortLabel: "Offers" },
+  {
+    label: "Applications & progress",
+    href: "/dashboard/applications",
+    icon: ListChecks,
+    shortLabel: "Apps"
+  },
   { label: "AI tools", href: "/dashboard/tools", icon: MagicWand, shortLabel: "Tools" },
-  { label: "Cover letters", href: "/dashboard/cover-letters", icon: Notepad, shortLabel: "Letters" },
-  { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
   { label: "Learning", href: "/dashboard/learners", icon: GraduationCap },
-  { label: "Progress", href: "/dashboard/analytics", icon: ChartBar },
-  { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle },
-  { label: "Settings", href: "/dashboard/settings", icon: GearSix }
+  { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
+  { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle }
 ];
 
 const pageTitles: Array<{ match: (path: string) => boolean; title: string; eyebrow: string }> = [
@@ -63,24 +53,19 @@ const pageTitles: Array<{ match: (path: string) => boolean; title: string; eyebr
     eyebrow: "Placement prep"
   },
   {
-    match: (p) => p.startsWith("/dashboard/mock-interview"),
-    title: "Mock interview",
-    eyebrow: "Practice room"
-  },
-  {
     match: (p) => p.startsWith("/dashboard/applications"),
-    title: "My applications",
-    eyebrow: "Tracker"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/offers"),
-    title: "Compare offers",
-    eyebrow: "Decide with clarity"
+    title: "Applications & progress",
+    eyebrow: "Tracker + readiness"
   },
   {
     match: (p) => p.startsWith("/dashboard/tools"),
     title: "AI tools",
-    eyebrow: "Cover letter & more"
+    eyebrow: "Cover letter, offers & more"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/offers"),
+    title: "Compare offers",
+    eyebrow: "AI tools"
   },
   {
     match: (p) => p.startsWith("/dashboard/cover-letters"),
@@ -91,6 +76,11 @@ const pageTitles: Array<{ match: (path: string) => boolean; title: string; eyebr
     match: (p) => p.startsWith("/dashboard/generate"),
     title: "Tailor resume",
     eyebrow: "Job-ready PDF"
+  },
+  {
+    match: (p) => p.startsWith("/dashboard/mock-interview"),
+    title: "Virtual interview",
+    eyebrow: "Practice room"
   },
   {
     match: (p) => p.startsWith("/dashboard/interview"),
@@ -114,13 +104,8 @@ const pageTitles: Array<{ match: (path: string) => boolean; title: string; eyebr
   },
   {
     match: (p) => p.startsWith("/dashboard/learners"),
-    title: "Learning tracks",
+    title: "Learning",
     eyebrow: "Skill gaps"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/analytics"),
-    title: "Progress",
-    eyebrow: "Readiness"
   },
   {
     match: (p) => p.startsWith("/dashboard/settings"),
@@ -192,10 +177,16 @@ function AuthenticatedDashboardShell({
     : navItems;
   const pageMeta = titleForPath(pathname);
 
-  /** Home is exact-only so `/dashboard/mock-interview` never highlights Overview. */
+  /** Home is exact-only so nested routes never highlight it. */
   const isActive = (href: string) => {
     if (href === "/dashboard") {
       return pathname === "/dashboard";
+    }
+    if (href === "/dashboard/tools") {
+      return (
+        pathname.startsWith("/dashboard/tools") ||
+        pathname.startsWith("/dashboard/cover-letters")
+      );
     }
     return pathname === href || pathname.startsWith(`${href}/`);
   };

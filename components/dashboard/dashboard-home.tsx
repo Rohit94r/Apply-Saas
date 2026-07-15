@@ -89,13 +89,13 @@ const tools: Array<{
   },
   {
     title: "Mock interview",
-    blurb: "Timed practice before the real call.",
+    blurb: "Live AI interviewer — practice on the web.",
     href: "/dashboard/mock-interview",
     icon: Microphone
   },
   {
-    title: "My applications",
-    blurb: "Track applied → interview → offer.",
+    title: "Applications & progress",
+    blurb: "Tracker plus readiness and keyword stats.",
     href: "/dashboard/applications",
     icon: ListChecks
   },
@@ -454,7 +454,7 @@ export function DashboardHome({
             </h2>
             <p className="mt-2 text-sm leading-7 text-primary-foreground/75">
               Windows + macOS overlay is still Coming Soon. Mock interview,
-              applications, and offers are live on the web today.
+              applications, and AI tools are live on the web today.
             </p>
           </div>
           <Button

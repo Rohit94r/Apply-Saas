@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import {
   ArrowRight,
+  Briefcase,
   Camera,
   DownloadSimple,
   EnvelopeSimple,
   FilePdf,
   MagicWand,
+  Microphone,
   Scales,
   Sparkle,
   SpinnerGap
@@ -19,10 +22,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { OffersCompare } from "@/components/dashboard/offers-compare";
+import type { OfferRecord } from "@/lib/data/offers";
 import { useUploadThing } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
 
-type Tool = "cover" | "critique" | "pdf" | "photo";
+export type Tool = "cover" | "critique" | "pdf" | "photo" | "offers";
 
 type Critique = {
   atsScore: number;
@@ -42,22 +47,26 @@ type PhotoPlan = {
 
 const tabs = [
   { id: "cover", label: "Cover letter", icon: EnvelopeSimple },
-  { id: "critique", label: "Critique", icon: MagicWand },
-  { id: "pdf", label: "PDF", icon: FilePdf },
-  { id: "photo", label: "Photo", icon: Camera }
+  { id: "critique", label: "Resume critique", icon: MagicWand },
+  { id: "photo", label: "Photo", icon: Camera },
+  { id: "offers", label: "Compare offers", icon: Scales },
+  { id: "pdf", label: "PDF", icon: FilePdf }
 ] satisfies { id: Tool; label: string; icon: PhosphorIcon }[];
 
 export function ToolsWorkspace({
   initialTool = "cover",
   initialCompany = "",
   initialRole = "",
-  initialResumeContent = ""
+  initialResumeContent = "",
+  initialOffers = []
 }: {
   initialTool?: Tool;
   initialCompany?: string;
   initialRole?: string;
   initialResumeContent?: string;
+  initialOffers?: OfferRecord[];
 }) {
+  const router = useRouter();
   const [activeTool, setActiveTool] = useState<Tool>(initialTool);
   const [loading, setLoading] = useState(false);
   const [coverLetter, setCoverLetter] = useState("");
@@ -86,6 +95,13 @@ export function ToolsWorkspace({
       toast.error(error.message);
     }
   });
+
+  function selectTool(tool: Tool) {
+    setActiveTool(tool);
+    const params = new URLSearchParams(window.location.search);
+    params.set("tool", tool);
+    router.replace(`/dashboard/tools?${params.toString()}`, { scroll: false });
+  }
 
   async function requestPhotoPlan(imageUrl: string) {
     const response = await fetch("/api/photo", {
@@ -230,7 +246,7 @@ export function ToolsWorkspace({
             <button
               key={tab.id}
               type="button"
-              onClick={() => setActiveTool(tab.id)}
+              onClick={() => selectTool(tab.id)}
               className={cn(
                 "inline-flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
                 activeTool === tab.id && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
@@ -241,14 +257,27 @@ export function ToolsWorkspace({
             </button>
           ))}
         </div>
-        <Link
-          href="/dashboard/offers"
-          className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#fbfaf6] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:text-primary"
-        >
-          <Scales className="h-4 w-4 text-accent" weight="regular" />
-          Compare offers
-          <ArrowRight className="h-3.5 w-3.5 text-accent" weight="regular" />
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+            Prep
+          </p>
+          <Link
+            href="/dashboard/interview"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#fbfaf6] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:text-primary"
+          >
+            <Briefcase className="h-4 w-4 text-accent" weight="regular" />
+            Interview prep
+            <ArrowRight className="h-3.5 w-3.5 text-accent" weight="regular" />
+          </Link>
+          <Link
+            href="/dashboard/mock-interview"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-[#fbfaf6] px-4 py-2.5 text-sm font-semibold text-foreground transition hover:border-primary/30 hover:text-primary"
+          >
+            <Microphone className="h-4 w-4 text-accent" weight="regular" />
+            Mock interview
+            <ArrowRight className="h-3.5 w-3.5 text-accent" weight="regular" />
+          </Link>
+        </div>
       </div>
 
       {activeTool === "cover" ? (
@@ -283,7 +312,15 @@ export function ToolsWorkspace({
                 onResumeContentChange={setResumeContent}
                 onJobDescriptionChange={setJobDescription}
               />
-              <SubmitButton loading={loading} label="Generate cover letter" />
+              <div className="flex flex-wrap items-center gap-3">
+                <SubmitButton loading={loading} label="Generate cover letter" />
+                <Link
+                  href="/dashboard/cover-letters"
+                  className="text-sm font-semibold text-accent hover:underline"
+                >
+                  Saved letters
+                </Link>
+              </div>
             </form>
           </Card>
           <OutputPanel
@@ -452,6 +489,22 @@ export function ToolsWorkspace({
               </div>
             ) : null}
           </OutputPanel>
+        </div>
+      ) : null}
+
+      {activeTool === "offers" ? (
+        <div className="space-y-4">
+          <div>
+            <p className="fine-label mb-2">Compare offers</p>
+            <h3 className="font-serif text-3xl text-primary">
+              Weigh CTC, location, and deadlines
+            </h3>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+              Add offers from your tracker, then pick two or three to compare side by
+              side.
+            </p>
+          </div>
+          <OffersCompare initialOffers={initialOffers} />
         </div>
       ) : null}
     </div>
