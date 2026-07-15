@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   ArrowSquareOut,
   Briefcase,
-  Buildings,
-  Bank,
-  Desktop,
-  Rocket,
   GraduationCap,
   MapPin,
   Code,
@@ -16,9 +13,9 @@ import {
   PlayCircle,
   Eye,
   Lightbulb,
-  SpinnerGap
+  SpinnerGap,
+  Buildings
 } from "@phosphor-icons/react";
-import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +23,14 @@ import { jobListings } from "@/lib/data/job-listings";
 import { interviewPrepVideos } from "@/lib/data/learning-resources";
 import { allCompanyGuides } from "@/lib/data/coding-questions";
 import type { CompanyCodingGuide } from "@/lib/data/coding-questions";
+import {
+  MatcherFormSelect,
+  MatcherSearchSelect
+} from "@/components/dashboard/matcher-filter-select";
+import {
+  normalizeMatcherCity,
+  normalizeMatcherRole
+} from "@/lib/data/matcher-filters";
 
 type CompanyType = "product" | "service" | "startup" | "bfsi" | "any";
 type Domain =
@@ -74,17 +79,12 @@ type VideoSuggestion = {
   reason: string;
 };
 
-const companyTypeOptions: Array<{
-  id: CompanyType;
-  label: string;
-  icon: PhosphorIcon;
-  description: string;
-}> = [
-  { id: "product", label: "Product Based", icon: Buildings, description: "Google, Amazon, Microsoft, Flipkart..." },
-  { id: "service", label: "Service Based", icon: Desktop, description: "TCS, Infosys, Wipro, Cognizant..." },
-  { id: "startup", label: "Startups", icon: Rocket, description: "CRED, Zerodha, Series A startups..." },
-  { id: "bfsi", label: "BFSI / Finance", icon: Bank, description: "Goldman Sachs, JP Morgan, Deloitte..." },
-  { id: "any", label: "Show All", icon: Sparkle, description: "No preference — show everything" }
+const companyTypeOptions: Array<{ id: CompanyType; label: string }> = [
+  { id: "any", label: "All company types" },
+  { id: "product", label: "Product based" },
+  { id: "service", label: "Service based (IT)" },
+  { id: "startup", label: "Startups" },
+  { id: "bfsi", label: "BFSI / Finance" }
 ];
 
 const domainOptions: Array<{ id: Domain; label: string; skills: string[] }> = [
@@ -96,35 +96,6 @@ const domainOptions: Array<{ id: Domain; label: string; skills: string[] }> = [
   { id: "devops", label: "DevOps / Cloud", skills: ["Docker", "Kubernetes", "AWS", "Linux", "CI/CD", "Cloud", "Terraform"] },
   { id: "qa", label: "QA / Testing", skills: ["Testing", "Selenium", "QA", "Manual Testing", "API Testing"] },
   { id: "any", label: "Any Domain", skills: [] }
-];
-
-const roleOptions = [
-  "SDE Intern",
-  "Software Engineer",
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "Data Analyst",
-  "ML Engineer",
-  "DevOps Engineer",
-  "QA Engineer",
-  "Android Developer",
-  "Graduate Engineer Trainee",
-  "Associate Software Engineer",
-  "Any Role"
-];
-
-const cityOptions = [
-  "Bengaluru",
-  "Mumbai",
-  "Hyderabad",
-  "Pune",
-  "Chennai",
-  "Noida",
-  "Gurugram",
-  "Remote",
-  "Pan India",
-  "Any City"
 ];
 
 const experienceOptions: Array<{ id: ExperienceLevel; label: string }> = [
@@ -219,8 +190,45 @@ function companyInitials(name: string): string {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
+function roleMatchesFilter(jobTitle: string, roleFilter: string): boolean {
+  if (!roleFilter.trim()) return false;
+
+  const title = jobTitle.toLowerCase();
+  const role = roleFilter.toLowerCase();
+  const roleWords = role.split(/\s+/).filter((word) => word.length > 2);
+
+  return (
+    title.includes(role) ||
+    role.includes(title) ||
+    roleWords.some((word) => title.includes(word))
+  );
+}
+
+function cityMatchesFilter(jobLocation: string, cityFilter: string): boolean {
+  if (!cityFilter.trim()) return false;
+
+  const location = jobLocation.toLowerCase();
+  const city = cityFilter.toLowerCase();
+
+  if (city === "remote") {
+    return location.includes("remote");
+  }
+
+  if (city === "pan india") {
+    return true;
+  }
+
+  return (
+    location.includes(city) ||
+    location.includes("pan india") ||
+    location.includes("remote")
+  );
+}
+
 function matchCompanies(form: MatcherForm): ShortlistedCompany[] {
   const domainSkills = domainOptions.find((d) => d.id === form.domain)?.skills ?? [];
+  const normalizedRole = normalizeMatcherRole(form.role);
+  const normalizedCity = normalizeMatcherCity(form.city);
   const results: ShortlistedCompany[] = [];
 
   for (const job of jobListings) {
@@ -228,20 +236,14 @@ function matchCompanies(form: MatcherForm): ShortlistedCompany[] {
 
     if (form.companyType !== "any" && jobType !== form.companyType) continue;
     if (form.experience !== "any" && job.experienceBand !== form.experience) continue;
-    if (form.city !== "Any City") {
-      const jobLoc = job.location.toLowerCase();
-      const formCity = form.city.toLowerCase();
-      if (!jobLoc.includes(formCity) && !jobLoc.includes("pan india") && !jobLoc.includes("remote")) continue;
-      if (form.city === "Remote" && !jobLoc.includes("remote")) continue;
-    }
+    if (!cityMatchesFilter(job.location, normalizedCity)) continue;
+    if (!roleMatchesFilter(job.title, normalizedRole)) continue;
 
     let score = 50;
     const reasons: string[] = [];
 
-    if (form.role !== "Any Role") {
-      const roleMatch =
-        job.title.toLowerCase().includes(form.role.toLowerCase().split(" ")[0]) ||
-        form.role.toLowerCase().includes(job.title.toLowerCase().split(" ")[0]);
+    if (normalizedRole) {
+      const roleMatch = roleMatchesFilter(job.title, normalizedRole);
       if (roleMatch) {
         score += 25;
         reasons.push("Role matches your target");
@@ -378,38 +380,6 @@ function suggestVideos(form: MatcherForm): VideoSuggestion[] {
   return suggested.sort((a, b) => b.priority - a.priority).slice(0, 4);
 }
 
-function FormSelect({
-  label,
-  value,
-  onChange,
-  options,
-  icon: Icon
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-  icon: PhosphorIcon;
-}) {
-  return (
-    <label className="space-y-1.5">
-      <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        <Icon className="h-3.5 w-3.5" weight="regular" />
-        {label}
-      </span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-11 w-full rounded-xl border border-input bg-white px-3 text-sm font-medium text-foreground focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20"
-      >
-        {options.map((opt) => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
 function CompanyResultCard({ company }: { company: ShortlistedCompany }) {
   return (
     <div className="flex flex-col rounded-xl border border-border bg-white p-4 transition hover:shadow-soft">
@@ -529,8 +499,8 @@ export function InterviewPrepMatcher() {
   const [form, setForm] = useState<MatcherForm>({
     companyType: "any",
     domain: "any",
-    role: "Any Role",
-    city: "Any City",
+    role: "",
+    city: "",
     experience: "any",
     education: "any"
   });
@@ -547,12 +517,30 @@ export function InterviewPrepMatcher() {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!form.role.trim() || form.role.trim().length < 2) {
+      toast.error("Select or search a role");
+      return;
+    }
+    if (!form.city.trim() || form.city.trim().length < 2) {
+      toast.error("Select or search a city");
+      return;
+    }
+
     setLoading(true);
 
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 300));
 
-    const matched = matchCompanies(form);
-    const suggested = suggestVideos(form);
+    const normalizedForm: MatcherForm = {
+      ...form,
+      role: normalizeMatcherRole(form.role),
+      city: normalizeMatcherCity(form.city)
+    };
+
+    const matched = matchCompanies(normalizedForm);
+    const suggested = suggestVideos(normalizedForm);
+
+    setForm(normalizedForm);
 
     setResults(matched);
     setVideos(suggested);
@@ -666,80 +654,64 @@ export function InterviewPrepMatcher() {
       </div>
 
       <form className="space-y-5 p-6" onSubmit={onSubmit}>
-        <div>
-          <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Company type
-          </p>
-          <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
-            {companyTypeOptions.map((opt) => {
-              const Icon = opt.icon;
-              const isActive = form.companyType === opt.id;
-
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => updateField("companyType", opt.id)}
-                  className={cn(
-                    "flex flex-col items-start gap-1.5 rounded-xl border p-3 text-left transition",
-                    isActive
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-border bg-white hover:border-primary/30"
-                  )}
-                >
-                  <Icon
-                    className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")}
-                    weight={isActive ? "fill" : "regular"}
-                  />
-                  <span className={cn("text-xs font-bold", isActive ? "text-primary" : "text-foreground")}>
-                    {opt.label}
-                  </span>
-                  <span className="text-[10px] leading-3 text-muted-foreground">
-                    {opt.description}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <FormSelect
+          <MatcherFormSelect
+            label="Company type"
+            value={form.companyType}
+            onChange={(value) => updateField("companyType", value as CompanyType)}
+            options={companyTypeOptions.map((option) => ({
+              value: option.id,
+              label: option.label
+            }))}
+            icon={Buildings}
+          />
+          <MatcherFormSelect
             label="Domain"
             value={form.domain}
-            onChange={(v) => updateField("domain", v as Domain)}
-            options={domainOptions.map((d) => d.label)}
+            onChange={(value) => updateField("domain", value as Domain)}
+            options={domainOptions.map((option) => ({
+              value: option.id,
+              label: option.label
+            }))}
             icon={Code}
           />
-          <FormSelect
-            label="Role"
-            value={form.role}
-            onChange={(v) => updateField("role", v)}
-            options={roleOptions}
-            icon={Briefcase}
-          />
-          <FormSelect
-            label="City"
-            value={form.city}
-            onChange={(v) => updateField("city", v)}
-            options={cityOptions}
-            icon={MapPin}
+          <MatcherFormSelect
+            label="Experience"
+            value={form.experience}
+            onChange={(value) => updateField("experience", value as ExperienceLevel)}
+            options={experienceOptions.map((option) => ({
+              value: option.id,
+              label: option.label
+            }))}
+            icon={GraduationCap}
           />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <FormSelect
-            label="Experience"
-            value={form.experience}
-            onChange={(v) => updateField("experience", v as ExperienceLevel)}
-            options={experienceOptions.map((e) => e.label)}
-            icon={GraduationCap}
+          <MatcherSearchSelect
+            label="Role"
+            field="role"
+            value={form.role}
+            onChange={(value) => updateField("role", value)}
+            placeholder="Search role — SDE, Frontend, DevOps..."
+            icon={Briefcase}
           />
-          <FormSelect
+          <MatcherSearchSelect
+            label="City"
+            field="city"
+            value={form.city}
+            onChange={(value) => updateField("city", value)}
+            placeholder="Search city — Bengaluru, Pune, Remote..."
+            icon={MapPin}
+          />
+          <MatcherFormSelect
             label="Education"
             value={form.education}
-            onChange={(v) => updateField("education", v as Education)}
-            options={educationOptions.map((e) => e.label)}
+            onChange={(value) => updateField("education", value as Education)}
+            options={educationOptions.map((option) => ({
+              value: option.id,
+              label: option.label
+            }))}
             icon={GraduationCap}
           />
         </div>

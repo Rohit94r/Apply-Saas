@@ -18,6 +18,7 @@ export const config = {
     "/api/cover-letter(.*)",
     "/api/critique(.*)",
     "/api/interview(.*)",
+    "/api/interview-prep(.*)",
     "/api/mock-interview(.*)",
     "/api/applications(.*)",
     "/api/offers(.*)",

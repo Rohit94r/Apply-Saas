@@ -718,6 +718,10 @@ export const companyQuestionBanks: CompanyQuestionBank[] = [
   }
 ];
 
+export function getAllCompanies(): CompanyProfile[] {
+  return companies;
+}
+
 export function searchCompanies(query: string, limit = 8): CompanyProfile[] {
   const normalized = query.trim().toLowerCase();
 
