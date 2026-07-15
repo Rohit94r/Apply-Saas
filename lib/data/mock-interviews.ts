@@ -1,5 +1,10 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import { MockInterviewSession } from "@/models/MockInterviewSession";
+import type {
+  MockDifficulty,
+  MockInterviewType,
+  MockAIProvider
+} from "@/lib/ai/mock-interview";
 
 export type MockQuestion = {
   question: string;
@@ -8,12 +13,32 @@ export type MockQuestion = {
   category: string;
 };
 
+export type MockTurnRecord = {
+  question: string;
+  tip?: string;
+  sampleAnswer?: string;
+  category?: string;
+  answer?: string;
+  strengths?: string[];
+  improvements?: string[];
+  score?: number;
+};
+
 export type MockInterviewSessionRecord = {
   id: string;
   userId: string;
   company: string;
   role: string;
+  interviewType: MockInterviewType;
+  difficulty: MockDifficulty;
+  totalQuestions: number;
   questions: MockQuestion[];
+  turns: MockTurnRecord[];
+  provider?: string;
+  demoMode?: boolean;
+  overallScore?: number;
+  tips?: string[];
+  highlights?: string[];
   durationSeconds: number;
   completedAt?: string;
   createdAt: string;
@@ -22,8 +47,26 @@ export type MockInterviewSessionRecord = {
 type CreateSessionInput = {
   company: string;
   role: string;
-  questions: MockQuestion[];
+  interviewType?: MockInterviewType;
+  difficulty?: MockDifficulty;
+  totalQuestions?: number;
+  questions?: MockQuestion[];
+  turns?: MockTurnRecord[];
+  provider?: MockAIProvider | string;
+  demoMode?: boolean;
   durationSeconds?: number;
+  completed?: boolean;
+};
+
+type UpdateSessionInput = {
+  turns?: MockTurnRecord[];
+  questions?: MockQuestion[];
+  durationSeconds?: number;
+  overallScore?: number;
+  tips?: string[];
+  highlights?: string[];
+  provider?: string;
+  demoMode?: boolean;
   completed?: boolean;
 };
 
@@ -32,7 +75,16 @@ function serialize(doc: {
   userId: string;
   company: string;
   role: string;
+  interviewType?: string;
+  difficulty?: string;
+  totalQuestions?: number;
   questions?: MockQuestion[];
+  turns?: MockTurnRecord[];
+  provider?: string;
+  demoMode?: boolean;
+  overallScore?: number;
+  tips?: string[];
+  highlights?: string[];
   durationSeconds?: number;
   completedAt?: Date | null;
   createdAt?: Date;
@@ -42,7 +94,16 @@ function serialize(doc: {
     userId: doc.userId,
     company: doc.company,
     role: doc.role,
+    interviewType: (doc.interviewType as MockInterviewType) || "mixed",
+    difficulty: (doc.difficulty as MockDifficulty) || "medium",
+    totalQuestions: doc.totalQuestions ?? 6,
     questions: doc.questions ?? [],
+    turns: doc.turns ?? [],
+    provider: doc.provider,
+    demoMode: doc.demoMode,
+    overallScore: doc.overallScore,
+    tips: doc.tips ?? [],
+    highlights: doc.highlights ?? [],
     durationSeconds: doc.durationSeconds ?? 0,
     completedAt: doc.completedAt
       ? new Date(doc.completedAt).toISOString()
@@ -51,7 +112,7 @@ function serialize(doc: {
   };
 }
 
-/** Deterministic practice pack — works without AI for reliable MVP. */
+/** Deterministic practice pack — labeled demo / offline fallback only. */
 export function buildMockQuestions(company: string, role: string): MockQuestion[] {
   const c = company.trim() || "the company";
   const r = role.trim() || "this role";
@@ -111,6 +172,13 @@ export async function listMockSessions(userId: string, limit = 10) {
   );
 }
 
+export async function getMockSession(userId: string, id: string) {
+  await connectToDatabase();
+  const row = await MockInterviewSession.findOne({ _id: id, userId }).lean();
+  if (!row) return null;
+  return serialize(row as unknown as Parameters<typeof serialize>[0]);
+}
+
 export async function createMockSession(
   userId: string,
   input: CreateSessionInput
@@ -120,27 +188,41 @@ export async function createMockSession(
     userId,
     company: input.company.trim(),
     role: input.role.trim(),
-    questions: input.questions,
+    interviewType: input.interviewType ?? "mixed",
+    difficulty: input.difficulty ?? "medium",
+    totalQuestions: input.totalQuestions ?? 6,
+    questions: input.questions ?? [],
+    turns: input.turns ?? [],
+    provider: input.provider ?? "",
+    demoMode: input.demoMode ?? false,
     durationSeconds: input.durationSeconds ?? 0,
     completedAt: input.completed ? new Date() : undefined
   });
   return serialize(created.toObject() as Parameters<typeof serialize>[0]);
 }
 
-export async function completeMockSession(
+export async function updateMockSession(
   userId: string,
   id: string,
-  durationSeconds: number
+  input: UpdateSessionInput
 ) {
   await connectToDatabase();
+  const $set: Record<string, unknown> = {};
+  if (input.turns) $set.turns = input.turns;
+  if (input.questions) $set.questions = input.questions;
+  if (input.durationSeconds !== undefined) {
+    $set.durationSeconds = input.durationSeconds;
+  }
+  if (input.overallScore !== undefined) $set.overallScore = input.overallScore;
+  if (input.tips) $set.tips = input.tips;
+  if (input.highlights) $set.highlights = input.highlights;
+  if (input.provider !== undefined) $set.provider = input.provider;
+  if (input.demoMode !== undefined) $set.demoMode = input.demoMode;
+  if (input.completed) $set.completedAt = new Date();
+
   const updated = await MockInterviewSession.findOneAndUpdate(
     { _id: id, userId },
-    {
-      $set: {
-        durationSeconds,
-        completedAt: new Date()
-      }
-    },
+    { $set },
     { new: true }
   ).lean();
 
@@ -149,4 +231,15 @@ export async function completeMockSession(
   }
 
   return serialize(updated as unknown as Parameters<typeof serialize>[0]);
+}
+
+export async function completeMockSession(
+  userId: string,
+  id: string,
+  durationSeconds: number
+) {
+  return updateMockSession(userId, id, {
+    durationSeconds,
+    completed: true
+  });
 }

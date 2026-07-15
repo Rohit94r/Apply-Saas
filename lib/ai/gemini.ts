@@ -3,6 +3,7 @@ import type { TextAIProvider } from "@/lib/ai/openai";
 
 /**
  * Gemini provider via Google's OpenAI-compatible endpoint.
+ * Used for resume tools and the web mock interview (Apply Interviewer).
  * No extra SDK needed — the `openai` package works against
  * https://generativelanguage.googleapis.com/v1beta/openai/
  *

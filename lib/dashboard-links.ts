@@ -10,7 +10,7 @@ export function resumeText(resume: GeneratedResume) {
 
 export function toolsHref(
   resume: Pick<GeneratedResume, "id" | "company" | "role">,
-  tool: "cover" | "critique" = "cover"
+  tool: "cover" | "critique" | "photo" | "offers" | "pdf" = "cover"
 ) {
   const params = new URLSearchParams({
     resumeId: resume.id,

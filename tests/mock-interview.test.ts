@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildMockQuestions } from "@/lib/data/mock-interviews";
+import { getMockInterviewAIStatus } from "@/lib/ai/mock-interview";
 
 describe("buildMockQuestions", () => {
   it("returns 6 questions for any company + role", () => {
@@ -41,5 +42,19 @@ describe("buildMockQuestions", () => {
     const questions = buildMockQuestions("", "");
     expect(questions).toHaveLength(6);
     expect(questions[0].question.length).toBeGreaterThan(10);
+  });
+});
+
+describe("getMockInterviewAIStatus", () => {
+  it("returns a status object with available + message", () => {
+    const status = getMockInterviewAIStatus();
+    expect(typeof status.available).toBe("boolean");
+    expect(status.message.length).toBeGreaterThan(10);
+    if (status.available) {
+      expect(status.provider).toBeTruthy();
+    } else {
+      expect(status.provider).toBeNull();
+      expect(status.message).toMatch(/GEMINI_API_KEY/);
+    }
   });
 });

@@ -123,11 +123,72 @@ export const offerCreateSchema = z.object({
 
 export const offerUpdateSchema = offerCreateSchema.partial();
 
+export const mockInterviewTypeSchema = z.enum(["hr", "technical", "mixed"]);
+export const mockInterviewDifficultySchema = z.enum(["easy", "medium", "hard"]);
+
 export const mockInterviewStartSchema = z.object({
+  action: z.literal("start").optional(),
   company: z.string().trim().min(1, "Company is required").max(120),
-  role: z.string().trim().min(1, "Role is required").max(120)
+  role: z.string().trim().min(1, "Role is required").max(120),
+  interviewType: mockInterviewTypeSchema.default("mixed"),
+  difficulty: mockInterviewDifficultySchema.default("medium"),
+  totalQuestions: z.number().int().min(5).max(8).optional().default(6),
+  /** When true, allow labeled demo mode if no AI key is configured. */
+  allowDemo: z.boolean().optional().default(false)
 });
 
+export const mockInterviewAnswerSchema = z.object({
+  action: z.literal("answer"),
+  sessionId: z.string().min(1),
+  answer: z.string().trim().min(1, "Type an answer before submitting").max(8000),
+  /** Client-held turns for local (non-persisted) sessions. */
+  turns: z
+    .array(
+      z.object({
+        question: z.string().min(1),
+        category: z.string().optional(),
+        answer: z.string().optional(),
+        strengths: z.array(z.string()).optional(),
+        improvements: z.array(z.string()).optional(),
+        score: z.number().optional()
+      })
+    )
+    .optional(),
+  company: z.string().trim().min(1).max(120).optional(),
+  role: z.string().trim().min(1).max(120).optional(),
+  interviewType: mockInterviewTypeSchema.optional(),
+  difficulty: mockInterviewDifficultySchema.optional(),
+  totalQuestions: z.number().int().min(5).max(8).optional(),
+  resumeContext: z.string().max(12000).optional(),
+  questionIndex: z.number().int().min(0).max(20).optional(),
+  currentQuestion: z.string().min(1).max(2000).optional()
+});
+
+export const mockInterviewEndSchema = z.object({
+  action: z.literal("end"),
+  sessionId: z.string().min(1),
+  durationSeconds: z.number().int().min(0).max(60 * 60 * 4),
+  turns: z
+    .array(
+      z.object({
+        question: z.string().min(1),
+        category: z.string().optional(),
+        answer: z.string().optional(),
+        strengths: z.array(z.string()).optional(),
+        improvements: z.array(z.string()).optional(),
+        score: z.number().optional()
+      })
+    )
+    .optional(),
+  company: z.string().trim().min(1).max(120).optional(),
+  role: z.string().trim().min(1).max(120).optional(),
+  interviewType: mockInterviewTypeSchema.optional(),
+  difficulty: mockInterviewDifficultySchema.optional(),
+  totalQuestions: z.number().int().min(5).max(8).optional(),
+  resumeContext: z.string().max(12000).optional()
+});
+
+/** @deprecated Prefer mockInterviewEndSchema with action: "end" */
 export const mockInterviewCompleteSchema = z.object({
   action: z.literal("complete"),
   sessionId: z.string().min(1),

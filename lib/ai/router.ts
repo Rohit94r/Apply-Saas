@@ -6,6 +6,7 @@ import { getGeminiClient } from "@/lib/ai/gemini";
  *
  * Strategy (Phase 1 — free-first):
  *   resume / cover-letter / ats / critique → Gemini 1.5 Flash (long context, better prose)
+ *   mock-interview                         → Gemini 1.5 Flash (virtual interviewer)
  *   interview / quick / coding            → Groq Llama 3.3 70B (fast, good JSON)
  *   transcribe                             → Groq Whisper (when desktop ships)
  *
@@ -21,6 +22,7 @@ export type AITask =
   | "ats"
   | "critique"
   | "interview"
+  | "mock-interview"
   | "quick"
   | "photo"
   | "transcribe";
@@ -34,6 +36,7 @@ const taskPreference: Record<AITask, "gemini" | "groq" | "openai"> = {
   ats: "gemini",
   critique: "gemini",
   interview: "groq",
+  "mock-interview": "gemini",
   quick: "groq",
   photo: "openai",
   transcribe: "groq"
