@@ -4,17 +4,18 @@ import { isGoogleAuthConfigured } from "@/lib/auth-config";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import Link from "next/link";
 
-export default function SignInPage({
+export default async function SignInPage({
   searchParams
 }: {
-  searchParams?: { callbackUrl?: string; error?: string };
+  searchParams?: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   if (!isGoogleAuthConfigured()) {
     return <AuthSetupNotice />;
   }
 
-  const callbackUrl = searchParams?.callbackUrl || "/dashboard";
-  const error = searchParams?.error;
+  const params = await searchParams;
+  const callbackUrl = params?.callbackUrl || "/dashboard";
+  const error = params?.error;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[#f7f4ee] px-5 py-10 dark:bg-[#131318]">
