@@ -20,6 +20,7 @@ import {
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { UserMenu } from "@/components/auth/user-menu";
+import { AuthSetupNotice } from "@/components/auth/auth-setup-notice";
 import { Logo } from "@/components/landing/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CreditsBadge } from "@/components/billing/credits-badge";
@@ -162,20 +163,7 @@ export function DashboardShell({
 }
 
 function DashboardAuthSetup() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f7f4ee] px-5">
-      <div className="max-w-md rounded-xl border border-border bg-white p-6 text-center shadow-sm">
-        <Logo className="justify-center" />
-        <h1 className="mt-6 text-xl font-semibold text-foreground">
-          Neon Auth is not configured
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Enable Auth in the Neon Console (Project → Branch → Auth), then set
-          NEON_AUTH_BASE_URL and NEON_AUTH_COOKIE_SECRET in .env.local / Vercel.
-        </p>
-      </div>
-    </div>
-  );
+  return <AuthSetupNotice fullPage={false} />;
 }
 
 function AuthenticatedDashboardShell({
