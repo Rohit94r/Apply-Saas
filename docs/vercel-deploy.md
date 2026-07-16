@@ -71,6 +71,12 @@ git log -3 --format='%an <%ae> | committer: %ce'
 
 You should see `rjdhav67@gmail.com` for both author and committer.
 
+## npm install / peer deps
+
+There is no `vercel.json` install override. Vercel uses the default `npm install`, which reads the root `.npmrc` (`legacy-peer-deps=true`).
+
+`@neondatabase/auth` declares an optional peer of `next@>=16`. This app stays on Next.js 15; without `legacy-peer-deps`, installs can fail with `ERESOLVE` even though that peer is optional. Do not upgrade to Next 16 solely for this peer unless you intentionally migrate the framework.
+
 ## Production env vars
 
 Copy from `.env.vercel.example` into Vercel → Project → Settings → Environment Variables (Production + Preview).

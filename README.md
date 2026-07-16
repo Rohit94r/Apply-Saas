@@ -52,6 +52,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+The repo includes a root `.npmrc` with `legacy-peer-deps=true`. `@neondatabase/auth` lists an optional peer of `next@>=16`, but this app stays on Next.js 15; that flag keeps local and Vercel installs from failing with `ERESOLVE`.
+
 ### Required environment variables
 
 | Variable | Used for |
