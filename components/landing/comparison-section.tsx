@@ -24,9 +24,9 @@ export function ComparisonSection() {
       <div className="section-shell">
         <Reveal>
           <SectionHeading
-            eyebrow="Built for job applications"
-            title="Generic AI can write. Apply knows the workflow."
-            description="Compare the experience students actually need: role matching, ATS optimization, history tracking, PDF export, and prep after submission."
+            eyebrow="Why students switch to Apply"
+            title="The only platform that bundles everything a placement student needs."
+            description="PrepInsta has PYQs but no resume builder or mock interviews. Internshala has courses but no tools. Apply gives you all five tabs a placement-season student has open — in one login."
           />
         </Reveal>
         <Reveal delay={0.1}>
@@ -34,9 +34,9 @@ export function ComparisonSection() {
             <div className="grid min-w-[860px] grid-cols-[1.45fr_repeat(4,1fr)] border-b border-border bg-[#fbfaf6] text-sm font-semibold text-primary">
               <div className="p-5">Capability</div>
               <div className="border-l border-border p-5 text-accent">Apply</div>
-              <div className="border-l border-border p-5">ChatGPT</div>
-              <div className="border-l border-border p-5">Canva Resume Builder</div>
-              <div className="border-l border-border p-5">Resume.io</div>
+              <div className="border-l border-border p-5">PrepInsta</div>
+              <div className="border-l border-border p-5">Internshala</div>
+              <div className="border-l border-border p-5">Unstop</div>
             </div>
             <div className="overflow-x-auto">
               <div className="min-w-[860px]">
@@ -53,16 +53,16 @@ export function ComparisonSection() {
                       {row.apply}
                     </div>
                     <div className="flex items-center gap-2 border-l border-border p-5 text-sm text-muted-foreground">
-                      <StatusIcon value={row.chatgpt} />
-                      {row.chatgpt}
+                      <StatusIcon value={row.prepinsta} />
+                      {row.prepinsta}
                     </div>
                     <div className="flex items-center gap-2 border-l border-border p-5 text-sm text-muted-foreground">
-                      <StatusIcon value={row.canva} />
-                      {row.canva}
+                      <StatusIcon value={row.internshala} />
+                      {row.internshala}
                     </div>
                     <div className="flex items-center gap-2 border-l border-border p-5 text-sm text-muted-foreground">
-                      <StatusIcon value={row.resumeio} />
-                      {row.resumeio}
+                      <StatusIcon value={row.unstop} />
+                      {row.unstop}
                     </div>
                   </div>
                 ))}

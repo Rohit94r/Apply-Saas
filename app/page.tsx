@@ -72,9 +72,9 @@ export default function Home() {
       <SiteHeader />
       <main>
         <HeroSection />
-        <ProductFeaturesSection />
         <PyqsSection />
         <MockInterviewLandingSection />
+        <ProductFeaturesSection />
         <CompanyPrepSection />
         <ComingSoonSection />
         <HowItWorks />

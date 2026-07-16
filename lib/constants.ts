@@ -18,52 +18,66 @@ export const siteConfig = {
 
 export const comparisonRows = [
   {
-    feature: "Builds from one master profile",
-    apply: "Yes, upload once",
-    chatgpt: "Manual copy and paste",
-    canva: "Template-first",
-    resumeio: "Resume-first"
+    feature: "Company-wise PYQs (64+ companies)",
+    apply: "64+ with guides",
+    prepinsta: "50+ companies",
+    internshala: "Limited",
+    unstop: "Competition-focused"
   },
   {
-    feature: "Tailors bullets to each job",
+    feature: "AI mock interview with voice",
+    apply: "ElevenLabs + browser",
+    prepinsta: "No",
+    internshala: "No",
+    unstop: "No"
+  },
+  {
+    feature: "ATS resume tailoring from JD",
     apply: "Automatic role match",
-    chatgpt: "Prompt dependent",
-    canva: "Manual editing",
-    resumeio: "Limited suggestions"
-  },
-  {
-    feature: "ATS keyword optimization",
-    apply: "Built into every generation",
-    chatgpt: "Requires review",
-    canva: "Design focused",
-    resumeio: "Template checks"
+    prepinsta: "No",
+    internshala: "Resume builder only",
+    unstop: "No"
   },
   {
     feature: "One-click PDF export",
     apply: "Clean ATS PDF",
-    chatgpt: "External tool needed",
-    canva: "Visual export",
-    resumeio: "Included"
+    prepinsta: "No resumes",
+    internshala: "Basic PDF",
+    unstop: "No resumes"
   },
   {
-    feature: "Prompt-based tailoring & refine",
-    apply: "Built into tailor flow",
-    chatgpt: "Manual copy and paste",
-    canva: "Manual editing",
-    resumeio: "Limited suggestions"
+    feature: "Application / placement tracker",
+    apply: "Built-in tracker",
+    prepinsta: "No",
+    internshala: "Job listings only",
+    unstop: "Hackathon tracking"
   },
   {
     feature: "Cover letter from same role",
-    apply: "One click from resume card",
-    chatgpt: "Separate prompt",
-    canva: "No",
-    resumeio: "Add-on"
+    apply: "One click from resume",
+    prepinsta: "No",
+    internshala: "No",
+    unstop: "No"
   },
   {
-    feature: "Interview prep from submitted resume",
+    feature: "Interview prep from your resume",
     apply: "Prefilled from profile",
-    chatgpt: "Separate prompt",
-    canva: "No",
-    resumeio: "Basic"
+    prepinsta: "Static content",
+    internshala: "Course-based prep",
+    unstop: "No"
+  },
+  {
+    feature: "Freelancing / find clients tool",
+    apply: "Maps + Justdial leads",
+    prepinsta: "No",
+    internshala: "Internships only",
+    unstop: "No"
+  },
+  {
+    feature: "Pricing for Indian students",
+    apply: "₹50/mo UPI",
+    prepinsta: "Free + paid courses",
+    internshala: "Free + paid courses",
+    unstop: "Free"
   }
 ];

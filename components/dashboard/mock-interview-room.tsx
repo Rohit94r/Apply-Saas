@@ -472,7 +472,7 @@ export function MockInterviewRoom() {
         setSpeaking(false);
         autoListenTimerRef.current = window.setTimeout(() => {
           void startListeningRef.current();
-        }, 400);
+        }, 600);
         return;
       }
 
@@ -483,7 +483,7 @@ export function MockInterviewRoom() {
         setSpeaking(false);
         autoListenTimerRef.current = window.setTimeout(() => {
           void startListeningRef.current();
-        }, 450);
+        }, 800);
       };
 
       void (async () => {
@@ -722,7 +722,7 @@ export function MockInterviewRoom() {
       if (text.trim()) {
         void submitAnswerRef.current();
       }
-    }, 900);
+    }, 5000);
   }, []);
 
   async function transcribeWithWhisper(blob: Blob) {
@@ -740,12 +740,13 @@ export function MockInterviewRoom() {
       }
       const text = String(data.text || "").trim();
       if (!text) {
-        toast.error("Could not hear clear speech — try again");
+        // Don't error — just let user try again or type
+        setLiveCaption("Couldn't capture speech — tap mic to try again or type below");
         return;
       }
       setAnswer(text);
       setLiveCaption(text);
-      toast.success("Answer captured");
+      toast.success("Answer captured — auto-submitting in 5s…");
       scheduleAutoSubmit(text);
     } catch (error) {
       toast.error(
@@ -789,7 +790,8 @@ export function MockInterviewRoom() {
         mediaRecorderRef.current = null;
         chunksRef.current = [];
         if (blob.size < 900) {
-          toast.error("Recording too short — try again");
+          // Don't error — just reset and let user try again
+          setLiveCaption("Recording too short — tap mic to try again or type below");
           return;
         }
         void transcribeWithWhisper(blob);
@@ -844,6 +846,24 @@ export function MockInterviewRoom() {
         const display = `${finalText} ${interim}`.trim();
         setLiveCaption(display);
         setAnswer(display);
+
+        // Reset the silence timer on every speech event — 5s of silence triggers auto-submit
+        if (autoSubmitTimerRef.current) {
+          window.clearTimeout(autoSubmitTimerRef.current);
+        }
+        if (finalText.trim()) {
+          autoSubmitTimerRef.current = window.setTimeout(() => {
+            if (finalTranscriptRef.current.trim() && !submitting && !feedback) {
+              usingWebSpeechRef.current = false;
+              recognitionRef.current = null;
+              setRecording(false);
+              setAnswer(finalTranscriptRef.current);
+              setLiveCaption(finalTranscriptRef.current);
+              toast.success("Answer captured — auto-submitting…");
+              void submitAnswerRef.current();
+            }
+          }, 5000);
+        }
       };
 
       recognition.onerror = (event) => {
@@ -857,28 +877,30 @@ export function MockInterviewRoom() {
       };
 
       recognition.onend = () => {
-        // Browser often ends after a pause — finalize if we still own the session
         if (!usingWebSpeechRef.current) return;
         const text = (
           finalTranscriptRef.current || answerSnapshotRef.current
         ).trim();
         if (text) {
+          // Auto-submit when the browser stops detecting speech and we have text
           usingWebSpeechRef.current = false;
           recognitionRef.current = null;
           setRecording(false);
           setAnswer(text);
           setLiveCaption(text);
-          toast.success("Answer captured");
-          scheduleAutoSubmit(text);
+          toast.success("Answer captured — auto-submitting…");
+          void submitAnswerRef.current();
           return;
         }
-        // Keep listening if nothing captured yet
+        // Keep listening if nothing captured yet — restart recognition
         try {
           recognition.start();
         } catch {
           usingWebSpeechRef.current = false;
           recognitionRef.current = null;
           setRecording(false);
+          // Don't show error — just let user try again or type
+          setLiveCaption("Listening stopped — tap mic to try again or type below");
         }
       };
 
@@ -921,7 +943,8 @@ export function MockInterviewRoom() {
         return;
       }
       if (!finalText) {
-        toast.error("No speech captured — try again");
+        // Don't show error — just reset and let user try again or type
+        setLiveCaption("Tap mic to try again or type your answer below");
         return;
       }
       setAnswer(finalText);
