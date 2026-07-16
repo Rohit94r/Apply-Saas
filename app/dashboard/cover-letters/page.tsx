@@ -5,7 +5,8 @@ import { listCoverLetters } from "@/lib/data/cover-letters";
 
 export default async function CoverLettersPage() {
   const userId = await getCurrentUserId();
-  const coverLetters = await listCoverLetters(userId).catch(() => []);
+  const coverLettersPromise = listCoverLetters(userId).catch(() => []);
+  const coverLetters = await coverLettersPromise;
 
   return (
     <div>

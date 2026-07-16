@@ -21,8 +21,10 @@ export default async function ToolsPage({
     role?: string;
   }>;
 }) {
-  const userId = await getCurrentUserId();
-  const params = await searchParams;
+  const [userId, params] = await Promise.all([
+    getCurrentUserId(),
+    searchParams
+  ]);
   const [masterResume, linkedResume, offers] = await Promise.all([
     getLatestMasterResume(userId).catch(() => null),
     params.resumeId

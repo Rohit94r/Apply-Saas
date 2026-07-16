@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import {
   Camera,
@@ -63,7 +62,6 @@ export function ToolsWorkspace({
   initialResumeContent?: string;
   initialOffers?: OfferRecord[];
 }) {
-  const router = useRouter();
   const [activeTool, setActiveTool] = useState<Tool>(initialTool);
   const [loading, setLoading] = useState(false);
   const [coverLetter, setCoverLetter] = useState("");
@@ -97,7 +95,7 @@ export function ToolsWorkspace({
     setActiveTool(tool);
     const params = new URLSearchParams(window.location.search);
     params.set("tool", tool);
-    router.replace(`/dashboard/tools?${params.toString()}`, { scroll: false });
+    window.history.replaceState(null, "", `/dashboard/tools?${params.toString()}`);
   }
 
   async function requestPhotoPlan(imageUrl: string) {

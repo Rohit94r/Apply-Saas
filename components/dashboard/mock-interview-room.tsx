@@ -1357,13 +1357,13 @@ export function MockInterviewRoom() {
                 After start, the flow is automatic: hear the question → speak →
                 live captions → auto-submit → next question. End call anytime.
               </p>
-              <a
+              <Link
                 href="/dashboard/interview"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
               >
                 Browse 64+ company coding question guides
                 <ArrowLeft className="h-3 w-3 rotate-180" weight="regular" />
-              </a>
+              </Link>
             </CardContent>
           </Card>
 
