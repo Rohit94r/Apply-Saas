@@ -29,7 +29,7 @@ Apply is an AI-powered job-search workspace for **students and early-career deve
 | Styling | **Tailwind CSS**, **Framer Motion** | Layout, motion |
 | Icons | **Phosphor Icons** | Dashboard and landing UI |
 | Primitives | **Radix Slot**, **CVA**, **clsx** | Button variants, utilities |
-| Auth | **Neon Auth** (`@neondatabase/auth`) | Sign-in, protected routes |
+| Auth | **Auth.js** + **Google OAuth** (JWT) | Sign-in; users stored in Postgres |
 | Database | **Neon PostgreSQL** + **Drizzle** | User resumes, guides, master resume |
 | Fallback storage | Local JSON (`.data/resume-store.json`) | Dev/resilience when DB is unreachable |
 | AI | **Groq** (primary), **OpenAI** (fallback) | Resume tailoring, interview guides, cover letters |
@@ -52,14 +52,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-The repo includes a root `.npmrc` with `legacy-peer-deps=true`. `@neondatabase/auth` lists an optional peer of `next@>=16`, but this app stays on Next.js 15; that flag keeps local and Vercel installs from failing with `ERESOLVE`.
+The repo includes a root `.npmrc` with `legacy-peer-deps=true` so installs stay resilient to optional peer conflicts.
 
 ### Required environment variables
 
 | Variable | Used for |
 |----------|----------|
 | `DATABASE_URL` | Neon Postgres (app data via Drizzle) |
-| `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET` | Neon Auth (Managed Better Auth) |
+| `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Auth.js JWT + Google sign-in |
 | `GROQ_API_KEY`, `GROQ_MODEL` | AI generation (recommended) |
 | `OPENAI_API_KEY` | Optional AI fallback |
 | `UPLOADTHING_TOKEN`, `UPLOADTHING_SECRET`, `UPLOADTHING_APP_ID` | Photo uploads |
@@ -111,7 +111,7 @@ See [docs/job-apis-setup.md](docs/job-apis-setup.md) for registration links and 
 | `GET/POST` | `/api/pdf` | Render or download PDF |
 | `GET` | `/api/health` | Health check |
 
-All dashboard APIs are protected by Neon Auth middleware.
+All dashboard APIs are protected by Auth.js middleware (Google JWT session).
 
 ---
 
@@ -124,7 +124,7 @@ Resume-editor/
 ├── app/                          # Next.js App Router — start here for routes
 │   ├── page.tsx                  # Public landing
 │   ├── layout.tsx                # Root layout, Umami
-│   ├── (auth)/                   # Sign-in / sign-up (Neon Auth)
+│   ├── (auth)/                   # Sign-in / sign-up (Google OAuth)
 │   ├── dashboard/                # Authenticated workspace pages
 │   │   ├── page.tsx              # Overview + readiness
 │   │   ├── build/                # Build resume page
@@ -311,9 +311,9 @@ URL builders live in `features/jobs/lib/platform-links.ts`. Curated listings in 
 ### Documentation references
 
 - [Next.js App Router docs](https://nextjs.org/docs/app)
-- [Neon Auth (Managed Better Auth)](https://neon.com/docs/auth/overview)
+- [Auth.js](https://authjs.dev)
 - [Drizzle ORM](https://orm.drizzle.team/docs/overview)
-- [Neon Auth](https://neon.com/docs/auth/overview)
+- [Google OAuth](https://console.cloud.google.com/apis/credentials)
 - [Groq API](https://console.groq.com/docs)
 - [React PDF Renderer](https://react-pdf.org/)
 

@@ -15,7 +15,7 @@ export function UserMenu({
   compact?: boolean;
 }) {
   const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, status } = authClient.useSession();
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
@@ -26,8 +26,7 @@ export function UserMenu({
   async function handleSignOut() {
     setSigningOut(true);
     try {
-      await authClient.signOut();
-      router.push("/");
+      await authClient.signOut({ callbackUrl: "/" });
       router.refresh();
     } finally {
       setSigningOut(false);
@@ -35,7 +34,7 @@ export function UserMenu({
     }
   }
 
-  if (isPending) {
+  if (status === "loading") {
     return (
       <div
         className={cn(

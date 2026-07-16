@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 import { SmokeCursor } from "@/components/smoke-cursor";
 
@@ -68,8 +69,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider>
-      {children}
-    </ThemeProvider>
+    <SessionProvider>
+      <ThemeProvider>{children}</ThemeProvider>
+    </SessionProvider>
   );
 }

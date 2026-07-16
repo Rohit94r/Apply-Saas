@@ -12,10 +12,11 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/client";
 
 export function SettingsPanel() {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, status } = authClient.useSession();
   const user = session?.user;
   const email = user?.email ?? "—";
   const name = user?.name ?? user?.email ?? "—";
+  const loading = status === "loading";
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -30,11 +31,10 @@ export function SettingsPanel() {
               Display name
             </dt>
             <dd className="mt-1 font-semibold text-foreground">
-              {isPending ? "Loading…" : name}
+              {loading ? "Loading…" : name}
             </dd>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Managed by your Neon Auth account. Contact support to update
-              profile details if needed.
+              Synced from Google and stored in your Apply Postgres account.
             </p>
           </div>
           <div>
@@ -43,7 +43,7 @@ export function SettingsPanel() {
               Email
             </dt>
             <dd className="mt-1 font-semibold text-foreground">
-              {isPending ? "Loading…" : email}
+              {loading ? "Loading…" : email}
             </dd>
           </div>
         </dl>

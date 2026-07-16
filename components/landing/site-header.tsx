@@ -15,12 +15,12 @@ export function SiteHeader() {
 }
 
 function AuthAwareSiteHeader() {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, status } = authClient.useSession();
   const isSignedIn = Boolean(session?.user);
 
   return (
     <HeaderShell>
-      {!isPending && isSignedIn ? (
+      {status !== "loading" && isSignedIn ? (
         <>
           <Button asChild size="sm">
             <Link href="/dashboard/generate">

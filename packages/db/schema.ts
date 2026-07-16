@@ -11,7 +11,7 @@ import {
   uuid
 } from "drizzle-orm/pg-core";
 
-/** Auth-provider user id (Neon Auth / legacy Clerk). Text, not a DB FK assumption. */
+/** Auth-provider user id (Google account id from Auth.js JWT). */
 export const users = pgTable(
   "users",
   {

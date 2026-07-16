@@ -73,9 +73,7 @@ You should see `rjdhav67@gmail.com` for both author and committer.
 
 ## npm install / peer deps
 
-There is no `vercel.json` install override. Vercel uses the default `npm install`, which reads the root `.npmrc` (`legacy-peer-deps=true`).
-
-`@neondatabase/auth` declares an optional peer of `next@>=16`. This app stays on Next.js 15; without `legacy-peer-deps`, installs can fail with `ERESOLVE` even though that peer is optional. Do not upgrade to Next 16 solely for this peer unless you intentionally migrate the framework.
+There is no `vercel.json` install override. Vercel uses the default `npm install`, which reads the root `.npmrc` (`legacy-peer-deps=true`) for optional peer conflicts.
 
 ## Production env vars
 
@@ -83,7 +81,7 @@ Copy from `.env.vercel.example` into Vercel → Project → Settings → Environ
 
 Required minimum:
 
-- `DATABASE_URL`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `GROQ_API_KEY`
+- `DATABASE_URL`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `GROQ_API_KEY`
 - `NEXT_PUBLIC_APP_URL=https://apply.neexmeet.com`
 - `ADMIN_EMAIL=rjdhav67@gmail.com`
 - `NEXT_PUBLIC_ADMIN_EMAIL=rjdhav67@gmail.com`

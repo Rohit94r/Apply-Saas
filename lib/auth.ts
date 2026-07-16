@@ -8,12 +8,11 @@ export type AuthSessionUser = {
 };
 
 export async function getSession() {
-  const { data: session } = await auth.getSession();
-  return session;
+  return auth();
 }
 
 export async function getCurrentUser(): Promise<AuthSessionUser | null> {
-  const session = await getSession();
+  const session = await auth();
   const user = session?.user;
   if (!user?.id) {
     return null;

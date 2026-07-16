@@ -1,28 +1,26 @@
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { neonAuthIsConfigured } from "@/lib/auth-config";
-import { auth } from "@/lib/auth/server";
+import { authConfig } from "@/lib/auth/auth.config";
+import { isGoogleAuthConfigured } from "@/lib/auth-config";
 
-const neonMiddleware = auth.middleware({
-  loginUrl: "/sign-in"
-});
+const { auth } = NextAuth(authConfig);
 
-/**
- * Protects /dashboard and authenticated APIs when Neon Auth is configured.
- * Public marketing routes (/ , /blog, /pyqs, /mock-interview, /prepare) are
- * intentionally outside the matcher. /api/auth stays public for Neon Auth.
- *
- * Until NEON_AUTH_BASE_URL is a real Auth URL from the Neon Console,
- * middleware is a no-op so the app still boots with placeholder env.
- * API handlers still enforce auth via getOptionalUserId / getCurrentUserId.
- */
-export default function middleware(request: NextRequest) {
-  if (!neonAuthIsConfigured) {
+export default auth((request) => {
+  if (!isGoogleAuthConfigured()) {
     return NextResponse.next();
   }
 
-  return neonMiddleware(request);
-}
+  const { pathname } = request.nextUrl;
+  const isLoggedIn = Boolean(request.auth);
+
+  if (!isLoggedIn && pathname.startsWith("/dashboard")) {
+    const signInUrl = new URL("/sign-in", request.nextUrl.origin);
+    signInUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: [

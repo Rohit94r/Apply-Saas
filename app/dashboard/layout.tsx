@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DashboardActivityTracker } from "@/components/dashboard/activity-tracker";
 import { getCurrentUser } from "@/lib/auth";
-import { neonAuthIsConfigured } from "@/lib/auth-config";
+import { isGoogleAuthConfigured } from "@/lib/auth-config";
 import { trackDashboardSession } from "@/lib/admin/session";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  if (!neonAuthIsConfigured) {
+  if (!isGoogleAuthConfigured()) {
     return (
       <DashboardShell authConfigured={false}>{children}</DashboardShell>
     );

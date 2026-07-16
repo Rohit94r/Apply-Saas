@@ -5,8 +5,8 @@ import { users } from "@/packages/db/schema";
 import { toUserDocument, type UserDocument } from "@/models/User";
 
 /**
- * Profile from Neon Auth session.
- * `users.user_id` stores the auth-provider user id (Neon Auth).
+ * Profile from Auth.js (Google) session.
+ * `users.user_id` stores the Google account id (JWT subject).
  */
 export async function getCurrentUserProfile() {
   const user = await getCurrentUser();
