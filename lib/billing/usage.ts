@@ -1,9 +1,9 @@
-import { connectToDatabase } from "@/lib/mongodb";
-import { GeneratedResume } from "@/models/GeneratedResume";
-import { DeviceUsage, type DeviceUsageDocument } from "@/models/DeviceUsage";
+import { count, eq } from "drizzle-orm";
 import { FREE_RESUME_LIMIT } from "@/lib/billing/constants";
 import { isSubscriptionExpired } from "@/lib/admin/subscription";
 import { ensureUser, getUserByClerkId, isProUser } from "@/lib/billing/users";
+import { db } from "@/lib/db";
+import { deviceUsage, tailoredResumes } from "@/packages/db/schema";
 
 export class UsageLimitError extends Error {
   readonly code = "USAGE_LIMIT";
@@ -31,8 +31,11 @@ export type BillingStatus = {
 };
 
 async function countUserGenerations(userId: string) {
-  await connectToDatabase();
-  return GeneratedResume.countDocuments({ userId });
+  const [row] = await db
+    .select({ value: count() })
+    .from(tailoredResumes)
+    .where(eq(tailoredResumes.userId, userId));
+  return row?.value ?? 0;
 }
 
 async function getDeviceUsageRecord(deviceId?: string) {
@@ -40,8 +43,9 @@ async function getDeviceUsageRecord(deviceId?: string) {
     return null;
   }
 
-  await connectToDatabase();
-  return DeviceUsage.findOne({ deviceId: deviceId.trim() }).lean<DeviceUsageDocument>();
+  return db.query.deviceUsage.findFirst({
+    where: eq(deviceUsage.deviceId, deviceId.trim())
+  });
 }
 
 export async function getBillingStatus(
@@ -150,13 +154,28 @@ export async function recordGenerationUsage(userId: string, deviceId?: string) {
     return;
   }
 
-  await connectToDatabase();
-  await DeviceUsage.findOneAndUpdate(
-    { deviceId: deviceId.trim() },
-    {
-      $inc: { freeGenerationsUsed: 1 },
-      $addToSet: { linkedUserIds: userId }
-    },
-    { upsert: true, new: true }
-  );
+  const trimmed = deviceId.trim();
+  const existing = await db.query.deviceUsage.findFirst({
+    where: eq(deviceUsage.deviceId, trimmed)
+  });
+
+  if (existing) {
+    const linked = new Set(existing.linkedUserIds ?? []);
+    linked.add(userId);
+    await db
+      .update(deviceUsage)
+      .set({
+        freeGenerationsUsed: existing.freeGenerationsUsed + 1,
+        linkedUserIds: [...linked],
+        updatedAt: new Date()
+      })
+      .where(eq(deviceUsage.deviceId, trimmed));
+    return;
+  }
+
+  await db.insert(deviceUsage).values({
+    deviceId: trimmed,
+    freeGenerationsUsed: 1,
+    linkedUserIds: [userId]
+  });
 }

@@ -4,9 +4,9 @@
 
 ```
 app/
-├── layout.tsx          # Root layout, SEO metadata, Clerk, scripts
+├── layout.tsx          # Root layout, SEO metadata, scripts
 ├── page.tsx            # Landing page
-├── (auth)/             # Clerk sign-in / sign-up
+├── (auth)/             # Neon Auth sign-in / sign-up
 ├── blog/               # SEO blog (content from content/blog/)
 ├── dashboard/          # Protected product UI → see dashboard/README.md
 └── api/                # REST handlers → see api/README.md
@@ -16,8 +16,8 @@ app/
 
 | Area | Auth |
 |------|------|
-| `/`, `/blog/*` | Public |
-| `/dashboard/*`, `/api/*` | Clerk required (see `middleware.ts`) |
+| `/`, `/blog/*`, `/pyqs/*`, `/mock-interview`, `/prepare/*` | Public |
+| `/dashboard/*`, matched `/api/*` | Neon Auth required (see `middleware.ts` + route checks) |
 
 ## SEO files (do not move)
 

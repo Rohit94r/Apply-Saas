@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
 import {
   ArrowRight,
   CreditCard,
@@ -10,12 +9,13 @@ import {
   Warning
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/client";
 
 export function SettingsPanel() {
-  const { user, isLoaded } = useUser();
-  const email = user?.primaryEmailAddress?.emailAddress ?? "—";
-  const name =
-    user?.fullName ?? user?.username ?? user?.primaryEmailAddress?.emailAddress ?? "—";
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+  const email = user?.email ?? "—";
+  const name = user?.name ?? user?.email ?? "—";
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -30,11 +30,11 @@ export function SettingsPanel() {
               Display name
             </dt>
             <dd className="mt-1 font-semibold text-foreground">
-              {isLoaded ? name : "Loading…"}
+              {isPending ? "Loading…" : name}
             </dd>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Managed by your Clerk account. Update it from the avatar menu
-              (Manage account).
+              Managed by your Neon Auth account. Contact support to update
+              profile details if needed.
             </p>
           </div>
           <div>
@@ -43,7 +43,7 @@ export function SettingsPanel() {
               Email
             </dt>
             <dd className="mt-1 font-semibold text-foreground">
-              {isLoaded ? email : "Loading…"}
+              {isPending ? "Loading…" : email}
             </dd>
           </div>
         </dl>
@@ -72,8 +72,7 @@ export function SettingsPanel() {
           <h3 className="font-serif text-2xl">Delete account</h3>
         </div>
         <p className="mt-3 text-sm leading-6 text-rose-950/70">
-          To permanently delete your Apply account and associated data, use
-          Clerk&apos;s Manage account → Security → Delete account, or email{" "}
+          To permanently delete your Apply account and associated data, email{" "}
           <a
             className="font-semibold underline underline-offset-2"
             href="mailto:hello@neexmeet.com"

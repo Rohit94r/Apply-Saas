@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { getOptionalUserId } from "@/lib/auth";
 import { suggestMatcherFilterOptions } from "@/lib/ai/matcher-suggest";
 import {
   searchMatcherFilter,
@@ -9,7 +9,7 @@ import {
 const VALID_FIELDS = new Set<MatcherFilterField>(["role", "city"]);
 
 export async function GET(request: Request) {
-  const { userId } = await auth();
+  const userId = await getOptionalUserId();
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

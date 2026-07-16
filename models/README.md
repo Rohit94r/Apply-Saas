@@ -1,19 +1,19 @@
-# Models — Mongoose schemas
+# Models — compatibility types
 
-One file per MongoDB collection. **Do not query models directly in pages** — use `lib/data/resumes.ts`.
+App storage is **Drizzle + Neon Postgres** (`packages/db/schema.ts`).
+Files here export TypeScript types / helpers for callers that still import `@/models/*`.
+**Do not query models directly in pages** — use `lib/data/*`.
 
-| Model | Collection | Purpose |
-|-------|------------|---------|
-| `User.ts` | users | Clerk ID, Pro plan expiry |
-| `MasterResume.ts` | masterresumes | Uploaded / master profile text |
-| `GeneratedResume.ts` | generatedresumes | Tailored & built versions |
-| `InterviewGuide.ts` | interviewguides | Interview prep plans |
-| `PaymentRequest.ts` | paymentrequests | Manual UPI payments |
-| `DeviceUsage.ts` | deviceusage | Free tier per device |
-| `UserActivity.ts` | useractivity | Feature usage events |
+| File | Maps to table | Purpose |
+|------|---------------|---------|
+| `User.ts` | `users` | Auth user id, Pro plan expiry |
+| `MasterResume.ts` | `resumes` | Uploaded / master profile text |
+| `GeneratedResume.ts` | `tailored_resumes` | Tailored & built versions |
+| `InterviewGuide.ts` | `interview_guides` | Interview prep plans |
+| `PaymentRequest.ts` | `payment_requests` | Manual UPI payments |
+| `DeviceUsage.ts` | `device_usage` | Free tier per device |
+| `UserActivity.ts` | `user_activity` | Feature usage events |
 
-## Phase 2
-
-Replaced by Drizzle schema in `packages/db/` — see `docs/futureupgradation.md`.
+Canonical schema: `packages/db/schema.ts`. Connection: `lib/db/index.ts`.
 
 Types shared with frontend: `types/index.ts`

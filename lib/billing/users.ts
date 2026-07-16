@@ -1,66 +1,78 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { auth } from "@clerk/nextjs/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { User, type UserDocument } from "@/models/User";
+import { eq, sql } from "drizzle-orm";
+import { getCurrentUser } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { users } from "@/packages/db/schema";
+import { toUserDocument, type UserDocument } from "@/models/User";
 
+/**
+ * Profile from Neon Auth session.
+ * `users.user_id` stores the auth-provider user id (Neon Auth).
+ */
 export async function getCurrentUserProfile() {
-  const session = await auth();
+  const user = await getCurrentUser();
 
-  if (!session.userId) {
+  if (!user) {
     throw new Error("Unauthorized");
   }
 
-  const clerkUser = await currentUser();
-
   return {
-    userId: session.userId,
-    name:
-      clerkUser?.fullName ??
-      clerkUser?.username ??
-      clerkUser?.primaryEmailAddress?.emailAddress ??
-      "Apply user",
-    email: clerkUser?.primaryEmailAddress?.emailAddress ?? "",
-    image: clerkUser?.imageUrl
+    userId: user.id,
+    name: user.name || user.email || "Apply user",
+    email: user.email,
+    image: user.image ?? undefined
   };
 }
 
-export async function ensureUser(clerkId: string) {
+export async function ensureUser(authUserId: string) {
   const profile = await getCurrentUserProfile();
 
-  if (profile.userId !== clerkId) {
+  if (profile.userId !== authUserId) {
     throw new Error("Unauthorized");
   }
 
-  await connectToDatabase();
-
-  const existing = await User.findOne({ clerkId }).lean<UserDocument>();
+  const existing = await db.query.users.findFirst({
+    where: eq(users.userId, authUserId)
+  });
 
   if (existing) {
-    await User.updateOne(
-      { clerkId },
-      {
-        $set: {
-          name: profile.name,
-          email: profile.email,
-          ...(profile.image ? { image: profile.image } : {})
-        }
-      }
-    );
-    return User.findOne({ clerkId }).lean<UserDocument>();
+    const [updated] = await db
+      .update(users)
+      .set({
+        name: profile.name,
+        email: profile.email,
+        ...(profile.image ? { image: profile.image } : {}),
+        updatedAt: new Date()
+      })
+      .where(eq(users.userId, authUserId))
+      .returning();
+
+    return updated ? toUserDocument(updated) : toUserDocument(existing);
   }
 
-  return User.create({
-    clerkId,
-    name: profile.name,
-    email: profile.email,
-    image: profile.image,
-    subscriptionPlan: "free"
-  });
+  const [created] = await db
+    .insert(users)
+    .values({
+      userId: authUserId,
+      name: profile.name,
+      email: profile.email,
+      image: profile.image,
+      subscriptionPlan: "free"
+    })
+    .returning();
+
+  return toUserDocument(created);
 }
 
+/** @deprecated Prefer getUserByAuthId */
 export async function getUserByClerkId(clerkId: string) {
-  await connectToDatabase();
-  return User.findOne({ clerkId }).lean<UserDocument>();
+  return getUserByAuthId(clerkId);
+}
+
+export async function getUserByAuthId(authUserId: string) {
+  const row = await db.query.users.findFirst({
+    where: eq(users.userId, authUserId)
+  });
+  return row ? toUserDocument(row) : null;
 }
 
 export function isProUser(user?: UserDocument | null) {
@@ -72,35 +84,66 @@ export function isProUser(user?: UserDocument | null) {
 }
 
 export async function activatePro(
-  clerkId: string,
+  authUserId: string,
   options: { days?: number; discountCode?: string | null } = {}
 ) {
   const days = options.days ?? 30;
   const proExpiresAt = new Date();
   proExpiresAt.setDate(proExpiresAt.getDate() + days);
 
-  await connectToDatabase();
-  await User.updateOne(
-    { clerkId },
-    {
-      $set: {
-        subscriptionPlan: "pro",
-        proExpiresAt,
-        ...(options.discountCode ? { lastDiscountCode: options.discountCode } : {})
-      }
-    }
-  );
+  await db
+    .update(users)
+    .set({
+      subscriptionPlan: "pro",
+      proExpiresAt,
+      ...(options.discountCode ? { lastDiscountCode: options.discountCode } : {}),
+      updatedAt: new Date()
+    })
+    .where(eq(users.userId, authUserId));
 
   return proExpiresAt;
 }
 
-export async function revokePro(clerkId: string) {
-  await connectToDatabase();
-  await User.updateOne(
-    { clerkId },
-    {
-      $set: { subscriptionPlan: "free" },
-      $unset: { proExpiresAt: 1, lastDiscountCode: 1 }
-    }
-  );
+export async function revokePro(authUserId: string) {
+  await db
+    .update(users)
+    .set({
+      subscriptionPlan: "free",
+      proExpiresAt: null,
+      lastDiscountCode: null,
+      updatedAt: new Date()
+    })
+    .where(eq(users.userId, authUserId));
+}
+
+/** Bump login counters (used by admin activity tracking). */
+export async function touchUserLogin(input: {
+  userId: string;
+  name: string;
+  email: string;
+  incrementLoginCount: boolean;
+}) {
+  if (input.incrementLoginCount) {
+    await db
+      .update(users)
+      .set({
+        name: input.name,
+        email: input.email,
+        lastLoginAt: new Date(),
+        loginCount: sql`${users.loginCount} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(users.userId, input.userId));
+    return;
+  }
+
+  await db
+    .update(users)
+    .set({
+      name: input.name,
+      email: input.email,
+      lastLoginAt: new Date(),
+      updatedAt: new Date()
+    })
+    .where(eq(users.userId, input.userId));
 }

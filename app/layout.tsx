@@ -1,10 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Instrument_Serif } from "next/font/google";
 import Script from "next/script";
-import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { clerkIsConfigured, clerkPublishableKey } from "@/lib/clerk-config";
 import { absoluteUrl, seoConfig, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const geist = Geist({
@@ -83,7 +81,8 @@ export default function RootLayout({
 }>) {
   const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC;
   const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-  const document = (
+
+  return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta
@@ -139,15 +138,5 @@ export default function RootLayout({
         />
       </body>
     </html>
-  );
-
-  if (!clerkIsConfigured) {
-    return document;
-  }
-
-  return (
-    <ClerkProvider publishableKey={clerkPublishableKey}>
-      {document}
-    </ClerkProvider>
   );
 }

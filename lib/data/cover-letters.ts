@@ -1,5 +1,6 @@
-import { connectToDatabase } from "@/lib/mongodb";
-import { CoverLetter } from "@/models/CoverLetter";
+import { and, desc, eq } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { coverLetters } from "@/packages/db/schema";
 
 export type CoverLetterRecord = {
   id: string;
@@ -23,64 +24,57 @@ type CreateCoverLetterInput = {
   jobDescription?: string;
 };
 
-function serialize(doc: {
-  _id: { toString(): string };
-  userId: string;
-  company: string;
-  role: string;
-  resumeId?: string;
-  tone?: string;
-  coverLetter: string;
-  jobDescription?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}): CoverLetterRecord {
+function serialize(row: typeof coverLetters.$inferSelect): CoverLetterRecord {
   return {
-    id: doc._id.toString(),
-    userId: doc.userId,
-    company: doc.company,
-    role: doc.role,
-    resumeId: doc.resumeId ?? "",
-    tone: doc.tone ?? "confident",
-    coverLetter: doc.coverLetter,
-    jobDescription: doc.jobDescription ?? "",
-    createdAt: (doc.createdAt ?? new Date()).toISOString(),
-    updatedAt: (doc.updatedAt ?? new Date()).toISOString()
+    id: row.id,
+    userId: row.userId,
+    company: row.company,
+    role: row.role,
+    resumeId: row.resumeId ?? "",
+    tone: row.tone ?? "confident",
+    coverLetter: row.coverLetter,
+    jobDescription: row.jobDescription ?? "",
+    createdAt: (row.createdAt ?? new Date()).toISOString(),
+    updatedAt: (row.updatedAt ?? new Date()).toISOString()
   };
 }
 
 export async function listCoverLetters(userId: string, limit = 20) {
-  await connectToDatabase();
-  const rows = await CoverLetter.find({ userId })
-    .sort({ updatedAt: -1 })
-    .limit(limit)
-    .lean();
-  return rows.map((row) =>
-    serialize(row as unknown as Parameters<typeof serialize>[0])
-  );
+  const rows = await db
+    .select()
+    .from(coverLetters)
+    .where(eq(coverLetters.userId, userId))
+    .orderBy(desc(coverLetters.updatedAt))
+    .limit(limit);
+  return rows.map(serialize);
 }
 
 export async function createCoverLetter(
   userId: string,
   input: CreateCoverLetterInput
 ) {
-  await connectToDatabase();
-  const created = await CoverLetter.create({
-    userId,
-    company: input.company.trim(),
-    role: input.role.trim(),
-    resumeId: input.resumeId?.trim() ?? "",
-    tone: input.tone?.trim() ?? "confident",
-    coverLetter: input.coverLetter,
-    jobDescription: input.jobDescription?.trim() ?? ""
-  });
-  return serialize(created.toObject() as Parameters<typeof serialize>[0]);
+  const [created] = await db
+    .insert(coverLetters)
+    .values({
+      userId,
+      company: input.company.trim(),
+      role: input.role.trim(),
+      resumeId: input.resumeId?.trim() ?? "",
+      tone: input.tone?.trim() ?? "confident",
+      coverLetter: input.coverLetter,
+      jobDescription: input.jobDescription?.trim() ?? ""
+    })
+    .returning();
+  return serialize(created);
 }
 
 export async function deleteCoverLetter(userId: string, id: string) {
-  await connectToDatabase();
-  const result = await CoverLetter.deleteOne({ _id: id, userId });
-  if (result.deletedCount === 0) {
+  const deleted = await db
+    .delete(coverLetters)
+    .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, userId)))
+    .returning({ id: coverLetters.id });
+
+  if (deleted.length === 0) {
     throw new Error("Cover letter not found");
   }
 }

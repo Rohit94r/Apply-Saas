@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DashboardActivityTracker } from "@/components/dashboard/activity-tracker";
+import { getCurrentUser } from "@/lib/auth";
+import { neonAuthIsConfigured } from "@/lib/auth-config";
 import { trackDashboardSession } from "@/lib/admin/session";
 
 export const metadata: Metadata = {
@@ -12,12 +14,23 @@ export const metadata: Metadata = {
   }
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  await auth.protect();
+  if (!neonAuthIsConfigured) {
+    return (
+      <DashboardShell authConfigured={false}>{children}</DashboardShell>
+    );
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/sign-in");
+  }
 
   try {
     await trackDashboardSession();
@@ -26,7 +39,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <DashboardShell>
+    <DashboardShell authConfigured>
       <DashboardActivityTracker />
       {children}
     </DashboardShell>

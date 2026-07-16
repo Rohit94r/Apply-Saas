@@ -1,8 +1,9 @@
+import { eq } from "drizzle-orm";
 import { WHATSAPP_NUMBER } from "@/lib/billing/constants";
 import { resolveDiscountCode } from "@/lib/billing/discount-codes";
 import { sendPaymentNotificationEmail } from "@/lib/billing/email";
-import { connectToDatabase } from "@/lib/mongodb";
-import { PaymentRequest, type PaymentRequestDocument } from "@/models/PaymentRequest";
+import { db } from "@/lib/db";
+import { paymentRequests } from "@/packages/db/schema";
 
 export function buildWhatsAppPaymentUrl(input: {
   userName: string;
@@ -30,20 +31,22 @@ export async function completeManualPayment(input: {
   discountCode?: string;
 }) {
   const pricing = resolveDiscountCode(input.discountCode);
-  await connectToDatabase();
 
-  const payment = await PaymentRequest.create({
-    userId: input.userId,
-    userName: input.userName,
-    userEmail: input.userEmail,
-    deviceId: input.deviceId,
-    amountInr: pricing.amountInr,
-    originalAmountInr: pricing.originalAmountInr,
-    discountCode: pricing.code ?? undefined,
-    status: "pending",
-    proActivated: false,
-    whatsappOpenedAt: new Date()
-  });
+  const [payment] = await db
+    .insert(paymentRequests)
+    .values({
+      userId: input.userId,
+      userName: input.userName,
+      userEmail: input.userEmail,
+      deviceId: input.deviceId,
+      amountInr: pricing.amountInr,
+      originalAmountInr: pricing.originalAmountInr,
+      discountCode: pricing.code ?? undefined,
+      status: "pending",
+      proActivated: false,
+      whatsappOpenedAt: new Date()
+    })
+    .returning();
 
   await sendPaymentNotificationEmail({
     userName: input.userName,
@@ -51,12 +54,12 @@ export async function completeManualPayment(input: {
     amountInr: pricing.amountInr,
     originalAmountInr: pricing.originalAmountInr,
     discountCode: pricing.code,
-    paymentId: payment._id.toString(),
+    paymentId: payment.id,
     userId: input.userId
   });
 
   return {
-    paymentId: payment._id.toString(),
+    paymentId: payment.id,
     amountInr: pricing.amountInr,
     originalAmountInr: pricing.originalAmountInr,
     discountCode: pricing.code,
@@ -72,8 +75,9 @@ export async function completeManualPayment(input: {
 }
 
 export async function confirmPayment(paymentId: string, days = 30) {
-  await connectToDatabase();
-  const payment = await PaymentRequest.findById(paymentId).lean<PaymentRequestDocument>();
+  const payment = await db.query.paymentRequests.findFirst({
+    where: eq(paymentRequests.id, paymentId)
+  });
 
   if (!payment) {
     throw new Error("Payment not found");
@@ -82,27 +86,30 @@ export async function confirmPayment(paymentId: string, days = 30) {
   const { applySubscriptionDays } = await import("@/lib/admin/subscription");
   const result = await applySubscriptionDays(payment.userId, days);
 
-  await PaymentRequest.updateOne(
-    { _id: paymentId },
-    {
-      $set: {
-        status: "confirmed",
-        proActivated: true,
-        proExpiresAt: new Date(result.proExpiresAt)
-      }
-    }
-  );
+  await db
+    .update(paymentRequests)
+    .set({
+      status: "confirmed",
+      proActivated: true,
+      proExpiresAt: new Date(result.proExpiresAt),
+      updatedAt: new Date()
+    })
+    .where(eq(paymentRequests.id, paymentId));
 
   return result;
 }
 
 export async function rejectPayment(paymentId: string) {
-  await connectToDatabase();
-  const payment = await PaymentRequest.findById(paymentId).lean<PaymentRequestDocument>();
+  const payment = await db.query.paymentRequests.findFirst({
+    where: eq(paymentRequests.id, paymentId)
+  });
 
   if (!payment) {
     throw new Error("Payment not found");
   }
 
-  await PaymentRequest.updateOne({ _id: paymentId }, { $set: { status: "rejected" } });
+  await db
+    .update(paymentRequests)
+    .set({ status: "rejected", updatedAt: new Date() })
+    .where(eq(paymentRequests.id, paymentId));
 }

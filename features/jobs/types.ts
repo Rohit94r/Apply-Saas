@@ -42,7 +42,7 @@ export type ExperienceBand =
  * Built by `features/jobs/lib/build-profile.ts`.
  */
 export type JobSeekerProfile = {
-  /** Clerk user id — for logging/analytics only in API responses. */
+  /** Auth user id — for logging/analytics only in API responses. */
   userId: string;
   /** Human-readable headline shown in the job search banner. */
   headline: string;

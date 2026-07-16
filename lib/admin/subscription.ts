@@ -1,5 +1,7 @@
-import { connectToDatabase } from "@/lib/mongodb";
-import { User, type UserDocument } from "@/models/User";
+import { eq, sql } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { toUserDocument, type UserDocument } from "@/models/User";
+import { users } from "@/packages/db/schema";
 
 export function getDaysRemaining(proExpiresAt?: Date | null) {
   if (!proExpiresAt) {
@@ -25,24 +27,25 @@ export async function setUserSubscriptionByEmail(email: string, days: number) {
     throw new Error("Days must be between 1 and 365");
   }
 
-  await connectToDatabase();
-
-  const normalized = email.trim();
-  const user = await User.findOne({
-    email: { $regex: new RegExp(`^${normalized.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") }
-  }).lean<UserDocument>();
+  const normalized = email.trim().toLowerCase();
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(sql`lower(${users.email}) = ${normalized}`)
+    .limit(1);
 
   if (!user) {
     throw new Error("User not found. They must sign in once before you can activate Pro.");
   }
 
-  return applySubscriptionDays(user.clerkId, days);
+  return applySubscriptionDays(user.userId, days);
 }
 
 export async function applySubscriptionDays(clerkId: string, days: number) {
-  await connectToDatabase();
-
-  const user = await User.findOne({ clerkId }).lean<UserDocument>();
+  const row = await db.query.users.findFirst({
+    where: eq(users.userId, clerkId)
+  });
+  const user = row ? toUserDocument(row) : null;
   const now = new Date();
   const currentExpiry =
     user?.proExpiresAt && new Date(user.proExpiresAt) > now
@@ -52,15 +55,14 @@ export async function applySubscriptionDays(clerkId: string, days: number) {
   const proExpiresAt = new Date(currentExpiry);
   proExpiresAt.setDate(proExpiresAt.getDate() + days);
 
-  await User.updateOne(
-    { clerkId },
-    {
-      $set: {
-        subscriptionPlan: "pro",
-        proExpiresAt
-      }
-    }
-  );
+  await db
+    .update(users)
+    .set({
+      subscriptionPlan: "pro",
+      proExpiresAt,
+      updatedAt: new Date()
+    })
+    .where(eq(users.userId, clerkId));
 
   return {
     clerkId,
@@ -71,8 +73,9 @@ export async function applySubscriptionDays(clerkId: string, days: number) {
 }
 
 export async function setUserSubscriptionByClerkId(clerkId: string, days: number) {
-  await connectToDatabase();
-  const user = await User.findOne({ clerkId }).lean<UserDocument>();
+  const user = await db.query.users.findFirst({
+    where: eq(users.userId, clerkId)
+  });
 
   if (!user) {
     throw new Error("User not found");

@@ -29,9 +29,9 @@ Apply is an AI-powered job-search workspace for **students and early-career deve
 | Styling | **Tailwind CSS**, **Framer Motion** | Layout, motion |
 | Icons | **Phosphor Icons** | Dashboard and landing UI |
 | Primitives | **Radix Slot**, **CVA**, **clsx** | Button variants, utilities |
-| Auth | **Clerk** (`@clerk/nextjs`) | Sign-in, protected routes |
-| Database | **MongoDB** + **Mongoose** | User resumes, guides, master resume |
-| Fallback storage | Local JSON (`.data/resume-store.json`) | Dev/resilience when MongoDB is down |
+| Auth | **Neon Auth** (`@neondatabase/auth`) | Sign-in, protected routes |
+| Database | **Neon PostgreSQL** + **Drizzle** | User resumes, guides, master resume |
+| Fallback storage | Local JSON (`.data/resume-store.json`) | Dev/resilience when DB is unreachable |
 | AI | **Groq** (primary), **OpenAI** (fallback) | Resume tailoring, interview guides, cover letters |
 | Validation | **Zod** | API request schemas |
 | PDF | **@react-pdf/renderer**, **pdf-lib**, **puppeteer-core** | Generate and patch PDFs |
@@ -56,8 +56,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Variable | Used for |
 |----------|----------|
-| `MONGODB_URI` | Persist resumes and interview guides |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` | Authentication |
+| `DATABASE_URL` | Neon Postgres (app data via Drizzle) |
+| `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET` | Neon Auth (Managed Better Auth) |
 | `GROQ_API_KEY`, `GROQ_MODEL` | AI generation (recommended) |
 | `OPENAI_API_KEY` | Optional AI fallback |
 | `UPLOADTHING_TOKEN`, `UPLOADTHING_SECRET`, `UPLOADTHING_APP_ID` | Photo uploads |
@@ -109,7 +109,7 @@ See [docs/job-apis-setup.md](docs/job-apis-setup.md) for registration links and 
 | `GET/POST` | `/api/pdf` | Render or download PDF |
 | `GET` | `/api/health` | Health check |
 
-All dashboard APIs are protected by Clerk middleware.
+All dashboard APIs are protected by Neon Auth middleware.
 
 ---
 
@@ -121,8 +121,8 @@ Read the repo top-down in this order if you are new to the codebase.
 Resume-editor/
 ├── app/                          # Next.js App Router — start here for routes
 │   ├── page.tsx                  # Public landing
-│   ├── layout.tsx                # Root layout, Clerk, Umami
-│   ├── (auth)/                   # Sign-in / sign-up (Clerk)
+│   ├── layout.tsx                # Root layout, Umami
+│   ├── (auth)/                   # Sign-in / sign-up (Neon Auth)
 │   ├── dashboard/                # Authenticated workspace pages
 │   │   ├── page.tsx              # Overview + readiness
 │   │   ├── build/                # Build resume page
@@ -309,8 +309,9 @@ URL builders live in `features/jobs/lib/platform-links.ts`. Curated listings in 
 ### Documentation references
 
 - [Next.js App Router docs](https://nextjs.org/docs/app)
-- [Clerk Next.js integration](https://clerk.com/docs/quickstarts/nextjs)
-- [Mongoose docs](https://mongoosejs.com/docs/)
+- [Neon Auth (Managed Better Auth)](https://neon.com/docs/auth/overview)
+- [Drizzle ORM](https://orm.drizzle.team/docs/overview)
+- [Neon Auth](https://neon.com/docs/auth/overview)
 - [Groq API](https://console.groq.com/docs)
 - [React PDF Renderer](https://react-pdf.org/)
 

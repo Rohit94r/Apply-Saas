@@ -1,10 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { connectToDatabase } from "@/lib/mongodb";
+import { and, desc, eq } from "drizzle-orm";
+import { assertDatabaseReady, db } from "@/lib/db";
 import { writableDataPath } from "@/lib/server/storage";
-import { GeneratedResume } from "@/models/GeneratedResume";
-import { InterviewGuide } from "@/models/InterviewGuide";
-import { MasterResume as MasterResumeModel } from "@/models/MasterResume";
+import {
+  interviewGuides,
+  resumes,
+  tailoredResumes,
+  type GeneratedContentJson
+} from "@/packages/db/schema";
 import type {
   GenerateResumeInput,
   InterviewGuideInput,
@@ -19,58 +23,10 @@ import type {
   ResumeSourceLine
 } from "@/types";
 
-type IdLike = {
-  toString(): string;
-};
-
 type LocalStore = {
   masterResumes: MasterResumeType[];
   generatedResumes: GeneratedResumeType[];
   interviewGuides: InterviewGuideType[];
-};
-
-type MasterResumeRecord = {
-  _id: IdLike;
-  userId: string;
-  title?: string;
-  sourceName?: string;
-  sourceUrl?: string;
-  sourceFilePath?: string;
-  sourceFileType?: string;
-  sourceLayout?: ResumeSourceLine[];
-  rawText?: string;
-  summary?: string;
-  education?: string[];
-  skills?: MasterResumeType["skills"];
-  projects?: MasterResumeType["projects"];
-  experience?: MasterResumeType["experience"];
-  updatedAt?: Date;
-};
-
-type GeneratedResumeRecord = {
-  _id: IdLike;
-  userId: string;
-  originalResumeId?: IdLike;
-  company: string;
-  role: string;
-  atsScore?: number;
-  status?: "draft" | "ready" | "downloaded";
-  keywords?: string[];
-  generatedContent: {
-    summary: string;
-    skills: string[];
-    bullets: string[];
-    beforeText?: string;
-    afterText?: string;
-    changeSummary?: string[];
-    beforeAtsScore?: number;
-    template?: "classic" | "modern" | "compact";
-    sourceFilePath?: string;
-    sourceFileType?: string;
-    sourceLayout?: ResumeSourceLine[];
-  };
-  pdfUrl?: string;
-  createdAt?: Date;
 };
 
 type MasterResumeSourceInput = MasterResumeInput & {
@@ -79,34 +35,19 @@ type MasterResumeSourceInput = MasterResumeInput & {
   sourceLayout?: ResumeSourceLine[];
 };
 
-type InterviewGuideRecord = {
-  _id: IdLike;
-  userId: string;
-  company: string;
-  role: string;
-  companyAnalysis?: string;
-  generatedQuestions?: string[];
-  prepNotes?: string[];
-  technicalTopics?: string[];
-  roadmap?: InterviewGuideType["roadmap"];
-  codingQuestions?: InterviewGuideType["codingQuestions"];
-  companyQuestions?: string[];
-  behavioralQuestions?: string[];
-  mockPlan?: string[];
-  freeResources?: InterviewGuideType["freeResources"];
-  focusAreas?: string[];
-  timeline?: string;
-  experienceLevel?: string;
-  preferredLanguage?: string;
-  createdAt?: Date;
-};
-
 const localStorePath =
   process.env.RESUME_LOCAL_STORE_PATH ??
   writableDataPath("resume-store.json");
 let databaseUnavailableUntil = 0;
 
-function toISOString(value?: Date) {
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isUuid(id: string) {
+  return UUID_RE.test(id);
+}
+
+function toISOString(value?: Date | null) {
   return value ? value.toISOString() : new Date().toISOString();
 }
 
@@ -155,7 +96,7 @@ async function withDatabaseOrLocal<T>(
   }
 
   try {
-    await connectToDatabase();
+    assertDatabaseReady();
     return await databaseOperation();
   } catch {
     databaseUnavailableUntil = Date.now() + 60_000;
@@ -164,23 +105,23 @@ async function withDatabaseOrLocal<T>(
 }
 
 export function serializeMasterResume(
-  resume: MasterResumeRecord
+  resume: typeof resumes.$inferSelect
 ): MasterResumeType {
   return {
-    id: resume._id.toString(),
+    id: resume.id,
     userId: resume.userId,
     title: resume.title ?? "Master resume",
-    sourceName: resume.sourceName,
-    sourceUrl: resume.sourceUrl,
-    sourceFilePath: resume.sourceFilePath,
-    sourceFileType: resume.sourceFileType,
-    sourceLayout: resume.sourceLayout ?? [],
+    sourceName: resume.sourceName ?? undefined,
+    sourceUrl: resume.sourceUrl ?? undefined,
+    sourceFilePath: resume.sourceFilePath ?? undefined,
+    sourceFileType: resume.sourceFileType ?? undefined,
+    sourceLayout: (resume.sourceLayout as ResumeSourceLine[] | null) ?? [],
     rawText: resume.rawText ?? "",
     summary: resume.summary ?? "",
     education: resume.education ?? [],
-    skills: resume.skills ?? [],
-    projects: resume.projects ?? [],
-    experience: resume.experience ?? [],
+    skills: (resume.skills as MasterResumeType["skills"]) ?? [],
+    projects: (resume.projects as MasterResumeType["projects"]) ?? [],
+    experience: (resume.experience as MasterResumeType["experience"]) ?? [],
     updatedAt: toISOString(resume.updatedAt)
   };
 }
@@ -230,28 +171,28 @@ export function masterResumeToText(resume?: MasterResumeType | null) {
 }
 
 export function serializeGeneratedResume(
-  resume: GeneratedResumeRecord
+  resume: typeof tailoredResumes.$inferSelect
 ): GeneratedResumeType {
   return {
-    id: resume._id.toString(),
+    id: resume.id,
     userId: resume.userId,
-    originalResumeId: resume.originalResumeId?.toString(),
+    originalResumeId: resume.originalResumeId ?? undefined,
     company: resume.company,
     role: resume.role,
     atsScore: resume.atsScore ?? 0,
     status: resume.status ?? "ready",
     keywords: resume.keywords ?? [],
-    generatedContent: resume.generatedContent,
-    pdfUrl: resume.pdfUrl,
+    generatedContent: resume.generatedContent as GeneratedResumeType["generatedContent"],
+    pdfUrl: resume.pdfUrl ?? undefined,
     createdAt: toISOString(resume.createdAt)
   };
 }
 
 export function serializeInterviewGuide(
-  guide: InterviewGuideRecord
+  guide: typeof interviewGuides.$inferSelect
 ): InterviewGuideType {
   return {
-    id: guide._id.toString(),
+    id: guide.id,
     userId: guide.userId,
     company: guide.company,
     role: guide.role,
@@ -259,12 +200,14 @@ export function serializeInterviewGuide(
     generatedQuestions: guide.generatedQuestions ?? [],
     prepNotes: guide.prepNotes ?? [],
     technicalTopics: guide.technicalTopics ?? [],
-    roadmap: guide.roadmap ?? [],
-    codingQuestions: guide.codingQuestions ?? [],
+    roadmap: (guide.roadmap as InterviewGuideType["roadmap"]) ?? [],
+    codingQuestions:
+      (guide.codingQuestions as InterviewGuideType["codingQuestions"]) ?? [],
     companyQuestions: guide.companyQuestions ?? [],
     behavioralQuestions: guide.behavioralQuestions ?? [],
     mockPlan: guide.mockPlan ?? [],
-    freeResources: guide.freeResources ?? [],
+    freeResources:
+      (guide.freeResources as InterviewGuideType["freeResources"]) ?? [],
     focusAreas: guide.focusAreas ?? [],
     timeline: guide.timeline ?? "",
     experienceLevel: guide.experienceLevel ?? "",
@@ -276,9 +219,12 @@ export function serializeInterviewGuide(
 export async function getLatestMasterResume(userId: string) {
   return withDatabaseOrLocal(
     async () => {
-      const resume = await MasterResumeModel.findOne({ userId })
-        .sort({ updatedAt: -1 })
-        .lean<MasterResumeRecord | null>();
+      const [resume] = await db
+        .select()
+        .from(resumes)
+        .where(eq(resumes.userId, userId))
+        .orderBy(desc(resumes.updatedAt))
+        .limit(1);
 
       return resume ? serializeMasterResume(resume) : null;
     },
@@ -300,9 +246,10 @@ export async function getLatestMasterResume(userId: string) {
 export async function getMasterResume(userId: string, resumeId: string) {
   return withDatabaseOrLocal(
     async () => {
-      const resume = await MasterResumeModel.findOne({ _id: resumeId, userId }).lean<
-        MasterResumeRecord | null
-      >();
+      if (!isUuid(resumeId)) return null;
+      const resume = await db.query.resumes.findFirst({
+        where: and(eq(resumes.id, resumeId), eq(resumes.userId, userId))
+      });
 
       return resume ? serializeMasterResume(resume) : null;
     },
@@ -324,39 +271,55 @@ export async function upsertMasterResume(
 ) {
   return withDatabaseOrLocal(
     async () => {
-      const setPayload: Record<string, unknown> = {
+      const existing = await db.query.resumes.findFirst({
+        where: eq(resumes.userId, userId),
+        orderBy: [desc(resumes.updatedAt)]
+      });
+
+      const setPayload = {
         title: input.title?.trim() || "Master resume",
         sourceName: input.sourceName?.trim(),
         sourceUrl: input.sourceUrl,
-        rawText: input.rawText.trim()
+        rawText: input.rawText.trim(),
+        ...(input.sourceFilePath !== undefined
+          ? { sourceFilePath: input.sourceFilePath }
+          : {}),
+        ...(input.sourceFileType !== undefined
+          ? { sourceFileType: input.sourceFileType }
+          : {}),
+        ...(input.sourceLayout !== undefined
+          ? { sourceLayout: input.sourceLayout }
+          : {}),
+        updatedAt: new Date()
       };
 
-      if (input.sourceFilePath !== undefined) {
-        setPayload.sourceFilePath = input.sourceFilePath;
+      if (existing) {
+        const [updated] = await db
+          .update(resumes)
+          .set(setPayload)
+          .where(eq(resumes.id, existing.id))
+          .returning();
+
+        if (!updated) {
+          throw new Error("Unable to save master resume");
+        }
+
+        return serializeMasterResume(updated);
       }
 
-      if (input.sourceFileType !== undefined) {
-        setPayload.sourceFileType = input.sourceFileType;
-      }
+      const [created] = await db
+        .insert(resumes)
+        .values({
+          userId,
+          ...setPayload
+        })
+        .returning();
 
-      if (input.sourceLayout !== undefined) {
-        setPayload.sourceLayout = input.sourceLayout;
-      }
-
-      const resume = await MasterResumeModel.findOneAndUpdate(
-        { userId },
-        {
-          $set: setPayload,
-          $setOnInsert: { userId }
-        },
-        { new: true, upsert: true }
-      ).lean<MasterResumeRecord>();
-
-      if (!resume) {
+      if (!created) {
         throw new Error("Unable to save master resume");
       }
 
-      return serializeMasterResume(resume);
+      return serializeMasterResume(created);
     },
     async () => {
       const store = await readLocalStore();
@@ -397,7 +360,7 @@ export async function upsertMasterResume(
 export async function createGeneratedResume(
   userId: string,
   input: GenerateResumeInput,
-  generatedContent: GeneratedResumeRecord["generatedContent"] & {
+  generatedContent: GeneratedContentJson & {
     keywords: string[];
     atsScore: number;
   },
@@ -405,30 +368,38 @@ export async function createGeneratedResume(
 ) {
   return withDatabaseOrLocal(
     async () => {
-      const resume = await GeneratedResume.create({
-        userId,
-        originalResumeId,
-        company: input.company,
-        role: input.role,
-        atsScore: generatedContent.atsScore,
-        keywords: generatedContent.keywords,
-        status: "ready",
-            generatedContent: {
-              summary: generatedContent.summary,
-              skills: generatedContent.skills,
-              bullets: generatedContent.bullets,
-              beforeText: generatedContent.beforeText,
-              afterText: generatedContent.afterText,
-              changeSummary: generatedContent.changeSummary,
-              beforeAtsScore: generatedContent.beforeAtsScore,
-              template: generatedContent.template,
-              sourceFilePath: generatedContent.sourceFilePath,
-              sourceFileType: generatedContent.sourceFileType,
-              sourceLayout: generatedContent.sourceLayout
-            }
-          });
+      const content: GeneratedContentJson = {
+        summary: generatedContent.summary,
+        skills: generatedContent.skills,
+        bullets: generatedContent.bullets,
+        beforeText: generatedContent.beforeText,
+        afterText: generatedContent.afterText,
+        changeSummary: generatedContent.changeSummary,
+        beforeAtsScore: generatedContent.beforeAtsScore,
+        template: generatedContent.template,
+        sourceFilePath: generatedContent.sourceFilePath,
+        sourceFileType: generatedContent.sourceFileType,
+        sourceLayout: generatedContent.sourceLayout
+      };
 
-      return serializeGeneratedResume(resume.toObject() as GeneratedResumeRecord);
+      const [resume] = await db
+        .insert(tailoredResumes)
+        .values({
+          userId,
+          originalResumeId:
+            originalResumeId && isUuid(originalResumeId)
+              ? originalResumeId
+              : undefined,
+          company: input.company,
+          role: input.role,
+          atsScore: generatedContent.atsScore,
+          keywords: generatedContent.keywords,
+          status: "ready",
+          generatedContent: content
+        })
+        .returning();
+
+      return serializeGeneratedResume(resume);
     },
     async () => {
       const store = await readLocalStore();
@@ -452,7 +423,9 @@ export async function createGeneratedResume(
           template: generatedContent.template,
           sourceFilePath: generatedContent.sourceFilePath,
           sourceFileType: generatedContent.sourceFileType,
-          sourceLayout: generatedContent.sourceLayout
+          sourceLayout: generatedContent.sourceLayout as
+            | ResumeSourceLine[]
+            | undefined
         },
         createdAt: new Date().toISOString()
       };
@@ -467,12 +440,14 @@ export async function createGeneratedResume(
 export async function getGeneratedResumes(userId: string, limit = 30) {
   return withDatabaseOrLocal(
     async () => {
-      const resumes = await GeneratedResume.find({ userId })
-        .sort({ createdAt: -1 })
-        .limit(limit)
-        .lean<GeneratedResumeRecord[]>();
+      const rows = await db
+        .select()
+        .from(tailoredResumes)
+        .where(eq(tailoredResumes.userId, userId))
+        .orderBy(desc(tailoredResumes.createdAt))
+        .limit(limit);
 
-      return resumes.map(serializeGeneratedResume);
+      return rows.map(serializeGeneratedResume);
     },
     async () => {
       const store = await readLocalStore();
@@ -491,9 +466,13 @@ export async function getGeneratedResumes(userId: string, limit = 30) {
 export async function getGeneratedResume(userId: string, resumeId: string) {
   return withDatabaseOrLocal(
     async () => {
-      const resume = await GeneratedResume.findOne({ _id: resumeId, userId }).lean<
-        GeneratedResumeRecord | null
-      >();
+      if (!isUuid(resumeId)) return null;
+      const resume = await db.query.tailoredResumes.findFirst({
+        where: and(
+          eq(tailoredResumes.id, resumeId),
+          eq(tailoredResumes.userId, userId)
+        )
+      });
 
       return resume ? serializeGeneratedResume(resume) : null;
     },
@@ -516,25 +495,46 @@ export async function updateGeneratedResume(
 ) {
   return withDatabaseOrLocal(
     async () => {
-      const resume = await GeneratedResume.findOneAndUpdate(
-        { _id: resumeId, userId },
-        {
-          $set: {
-            atsScore: input.atsScore,
-            keywords: input.keywords ?? [],
-            "generatedContent.summary": input.summary,
-            "generatedContent.skills": input.skills,
-            "generatedContent.bullets": input.bullets,
-            "generatedContent.beforeText": input.beforeText,
-            "generatedContent.afterText": input.afterText,
-            "generatedContent.changeSummary": input.changeSummary ?? [],
-            "generatedContent.beforeAtsScore": input.beforeAtsScore,
-            "generatedContent.template": input.template,
-            status: "ready"
-          }
-        },
-        { new: true }
-      ).lean<GeneratedResumeRecord | null>();
+      if (!isUuid(resumeId)) return null;
+
+      const existing = await db.query.tailoredResumes.findFirst({
+        where: and(
+          eq(tailoredResumes.id, resumeId),
+          eq(tailoredResumes.userId, userId)
+        )
+      });
+
+      if (!existing) return null;
+
+      const prev = existing.generatedContent;
+      const nextContent: GeneratedContentJson = {
+        ...prev,
+        summary: input.summary,
+        skills: input.skills,
+        bullets: input.bullets,
+        beforeText: input.beforeText ?? prev.beforeText,
+        afterText: input.afterText ?? prev.afterText,
+        changeSummary: input.changeSummary ?? [],
+        beforeAtsScore: input.beforeAtsScore ?? prev.beforeAtsScore,
+        template: input.template ?? prev.template
+      };
+
+      const [resume] = await db
+        .update(tailoredResumes)
+        .set({
+          atsScore: input.atsScore,
+          keywords: input.keywords ?? [],
+          generatedContent: nextContent,
+          status: "ready",
+          updatedAt: new Date()
+        })
+        .where(
+          and(
+            eq(tailoredResumes.id, resumeId),
+            eq(tailoredResumes.userId, userId)
+          )
+        )
+        .returning();
 
       return resume ? serializeGeneratedResume(resume) : null;
     },
@@ -590,10 +590,16 @@ export async function updateGeneratedResume(
 export async function markResumeDownloaded(userId: string, resumeId: string) {
   return withDatabaseOrLocal(
     async () => {
-      await GeneratedResume.updateOne(
-        { _id: resumeId, userId },
-        { $set: { status: "downloaded" } }
-      );
+      if (!isUuid(resumeId)) return;
+      await db
+        .update(tailoredResumes)
+        .set({ status: "downloaded", updatedAt: new Date() })
+        .where(
+          and(
+            eq(tailoredResumes.id, resumeId),
+            eq(tailoredResumes.userId, userId)
+          )
+        );
     },
     async () => {
       const store = await readLocalStore();
@@ -622,27 +628,30 @@ export async function createInterviewGuide(
 ) {
   return withDatabaseOrLocal(
     async () => {
-      const created = await InterviewGuide.create({
-        userId,
-        company: input.company,
-        role: input.role,
-        companyAnalysis: guide.companyAnalysis,
-        generatedQuestions: guide.generatedQuestions,
-        prepNotes: guide.prepNotes,
-        technicalTopics: guide.technicalTopics,
-        roadmap: guide.roadmap,
-        codingQuestions: guide.codingQuestions,
-        companyQuestions: guide.companyQuestions,
-        behavioralQuestions: guide.behavioralQuestions,
-        mockPlan: guide.mockPlan,
-        freeResources: guide.freeResources,
-        focusAreas: input.focusAreas,
-        timeline: input.timeline,
-        experienceLevel: input.experienceLevel,
-        preferredLanguage: input.preferredLanguage
-      });
+      const [created] = await db
+        .insert(interviewGuides)
+        .values({
+          userId,
+          company: input.company,
+          role: input.role,
+          companyAnalysis: guide.companyAnalysis,
+          generatedQuestions: guide.generatedQuestions,
+          prepNotes: guide.prepNotes,
+          technicalTopics: guide.technicalTopics,
+          roadmap: guide.roadmap,
+          codingQuestions: guide.codingQuestions,
+          companyQuestions: guide.companyQuestions,
+          behavioralQuestions: guide.behavioralQuestions,
+          mockPlan: guide.mockPlan,
+          freeResources: guide.freeResources,
+          focusAreas: input.focusAreas,
+          timeline: input.timeline,
+          experienceLevel: input.experienceLevel,
+          preferredLanguage: input.preferredLanguage
+        })
+        .returning();
 
-      return serializeInterviewGuide(created.toObject() as InterviewGuideRecord);
+      return serializeInterviewGuide(created);
     },
     async () => {
       const store = await readLocalStore();
@@ -678,10 +687,12 @@ export async function createInterviewGuide(
 export async function getInterviewGuides(userId: string, limit = 20) {
   return withDatabaseOrLocal(
     async () => {
-      const guides = await InterviewGuide.find({ userId })
-        .sort({ createdAt: -1 })
-        .limit(limit)
-        .lean<InterviewGuideRecord[]>();
+      const guides = await db
+        .select()
+        .from(interviewGuides)
+        .where(eq(interviewGuides.userId, userId))
+        .orderBy(desc(interviewGuides.createdAt))
+        .limit(limit);
 
       return guides.map(serializeInterviewGuide);
     },
@@ -700,21 +711,21 @@ export async function getInterviewGuides(userId: string, limit = 20) {
 }
 
 export function buildDashboardStats(
-  resumes: GeneratedResumeType[],
+  resumesList: GeneratedResumeType[],
   guides: InterviewGuideType[]
 ): DashboardStat[] {
-  const atsAverage = resumes.length
+  const atsAverage = resumesList.length
     ? Math.round(
-        resumes.reduce((total, resume) => total + resume.atsScore, 0) /
-          resumes.length
+        resumesList.reduce((total, resume) => total + resume.atsScore, 0) /
+          resumesList.length
       )
     : 0;
 
-  const downloadedCount = resumes.filter(
+  const downloadedCount = resumesList.filter(
     (resume) => resume.status === "downloaded"
   ).length;
 
-  const improvedCount = resumes.filter(
+  const improvedCount = resumesList.filter(
     (resume) =>
       resume.generatedContent.beforeAtsScore !== undefined &&
       resume.atsScore > (resume.generatedContent.beforeAtsScore ?? 0)
@@ -722,7 +733,7 @@ export function buildDashboardStats(
 
   const avgImprovement = improvedCount
     ? Math.round(
-        resumes
+        resumesList
           .filter((r) => r.generatedContent.beforeAtsScore !== undefined)
           .reduce(
             (total, r) =>
@@ -736,14 +747,14 @@ export function buildDashboardStats(
     {
       label: "Keyword match avg",
       value: `${atsAverage}%`,
-      detail: resumes.length
-        ? `Across ${resumes.length} generated resume${resumes.length === 1 ? "" : "s"}`
+      detail: resumesList.length
+        ? `Across ${resumesList.length} generated resume${resumesList.length === 1 ? "" : "s"}`
         : "Generate a resume to start tracking score quality",
       trend: avgImprovement > 0 ? `+${avgImprovement}% avg lift` : undefined
     },
     {
       label: "Resumes ready",
-      value: String(resumes.length),
+      value: String(resumesList.length),
       detail: downloadedCount
         ? `${downloadedCount} exported as PDF`
         : "Saved versions appear here after generation"
@@ -758,7 +769,7 @@ export function buildDashboardStats(
     {
       label: "Tailored versions",
       value: String(
-        resumes.filter((r) => r.company !== "Resume Builder").length
+        resumesList.filter((r) => r.company !== "Resume Builder").length
       ),
       detail: "Role-specific resumes tailored to job descriptions"
     }
@@ -775,12 +786,12 @@ export type ActivityItem = {
 };
 
 export function buildActivityFeed(
-  resumes: GeneratedResumeType[],
+  resumesList: GeneratedResumeType[],
   guides: InterviewGuideType[],
   limit = 6
 ): ActivityItem[] {
   const items: ActivityItem[] = [
-    ...resumes.map((resume) => ({
+    ...resumesList.map((resume) => ({
       id: resume.id,
       type: (resume.company === "Resume Builder"
         ? "build"
@@ -811,15 +822,15 @@ export function buildActivityFeed(
 }
 
 export function buildReadinessScore(
-  resumes: GeneratedResumeType[],
+  resumesList: GeneratedResumeType[],
   guides: InterviewGuideType[]
 ) {
-  const hasResume = resumes.length > 0;
-  const hasTailored = resumes.some((r) => r.company !== "Resume Builder");
+  const hasResume = resumesList.length > 0;
+  const hasTailored = resumesList.some((r) => r.company !== "Resume Builder");
   const hasGuide = guides.length > 0;
-  const avgAts = resumes.length
+  const avgAts = resumesList.length
     ? Math.round(
-        resumes.reduce((t, r) => t + r.atsScore, 0) / resumes.length
+        resumesList.reduce((t, r) => t + r.atsScore, 0) / resumesList.length
       )
     : 0;
 
@@ -838,10 +849,10 @@ export function buildReadinessScore(
   return { score, steps, avgAts };
 }
 
-export function buildKeywordCoverage(resumes: GeneratedResumeType[]) {
+export function buildKeywordCoverage(resumesList: GeneratedResumeType[]) {
   const counts = new Map<string, number>();
 
-  for (const resume of resumes) {
+  for (const resume of resumesList) {
     for (const keyword of resume.keywords) {
       counts.set(keyword, (counts.get(keyword) ?? 0) + 1);
     }
@@ -852,6 +863,6 @@ export function buildKeywordCoverage(resumes: GeneratedResumeType[]) {
     .slice(0, 8)
     .map(([keyword, count]) => ({
       keyword,
-      coverage: Math.round((count / Math.max(resumes.length, 1)) * 100)
+      coverage: Math.round((count / Math.max(resumesList.length, 1)) * 100)
     }));
 }

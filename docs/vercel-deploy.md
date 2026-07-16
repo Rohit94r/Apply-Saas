@@ -77,7 +77,7 @@ Copy from `.env.vercel.example` into Vercel → Project → Settings → Environ
 
 Required minimum:
 
-- `MONGODB_URI`, `CLERK_*`, `GROQ_API_KEY`
+- `DATABASE_URL`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `GROQ_API_KEY`
 - `NEXT_PUBLIC_APP_URL=https://apply.neexmeet.com`
 - `ADMIN_EMAIL=rjdhav67@gmail.com`
 - `NEXT_PUBLIC_ADMIN_EMAIL=rjdhav67@gmail.com`

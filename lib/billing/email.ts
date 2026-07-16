@@ -21,7 +21,7 @@ export async function sendPaymentNotificationEmail(input: PaymentEmailInput) {
     "",
     `Name: ${input.userName}`,
     `Email: ${input.userEmail}`,
-    `Clerk user ID: ${input.userId}`,
+    `Auth user ID: ${input.userId}`,
     `Payment ID: ${input.paymentId}`,
     `Amount: ₹${input.amountInr}${input.originalAmountInr !== input.amountInr ? ` (was ₹${input.originalAmountInr})` : ""}`,
     input.discountCode ? `Discount code: ${input.discountCode}` : "Discount code: none",

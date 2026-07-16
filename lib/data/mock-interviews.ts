@@ -1,6 +1,10 @@
-import { connectToDatabase } from "@/lib/mongodb";
-import { Types } from "mongoose";
-import { MockInterviewSession } from "@/models/MockInterviewSession";
+import { and, desc, eq } from "drizzle-orm";
+import { db } from "@/lib/db";
+import {
+  mockInterviewSessions,
+  type MockQuestionJson,
+  type MockTurnJson
+} from "@/packages/db/schema";
 import type {
   MockDifficulty,
   MockInterviewType,
@@ -84,45 +88,36 @@ type UpdateSessionInput = {
   completed?: boolean;
 };
 
-function serialize(doc: {
-  _id: { toString(): string };
-  userId: string;
-  company: string;
-  role: string;
-  interviewType?: string;
-  difficulty?: string;
-  totalQuestions?: number;
-  questions?: MockQuestion[];
-  turns?: MockTurnRecord[];
-  provider?: string;
-  demoMode?: boolean;
-  overallScore?: number;
-  tips?: string[];
-  highlights?: string[];
-  durationSeconds?: number;
-  completedAt?: Date | null;
-  createdAt?: Date;
-}): MockInterviewSessionRecord {
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isUuid(id: string) {
+  return UUID_RE.test(id);
+}
+
+function serialize(
+  row: typeof mockInterviewSessions.$inferSelect
+): MockInterviewSessionRecord {
   return {
-    id: doc._id.toString(),
-    userId: doc.userId,
-    company: doc.company,
-    role: doc.role,
-    interviewType: (doc.interviewType as MockInterviewType) || "mixed",
-    difficulty: (doc.difficulty as MockDifficulty) || "medium",
-    totalQuestions: doc.totalQuestions ?? 6,
-    questions: doc.questions ?? [],
-    turns: doc.turns ?? [],
-    provider: doc.provider,
-    demoMode: doc.demoMode,
-    overallScore: doc.overallScore,
-    tips: doc.tips ?? [],
-    highlights: doc.highlights ?? [],
-    durationSeconds: doc.durationSeconds ?? 0,
-    completedAt: doc.completedAt
-      ? new Date(doc.completedAt).toISOString()
+    id: row.id,
+    userId: row.userId,
+    company: row.company,
+    role: row.role,
+    interviewType: (row.interviewType as MockInterviewType) || "mixed",
+    difficulty: (row.difficulty as MockDifficulty) || "medium",
+    totalQuestions: row.totalQuestions ?? 6,
+    questions: (row.questions as MockQuestion[]) ?? [],
+    turns: (row.turns as MockTurnRecord[]) ?? [],
+    provider: row.provider,
+    demoMode: row.demoMode,
+    overallScore: row.overallScore ?? undefined,
+    tips: row.tips ?? [],
+    highlights: row.highlights ?? [],
+    durationSeconds: row.durationSeconds ?? 0,
+    completedAt: row.completedAt
+      ? new Date(row.completedAt).toISOString()
       : undefined,
-    createdAt: (doc.createdAt ?? new Date()).toISOString()
+    createdAt: (row.createdAt ?? new Date()).toISOString()
   };
 }
 
@@ -176,44 +171,49 @@ export function buildMockQuestions(company: string, role: string): MockQuestion[
 }
 
 export async function listMockSessions(userId: string, limit = 5) {
-  await connectToDatabase();
-  const rows = await MockInterviewSession.find({ userId })
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .lean();
-  return rows.map((row) =>
-    serialize(row as unknown as Parameters<typeof serialize>[0])
-  );
+  const rows = await db
+    .select()
+    .from(mockInterviewSessions)
+    .where(eq(mockInterviewSessions.userId, userId))
+    .orderBy(desc(mockInterviewSessions.createdAt))
+    .limit(limit);
+  return rows.map(serialize);
 }
 
 export async function getMockSession(userId: string, id: string) {
-  if (!Types.ObjectId.isValid(id)) return null;
-  await connectToDatabase();
-  const row = await MockInterviewSession.findOne({ _id: id, userId }).lean();
+  if (!isUuid(id)) return null;
+  const row = await db.query.mockInterviewSessions.findFirst({
+    where: and(
+      eq(mockInterviewSessions.id, id),
+      eq(mockInterviewSessions.userId, userId)
+    )
+  });
   if (!row) return null;
-  return serialize(row as unknown as Parameters<typeof serialize>[0]);
+  return serialize(row);
 }
 
 export async function createMockSession(
   userId: string,
   input: CreateSessionInput
 ) {
-  await connectToDatabase();
-  const created = await MockInterviewSession.create({
-    userId,
-    company: input.company.trim(),
-    role: input.role.trim(),
-    interviewType: input.interviewType ?? "mixed",
-    difficulty: input.difficulty ?? "medium",
-    totalQuestions: input.totalQuestions ?? 6,
-    questions: input.questions ?? [],
-    turns: input.turns ?? [],
-    provider: input.provider ?? "",
-    demoMode: input.demoMode ?? false,
-    durationSeconds: input.durationSeconds ?? 0,
-    completedAt: input.completed ? new Date() : undefined
-  });
-  return serialize(created.toObject() as Parameters<typeof serialize>[0]);
+  const [created] = await db
+    .insert(mockInterviewSessions)
+    .values({
+      userId,
+      company: input.company.trim(),
+      role: input.role.trim(),
+      interviewType: input.interviewType ?? "mixed",
+      difficulty: input.difficulty ?? "medium",
+      totalQuestions: input.totalQuestions ?? 6,
+      questions: (input.questions ?? []) as MockQuestionJson[],
+      turns: (input.turns ?? []) as MockTurnJson[],
+      provider: input.provider ?? "",
+      demoMode: input.demoMode ?? false,
+      durationSeconds: input.durationSeconds ?? 0,
+      completedAt: input.completed ? new Date() : undefined
+    })
+    .returning();
+  return serialize(created);
 }
 
 export async function updateMockSession(
@@ -221,13 +221,15 @@ export async function updateMockSession(
   id: string,
   input: UpdateSessionInput
 ) {
-  if (!Types.ObjectId.isValid(id)) {
+  if (!isUuid(id)) {
     throw new Error("Session not found");
   }
-  await connectToDatabase();
-  const $set: Record<string, unknown> = {};
-  if (input.turns) $set.turns = input.turns;
-  if (input.questions) $set.questions = input.questions;
+
+  const $set: Partial<typeof mockInterviewSessions.$inferInsert> = {
+    updatedAt: new Date()
+  };
+  if (input.turns) $set.turns = input.turns as MockTurnJson[];
+  if (input.questions) $set.questions = input.questions as MockQuestionJson[];
   if (input.durationSeconds !== undefined) {
     $set.durationSeconds = input.durationSeconds;
   }
@@ -238,17 +240,22 @@ export async function updateMockSession(
   if (input.demoMode !== undefined) $set.demoMode = input.demoMode;
   if (input.completed) $set.completedAt = new Date();
 
-  const updated = await MockInterviewSession.findOneAndUpdate(
-    { _id: id, userId },
-    { $set },
-    { new: true }
-  ).lean();
+  const [updated] = await db
+    .update(mockInterviewSessions)
+    .set($set)
+    .where(
+      and(
+        eq(mockInterviewSessions.id, id),
+        eq(mockInterviewSessions.userId, userId)
+      )
+    )
+    .returning();
 
   if (!updated) {
     throw new Error("Session not found");
   }
 
-  return serialize(updated as unknown as Parameters<typeof serialize>[0]);
+  return serialize(updated);
 }
 
 export async function completeMockSession(

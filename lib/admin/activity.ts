@@ -1,8 +1,14 @@
-import { connectToDatabase } from "@/lib/mongodb";
-import { GeneratedResume } from "@/models/GeneratedResume";
-import { PaymentRequest } from "@/models/PaymentRequest";
-import { User, type UserDocument } from "@/models/User";
-import { UserActivity, type ActivityAction } from "@/models/UserActivity";
+import { count, desc, eq, sql } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { touchUserLogin } from "@/lib/billing/users";
+import { toUserDocument } from "@/models/User";
+import type { ActivityAction } from "@/models/UserActivity";
+import {
+  paymentRequests,
+  tailoredResumes,
+  userActivity,
+  users
+} from "@/packages/db/schema";
 
 export async function recordActivity(input: {
   clerkId: string;
@@ -11,9 +17,8 @@ export async function recordActivity(input: {
   action: ActivityAction;
   detail?: string;
 }) {
-  await connectToDatabase();
-  await UserActivity.create({
-    clerkId: input.clerkId,
+  await db.insert(userActivity).values({
+    userId: input.clerkId,
     email: input.email,
     name: input.name,
     action: input.action,
@@ -26,24 +31,32 @@ export async function trackUserSession(input: {
   email: string;
   name: string;
 }) {
-  await connectToDatabase();
-
-  const existing = await User.findOne({ clerkId: input.clerkId }).lean<UserDocument>();
-  const lastLoginAt = existing?.lastLoginAt ? new Date(existing.lastLoginAt) : null;
+  const existing = await db.query.users.findFirst({
+    where: eq(users.userId, input.clerkId)
+  });
+  const lastLoginAt = existing?.lastLoginAt
+    ? new Date(existing.lastLoginAt)
+    : null;
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
   const shouldLogLogin = !lastLoginAt || lastLoginAt.getTime() < oneHourAgo;
 
-  await User.updateOne(
-    { clerkId: input.clerkId },
-    {
-      $set: {
-        name: input.name,
-        email: input.email,
-        lastLoginAt: new Date()
-      },
-      ...(shouldLogLogin ? { $inc: { loginCount: 1 } } : {})
-    }
-  );
+  if (existing) {
+    await touchUserLogin({
+      userId: input.clerkId,
+      name: input.name,
+      email: input.email,
+      incrementLoginCount: shouldLogLogin
+    });
+  } else {
+    await db.insert(users).values({
+      userId: input.clerkId,
+      name: input.name,
+      email: input.email,
+      subscriptionPlan: "free",
+      lastLoginAt: new Date(),
+      loginCount: 1
+    });
+  }
 
   if (shouldLogLogin) {
     await recordActivity({
@@ -55,10 +68,8 @@ export async function trackUserSession(input: {
 }
 
 export async function getAdminOverview() {
-  await connectToDatabase();
-
   const [
-    users,
+    userRows,
     recentActivity,
     pendingPayments,
     resumeCounts,
@@ -67,93 +78,101 @@ export async function getAdminOverview() {
     lastPages,
     recentJourneys
   ] = await Promise.all([
-    User.find().sort({ lastLoginAt: -1 }).limit(100).lean<UserDocument[]>(),
-    UserActivity.find().sort({ createdAt: -1 }).limit(50).lean(),
-    PaymentRequest.find({ status: "pending" })
-      .sort({ createdAt: -1 })
-      .limit(20)
-      .lean(),
-    GeneratedResume.aggregate<{ _id: string; count: number }>([
-      { $group: { _id: "$userId", count: { $sum: 1 } } }
-    ]),
-    UserActivity.aggregate<{
-      _id: { clerkId: string; action: ActivityAction };
-      count: number;
-    }>([
-      {
-        $group: {
-          _id: { clerkId: "$clerkId", action: "$action" },
-          count: { $sum: 1 }
-        }
-      }
-    ]),
-    UserActivity.aggregate<{ _id: string; count: number }>([
-      { $match: { action: "page_view" } },
-      { $group: { _id: "$clerkId", count: { $sum: 1 } } }
-    ]),
-    UserActivity.aggregate<{
-      _id: string;
-      lastPage: string;
-      lastPageAt: Date | null;
-    }>([
-      { $match: { action: "page_view" } },
-      { $sort: { createdAt: -1 } },
-      {
-        $group: {
-          _id: "$clerkId",
-          lastPage: { $first: "$detail" },
-          lastPageAt: { $first: "$createdAt" }
-        }
-      }
-    ]),
-    // Latest 300 events grouped per user in JS — gives a recent journey each.
-    UserActivity.find()
-      .sort({ createdAt: -1 })
+    db.select().from(users).orderBy(desc(users.lastLoginAt)).limit(100),
+    db
+      .select()
+      .from(userActivity)
+      .orderBy(desc(userActivity.createdAt))
+      .limit(50),
+    db
+      .select()
+      .from(paymentRequests)
+      .where(eq(paymentRequests.status, "pending"))
+      .orderBy(desc(paymentRequests.createdAt))
+      .limit(20),
+    db
+      .select({
+        userId: tailoredResumes.userId,
+        count: count()
+      })
+      .from(tailoredResumes)
+      .groupBy(tailoredResumes.userId),
+    db
+      .select({
+        userId: userActivity.userId,
+        action: userActivity.action,
+        count: count()
+      })
+      .from(userActivity)
+      .groupBy(userActivity.userId, userActivity.action),
+    db
+      .select({
+        userId: userActivity.userId,
+        count: count()
+      })
+      .from(userActivity)
+      .where(eq(userActivity.action, "page_view"))
+      .groupBy(userActivity.userId),
+    db
+      .select({
+        userId: userActivity.userId,
+        lastPage: sql<string>`(array_agg(${userActivity.detail} order by ${userActivity.createdAt} desc))[1]`,
+        lastPageAt: sql<Date | null>`max(${userActivity.createdAt})`
+      })
+      .from(userActivity)
+      .where(eq(userActivity.action, "page_view"))
+      .groupBy(userActivity.userId),
+    db
+      .select()
+      .from(userActivity)
+      .orderBy(desc(userActivity.createdAt))
       .limit(300)
-      .lean()
   ]);
 
-  const resumeCountMap = new Map(resumeCounts.map((row) => [row._id, row.count]));
+  const resumeCountMap = new Map(
+    resumeCounts.map((row) => [row.userId, row.count])
+  );
 
   const featureMap = new Map<string, Record<string, number>>();
 
   for (const row of activityCounts) {
-    const clerkId = row._id.clerkId;
-    const current = featureMap.get(clerkId) ?? {};
-    current[row._id.action] = row.count;
-    featureMap.set(clerkId, current);
+    const current = featureMap.get(row.userId) ?? {};
+    current[row.action] = row.count;
+    featureMap.set(row.userId, current);
   }
 
-  const pageViewMap = new Map(pageViewCounts.map((row) => [row._id, row.count]));
+  const pageViewMap = new Map(
+    pageViewCounts.map((row) => [row.userId, row.count])
+  );
   const lastPageMap = new Map(
     lastPages.map((row) => [
-      row._id,
+      row.userId,
       { lastPage: row.lastPage, lastPageAt: row.lastPageAt }
     ])
   );
 
-  // Group recent journeys per user (latest 8 each).
   const journeyMap = new Map<
     string,
-    Array<{ action: string; detail?: string; createdAt: Date | null }>
+    Array<{ action: string; detail?: string | null; createdAt: Date | null }>
   >();
 
   for (const item of recentJourneys) {
-    const list = journeyMap.get(item.clerkId) ?? [];
+    const list = journeyMap.get(item.userId) ?? [];
     if (list.length < 8) {
       list.push({
         action: item.action,
         detail: item.detail,
         createdAt: item.createdAt
       });
-      journeyMap.set(item.clerkId, list);
+      journeyMap.set(item.userId, list);
     }
   }
 
   const now = Date.now();
 
   return {
-    users: users.map((user) => {
+    users: userRows.map((row) => {
+      const user = toUserDocument(row);
       const features = featureMap.get(user.clerkId) ?? {};
       const proExpiresAt = user.proExpiresAt ? new Date(user.proExpiresAt) : null;
       const daysRemaining = proExpiresAt
@@ -194,8 +213,8 @@ export async function getAdminOverview() {
       };
     }),
     recentActivity: recentActivity.map((item) => ({
-      id: String(item._id),
-      clerkId: item.clerkId,
+      id: item.id,
+      clerkId: item.userId,
       email: item.email,
       name: item.name,
       action: item.action,
@@ -203,13 +222,15 @@ export async function getAdminOverview() {
       createdAt: item.createdAt ? new Date(item.createdAt).toISOString() : null
     })),
     pendingPayments: pendingPayments.map((payment) => ({
-      id: String(payment._id),
+      id: payment.id,
       userId: payment.userId,
       userName: payment.userName,
       userEmail: payment.userEmail,
       amountInr: payment.amountInr,
       discountCode: payment.discountCode,
-      createdAt: payment.createdAt ? new Date(payment.createdAt).toISOString() : null
+      createdAt: payment.createdAt
+        ? new Date(payment.createdAt).toISOString()
+        : null
     }))
   };
 }

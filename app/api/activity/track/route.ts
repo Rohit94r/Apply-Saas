@@ -9,7 +9,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getOptionalUserId } from "@/lib/auth";
 import { getCurrentUserProfile } from "@/lib/billing/users";
 import { recordActivity } from "@/lib/admin/activity";
 import type { ActivityAction } from "@/models/UserActivity";
@@ -26,7 +26,7 @@ const ALLOWED_ACTIONS: ActivityAction[] = [
 ];
 
 export async function POST(request: Request) {
-  const { userId } = await auth();
+  const userId = await getOptionalUserId();
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -2,47 +2,25 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight } from "@phosphor-icons/react";
+import { UserMenu } from "@/components/auth/user-menu";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/landing/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { clerkIsConfigured } from "@/lib/clerk-config";
+import { authClient } from "@/lib/auth/client";
 import { siteConfig } from "@/lib/constants";
 
 export function SiteHeader() {
-  if (!clerkIsConfigured) {
-    return <PublicSiteHeader />;
-  }
-
-  return <ClerkSiteHeader />;
+  return <AuthAwareSiteHeader />;
 }
 
-function PublicSiteHeader() {
-  return (
-    <HeaderShell>
-      <Link
-        href="/sign-in"
-        className="hidden text-sm font-medium text-foreground/80 transition hover:text-primary sm:inline-flex"
-      >
-        Log in
-      </Link>
-      <Button asChild size="sm">
-        <Link href="/sign-up">
-          Start free
-          <ArrowRight className="h-4 w-4" weight="regular" />
-        </Link>
-      </Button>
-    </HeaderShell>
-  );
-}
-
-function ClerkSiteHeader() {
-  const { isLoaded, isSignedIn } = useAuth();
+function AuthAwareSiteHeader() {
+  const { data: session, isPending } = authClient.useSession();
+  const isSignedIn = Boolean(session?.user);
 
   return (
     <HeaderShell>
-      {isLoaded && isSignedIn ? (
+      {!isPending && isSignedIn ? (
         <>
           <Button asChild size="sm">
             <Link href="/dashboard/generate">
@@ -50,7 +28,7 @@ function ClerkSiteHeader() {
               <ArrowRight className="h-4 w-4" weight="regular" />
             </Link>
           </Button>
-          <UserButton />
+          <UserMenu compact />
         </>
       ) : (
         <>

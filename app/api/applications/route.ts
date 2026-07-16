@@ -11,7 +11,7 @@ function isDbDown(error: unknown) {
   const message = error instanceof Error ? error.message : "";
   return (
     message.includes("Database connection failed") ||
-    message.includes("MONGODB_URI") ||
+    message.includes("DATABASE_URL") ||
     message.includes("ECONNREFUSED") ||
     message.includes("Server selection timed out")
   );

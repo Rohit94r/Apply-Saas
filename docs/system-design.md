@@ -24,9 +24,9 @@ For users who already have a resume.
 
 ## Runtime Boundaries
 
-- Auth: Clerk middleware protects dashboard and API routes.
+- Auth: Neon Auth middleware protects `/dashboard` and matched `/api` routes (marketing, blog, PYQs, and public mock-interview stay public).
 - AI: `lib/ai` chooses Groq first, OpenAI second.
-- Database: `lib/data/resumes.ts` uses MongoDB and falls back to local JSON only when MongoDB is unreachable in development.
+- Database: `lib/data/resumes.ts` uses Neon Postgres via Drizzle and falls back to local JSON only when the DB is unreachable in development.
 - PDF: `lib/pdf/resume-document.tsx` renders new resumes; `lib/pdf/source-pdf.ts` patches uploaded PDFs safely.
 - SEO: `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts`, and `app/manifest.ts` keep public metadata centralized.
 

@@ -1,24 +1,14 @@
-import { Schema, model, models, type InferSchemaType } from "mongoose";
+/**
+ * Compatibility types for callers that still import `@/models/User`.
+ * App storage is Drizzle (`packages/db`); `clerkId` aliases auth-provider user id.
+ */
+import type { UserRow } from "@/packages/db/schema";
 
-const UserSchema = new Schema(
-  {
-    clerkId: { type: String, required: true, unique: true, index: true },
-    name: { type: String, required: true },
-    email: { type: String, required: true, index: true },
-    image: { type: String },
-    subscriptionPlan: {
-      type: String,
-      enum: ["free", "pro"],
-      default: "free"
-    },
-    proExpiresAt: { type: Date },
-    lastDiscountCode: { type: String },
-    lastLoginAt: { type: Date },
-    loginCount: { type: Number, default: 0 }
-  },
-  { timestamps: true }
-);
+export type UserDocument = UserRow & {
+  /** @deprecated Prefer `userId` — auth provider id (Neon Auth / legacy Clerk). */
+  clerkId: string;
+};
 
-export type UserDocument = InferSchemaType<typeof UserSchema>;
-
-export const User = models.User || model("User", UserSchema);
+export function toUserDocument(row: UserRow): UserDocument {
+  return { ...row, clerkId: row.userId };
+}

@@ -5,15 +5,16 @@
 ```
 lib/
 ├── ai/                 # Groq/OpenAI clients, prompts, resume-engine
-├── data/               # MongoDB services + static datasets
+├── auth/               # Neon Auth client + server
+├── data/               # Drizzle data services + static datasets
 ├── billing/            # Usage limits, payments, UPI flow
+├── db/                 # Neon + Drizzle connection (`getDb` / `db`)
 ├── pdf/                # PDF generation (@react-pdf/renderer)
 ├── resume-studio/      # Build page domain logic (types, sections, api client)
 ├── admin/              # Founder admin auth + activity
-├── auth.ts             # getCurrentUserId() wrapper
+├── auth.ts             # getCurrentUserId() / getOptionalUserId()
 ├── seo.ts              # Site metadata, absoluteUrl
-├── validations.ts      # Zod schemas for all APIs
-└── mongodb.ts          # DB connection
+└── validations.ts      # Zod schemas for all APIs
 ```
 
 ## AI (edit prompts here)
@@ -34,11 +35,4 @@ lib/
 | `data/jobs.ts` | Job match orchestration |
 | `data/learning-resources.ts` | Re-exports `content/learning/tracks.ts` |
 
-## Phase 2 migrations
-
-| Today | Future |
-|-------|--------|
-| `lib/ai/` | `packages/ai/` |
-| `models/` + `lib/data/` | `packages/db/` (Drizzle + Postgres) |
-
-See `packages/README.md` for scaffold.
+Schema lives in `packages/db/`; use `db` from `@/lib/db`.

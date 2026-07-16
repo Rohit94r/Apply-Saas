@@ -23,7 +23,7 @@
 Apply/                              # ← Web app runs HERE today (Phase A)
 │
 ├── app/                            # Next.js routes → app/README.md
-│   ├── (auth)/                     # Clerk sign-in/up
+│   ├── (auth)/                     # Neon Auth sign-in/up
 │   ├── blog/                       # SEO pages (data: content/blog/)
 │   ├── dashboard/                  # Product UI → app/dashboard/README.md
 │   └── api/                        # REST API → app/api/README.md
@@ -53,14 +53,14 @@ Apply/                              # ← Web app runs HERE today (Phase A)
 │
 ├── lib/                            # Infrastructure → lib/README.md
 │   ├── ai/                         # Prompts + resume-engine + Groq
-│   ├── data/                       # MongoDB services + static data
+│   ├── data/                       # Drizzle services + static data
 │   ├── billing/
 │   ├── pdf/
 │   ├── resume-studio/
 │   ├── seo.ts                      # Global SEO metadata
 │   └── validations.ts              # Zod API schemas
 │
-├── models/                         # Mongoose schemas → models/README.md
+├── models/                         # Compat types → models/README.md (schema in packages/db)
 ├── types/                          # Shared TypeScript types
 ├── public/                         # Static assets (logo, QR code)
 │
@@ -133,17 +133,17 @@ Full table: [built-features-phase-two.md](./built-features-phase-two.md#api-refe
 
 ## Data layers
 
-### User data (MongoDB)
+### User data (Neon Postgres / Drizzle)
 
-| Collection | Model | Service |
-|------------|-------|---------|
-| Master resumes | `MasterResume` | `lib/data/resumes.ts` |
-| Generated resumes | `GeneratedResume` | `lib/data/resumes.ts` |
-| Interview guides | `InterviewGuide` | `lib/data/resumes.ts` |
-| Users / Pro | `User` | `lib/billing/users.ts` |
-| Payments | `PaymentRequest` | `lib/billing/payments.ts` |
+| Table | Compat type | Service |
+|-------|-------------|---------|
+| `resumes` | `MasterResume` | `lib/data/resumes.ts` |
+| `tailored_resumes` | `GeneratedResume` | `lib/data/resumes.ts` |
+| `interview_guides` | `InterviewGuide` | `lib/data/resumes.ts` |
+| `users` | `User` | `lib/billing/users.ts` |
+| `payment_requests` | `PaymentRequest` | `lib/billing/payments.ts` |
 
-Dev fallback: `.data/resume-store.json` when Mongo unreachable.
+Dev fallback: `.data/resume-store.json` when the DB is unreachable.
 
 ### Static / curated data
 
@@ -197,7 +197,7 @@ import { Button } from "@/components/ui/button";
 
 ### Auth
 
-- Clerk protects `/dashboard/*` and `/api/*` via `middleware.ts`
+- Neon Auth protects `/dashboard/*` via `middleware.ts`; APIs use `getCurrentUserId()`
 - Use `getCurrentUserId()` in API routes
 
 ---

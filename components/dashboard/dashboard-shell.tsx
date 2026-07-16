@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { UserButton, useUser } from "@clerk/nextjs";
 import {
   Briefcase,
   CaretLineLeft,
@@ -20,11 +19,12 @@ import {
   Storefront
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
+import { UserMenu } from "@/components/auth/user-menu";
 import { Logo } from "@/components/landing/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CreditsBadge } from "@/components/billing/credits-badge";
 import { isAdminEmail } from "@/lib/admin/client";
-import { clerkIsConfigured } from "@/lib/clerk-config";
+import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 
 const navItems: Array<{
@@ -147,8 +147,14 @@ function titleForPath(pathname: string) {
   );
 }
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
-  if (!clerkIsConfigured) {
+export function DashboardShell({
+  children,
+  authConfigured = true
+}: {
+  children: React.ReactNode;
+  authConfigured?: boolean;
+}) {
+  if (!authConfigured) {
     return <DashboardAuthSetup />;
   }
 
@@ -161,11 +167,11 @@ function DashboardAuthSetup() {
       <div className="max-w-md rounded-xl border border-border bg-white p-6 text-center shadow-sm">
         <Logo className="justify-center" />
         <h1 className="mt-6 text-xl font-semibold text-foreground">
-          Clerk is not configured
+          Neon Auth is not configured
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Add a real NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY in
-          Vercel before opening the dashboard.
+          Enable Auth in the Neon Console (Project → Branch → Auth), then set
+          NEON_AUTH_BASE_URL and NEON_AUTH_COOKIE_SECRET in .env.local / Vercel.
         </p>
       </div>
     </div>
@@ -178,11 +184,11 @@ function AuthenticatedDashboardShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user } = useUser();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   const [collapsed, setCollapsed] = useState(false);
-  const displayName =
-    user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? "Apply user";
-  const isAdmin = isAdminEmail(user?.primaryEmailAddress?.emailAddress);
+  const displayName = user?.name ?? user?.email ?? "Apply user";
+  const isAdmin = isAdminEmail(user?.email);
   const sidebarItems = isAdmin
     ? [
         ...navItems,
@@ -295,13 +301,7 @@ function AuthenticatedDashboardShell({
               <div className="sm:hidden">
                 <ThemeToggle />
               </div>
-              <UserButton
-                appearance={{
-                  elements: {
-                    avatarBox: "h-10 w-10"
-                  }
-                }}
-              />
+              <UserMenu />
             </div>
           </div>
           <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">

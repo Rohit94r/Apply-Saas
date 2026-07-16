@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { getOptionalUserId } from "@/lib/auth";
 import {
   getCompanyById,
   getCompanyByName,
@@ -7,7 +7,7 @@ import {
 } from "@/lib/data/companies";
 
 export async function GET(request: Request) {
-  const { userId } = await auth();
+  const userId = await getOptionalUserId();
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

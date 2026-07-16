@@ -1,11 +1,11 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
-import { auth } from "@clerk/nextjs/server";
+import { getOptionalUserId } from "@/lib/auth";
 
 const f = createUploadthing();
 
 async function requireUser() {
-  const { userId } = await auth();
+  const userId = await getOptionalUserId();
 
   if (!userId) {
     throw new UploadThingError({

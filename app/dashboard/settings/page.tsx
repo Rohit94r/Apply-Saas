@@ -7,7 +7,7 @@ export default function SettingsPage() {
       <PageHeader
         eyebrow="Account"
         title="Settings"
-        description="Profile details from your Clerk account, billing, and how to request account deletion."
+        description="Profile details from your account, billing, and how to request account deletion."
       />
       <SettingsPanel />
     </div>
