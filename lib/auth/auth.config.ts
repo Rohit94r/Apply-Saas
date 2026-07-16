@@ -1,20 +1,33 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
-import { isGoogleAuthConfigured } from "@/lib/auth-config";
+import {
+  getGoogleClientId,
+  getGoogleClientSecret,
+  isGoogleAuthConfigured
+} from "@/lib/auth-config";
+
+function googleProviders() {
+  const clientId = getGoogleClientId();
+  const clientSecret = getGoogleClientSecret();
+  if (!clientId || !clientSecret) {
+    return [];
+  }
+
+  return [
+    Google({
+      clientId,
+      clientSecret,
+      allowDangerousEmailAccountLinking: true
+    })
+  ];
+}
 
 /**
  * Edge-safe Auth.js config (no DB / Node-only imports).
  * Used by middleware. Full callbacks with DB live in `server.ts`.
  */
 export const authConfig = {
-  providers: isGoogleAuthConfigured()
-    ? [
-        Google({
-          clientId: process.env.AUTH_GOOGLE_ID!,
-          clientSecret: process.env.AUTH_GOOGLE_SECRET!
-        })
-      ]
-    : [],
+  providers: googleProviders(),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60
@@ -35,10 +48,10 @@ export const authConfig = {
       return Boolean(auth?.user);
     },
     async jwt({ token, user, account }) {
-      if (user?.id) {
-        token.id = user.id;
-      } else if (account?.providerAccountId) {
+      if (account?.providerAccountId) {
         token.id = account.providerAccountId;
+      } else if (user?.id) {
+        token.id = user.id;
       }
       return token;
     },

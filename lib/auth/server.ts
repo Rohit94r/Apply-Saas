@@ -48,7 +48,10 @@ async function upsertGoogleUser(input: {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  secret: process.env.AUTH_SECRET,
+  secret:
+    process.env.AUTH_SECRET?.trim() ||
+    process.env.NEXTAUTH_SECRET?.trim() ||
+    undefined,
   callbacks: {
     ...authConfig.callbacks,
     async signIn({ user, account }) {

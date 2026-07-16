@@ -12,41 +12,21 @@ export function AuthSetupNotice({ fullPage = true }: AuthSetupNoticeProps) {
     <div className="mx-auto max-w-xl rounded-2xl border border-border bg-white p-8 shadow-sm dark:bg-[#1a1a20]">
       <h1 className="font-serif text-3xl text-primary">Google auth setup</h1>
       <p className="mt-3 text-sm leading-7 text-muted-foreground">
-        Apply uses Auth.js (JWT) + Google sign-in. Users are stored in your Neon
-        Postgres <code className="text-xs">users</code> table — independent of
-        Neon Auth / Clerk.
+        Google Console redirect URIs look fine. This screen appears only when
+        env vars are incomplete in the current runtime (local{" "}
+        <code className="text-xs">.env.local</code> or Vercel Environment
+        Variables).
       </p>
       <ol className="mt-5 list-decimal space-y-3 pl-5 text-sm leading-7 text-foreground">
         <li>
-          Open{" "}
-          <a
-            className="font-semibold text-primary underline-offset-2 hover:underline"
-            href="https://console.cloud.google.com/apis/credentials"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Google Cloud Console → Credentials
-          </a>{" "}
-          and create an <strong>OAuth 2.0 Client ID</strong> (Web application).
-        </li>
-        <li>
-          Add authorized redirect URI:{" "}
-          <code className="text-xs">
-            http://localhost:3000/api/auth/callback/google
-          </code>{" "}
-          and your production{" "}
-          <code className="text-xs">
-            https://YOUR_DOMAIN/api/auth/callback/google
-          </code>
-          .
-        </li>
-        <li>
-          Set in <code className="text-xs">.env.local</code> (and Vercel):
+          Set all three in <code className="text-xs">.env.local</code>{" "}
+          <strong>and</strong> Vercel → Settings → Environment Variables:
           <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
             <li>
               <code className="text-xs">AUTH_SECRET</code> —{" "}
-              {hints.secretOk ? "set" : "missing"} ·{" "}
-              <code className="text-xs">openssl rand -base64 32</code>
+              {hints.secretOk
+                ? "set"
+                : `missing (length ${hints.secretLength})`}
             </li>
             <li>
               <code className="text-xs">AUTH_GOOGLE_ID</code> —{" "}
@@ -58,7 +38,16 @@ export function AuthSetupNotice({ fullPage = true }: AuthSetupNoticeProps) {
             </li>
           </ul>
         </li>
-        <li>Restart <code className="text-xs">next dev</code>.</li>
+        <li>
+          If Google ID/secret are set but secret is missing on production, add{" "}
+          <code className="text-xs">AUTH_SECRET</code> in Vercel and{" "}
+          <strong>Redeploy</strong>.
+        </li>
+        <li>
+          Locally: stop the server completely, then run{" "}
+          <code className="text-xs">npm run dev</code> again (env changes need a
+          full restart).
+        </li>
       </ol>
       <p className="mt-5 text-xs text-muted-foreground">
         Status: Secret {hints.secretOk ? "ok" : "missing"} · Google ID{" "}
