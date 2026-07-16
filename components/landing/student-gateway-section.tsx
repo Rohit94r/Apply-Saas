@@ -29,7 +29,7 @@ export function StudentGatewaySection() {
           <SectionHeading
             eyebrow="Resume builder"
             title="Upload once. Tailor for every job."
-            description="Paste a job description, download an ATS-ready PDF, then use the same profile for letters, interviews, and placement tracking."
+            description="Free AI resume builder for students — paste a job description, download an ATS-ready PDF, then use the same profile for cover letters, interviews, and placement tracking."
           />
         </Reveal>
         <ol className="mt-14 divide-y divide-border border-y border-border">

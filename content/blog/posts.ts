@@ -680,6 +680,8 @@ export const blogPosts = [
       "free resume builder for freshers",
       "ATS friendly resume builder India",
       "AI resume builder for students",
+      "resume builder free for students",
+      "free resume maker for students",
       "campus placement resume builder",
       "resume builder for engineering students India",
       "free ATS resume optimizer",
