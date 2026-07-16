@@ -23,24 +23,23 @@ export function AuthSetupNotice({ fullPage = true }: AuthSetupNoticeProps) {
           <strong>and</strong> Vercel → Settings → Environment Variables:
           <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
             <li>
-              <code className="text-xs">AUTH_SECRET</code> —{" "}
-              {hints.secretOk
-                ? "set"
-                : `missing (length ${hints.secretLength})`}
+              <code className="text-xs">AUTH_SECRET</code> — {hints.secretLabel}
             </li>
             <li>
               <code className="text-xs">AUTH_GOOGLE_ID</code> —{" "}
-              {hints.googleIdOk ? "set" : "missing"}
+              {hints.googleIdLabel}
             </li>
             <li>
               <code className="text-xs">AUTH_GOOGLE_SECRET</code> —{" "}
-              {hints.googleSecretOk ? "set" : "missing"}
+              {hints.googleSecretLabel}
             </li>
           </ul>
         </li>
         <li>
-          If Google ID/secret are set but secret is missing on production, add{" "}
-          <code className="text-xs">AUTH_SECRET</code> in Vercel and{" "}
+          On Vercel: edit each variable → paste the <strong>real</strong> value
+          from local <code className="text-xs">.env.local</code> (not the{" "}
+          <code className="text-xs">replace-with-…</code> text from{" "}
+          <code className="text-xs">.env.vercel.example</code>) → Save →{" "}
           <strong>Redeploy</strong>.
         </li>
         <li>
@@ -50,9 +49,9 @@ export function AuthSetupNotice({ fullPage = true }: AuthSetupNoticeProps) {
         </li>
       </ol>
       <p className="mt-5 text-xs text-muted-foreground">
-        Status: Secret {hints.secretOk ? "ok" : "missing"} · Google ID{" "}
-        {hints.googleIdOk ? "ok" : "missing"} · Google secret{" "}
-        {hints.googleSecretOk ? "ok" : "missing"}
+        Status: Secret {hints.secretOk ? "ok" : "bad"} · Google ID{" "}
+        {hints.googleIdOk ? "ok" : "bad"} · Google secret{" "}
+        {hints.googleSecretOk ? "ok" : "bad"}
       </p>
     </div>
   );

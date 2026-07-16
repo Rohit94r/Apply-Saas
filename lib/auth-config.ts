@@ -50,15 +50,39 @@ export function isGoogleAuthConfigured() {
   );
 }
 
+function describeEnvStatus(value: string, minLength: number) {
+  const trimmed = (value ?? "").trim().replace(/^["']|["']$/g, "");
+  if (!trimmed) {
+    return { ok: false, label: "missing" };
+  }
+  const lower = trimmed.toLowerCase();
+  if (PLACEHOLDER_PATTERNS.some((pattern) => lower.includes(pattern))) {
+    return {
+      ok: false,
+      label: `placeholder (length ${trimmed.length}) — paste the real value, not from .env.vercel.example`
+    };
+  }
+  if (trimmed.length < minLength) {
+    return { ok: false, label: `too short (length ${trimmed.length})` };
+  }
+  return { ok: true, label: "set" };
+}
+
 export function getAuthSetupHints() {
   const secret = getAuthSecret();
   const googleId = getGoogleClientId();
   const googleSecret = getGoogleClientSecret();
+  const secretStatus = describeEnvStatus(secret, 16);
+  const googleIdStatus = describeEnvStatus(googleId, 12);
+  const googleSecretStatus = describeEnvStatus(googleSecret, 12);
 
   return {
-    secretOk: isUsableValue(secret, 16),
-    googleIdOk: isUsableValue(googleId, 12),
-    googleSecretOk: isUsableValue(googleSecret, 12),
+    secretOk: secretStatus.ok,
+    googleIdOk: googleIdStatus.ok,
+    googleSecretOk: googleSecretStatus.ok,
+    secretLabel: secretStatus.label,
+    googleIdLabel: googleIdStatus.label,
+    googleSecretLabel: googleSecretStatus.label,
     secretLength: secret.length,
     consolePath:
       "Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID"
