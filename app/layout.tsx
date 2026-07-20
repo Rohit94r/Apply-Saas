@@ -123,38 +123,13 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         ) : null}
-        <Script
-          src={
-            process.env.NEXT_PUBLIC_CHATBOT_SRC ?? "https://apnaai.online/chatBot.js"
-          }
-          data-owner-id={
-            process.env.NEXT_PUBLIC_CHATBOT_OWNER_ID ?? "usr_129633093731483650"
-          }
-          strategy="afterInteractive"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                // Hide the Apna AI chatbot widget if its API is offline
-                // Prevents "API offline / LayerFlow / Retry connection" errors from showing
-                var observer = new MutationObserver(function() {
-                  var widgets = document.querySelectorAll('[id*="chat"], [class*="chat"], [id*="apna"], [class*="apna"], [id*="bot"], [class*="bot"], iframe');
-                  widgets.forEach(function(w) {
-                    var text = (w.textContent || w.title || '').toLowerCase();
-                    var inner = w.contentDocument ? (w.contentDocument.body ? w.contentDocument.body.textContent : '') : '';
-                    if (text.includes('api offline') || text.includes('layerflow') || text.includes('retry connection') || inner.includes('api offline') || inner.includes('layerflow')) {
-                      w.style.display = 'none';
-                    }
-                  });
-                });
-                observer.observe(document.body, { childList: true, subtree: true });
-                // Stop observing after 30s to avoid perpetual DOM scanning
-                setTimeout(function() { observer.disconnect(); }, 30000);
-              })();
-            `
-          }}
-        />
+        {process.env.NEXT_PUBLIC_CHATBOT_SRC === "ENABLED" ? (
+          <Script
+            src={process.env.NEXT_PUBLIC_CHATBOT_SRC}
+            data-owner-id={process.env.NEXT_PUBLIC_CHATBOT_OWNER_ID}
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );
