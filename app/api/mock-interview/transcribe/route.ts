@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
+import { getInterviewLanguage } from "@/lib/ai/interview-personas";
 import {
   isTranscriptionAvailable,
   transcribeAudioBuffer
@@ -26,6 +27,10 @@ export async function POST(request: Request) {
 
     const form = await request.formData();
     const file = form.get("audio");
+    const languageRaw = form.get("language");
+    const languageCode =
+      typeof languageRaw === "string" ? languageRaw.trim() : "en";
+    const lang = getInterviewLanguage(languageCode);
 
     if (!(file instanceof File)) {
       return NextResponse.json(
@@ -57,10 +62,10 @@ export async function POST(request: Request) {
       buffer,
       filename: `mock-answer.${extension}`,
       mimeType: file.type || "audio/webm",
-      language: "en"
+      language: lang.code
     });
 
-    return NextResponse.json({ text, model });
+    return NextResponse.json({ text, model, language: lang.code });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Transcription failed";

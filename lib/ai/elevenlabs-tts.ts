@@ -3,10 +3,8 @@
  * API key stays server-side — never expose to the client.
  */
 
-import {
-  getInterviewLanguage,
-  getInterviewVoice
-} from "@/lib/ai/elevenlabs-voices";
+import { getInterviewLanguage } from "@/lib/ai/elevenlabs-voices";
+import { getInterviewPersona } from "@/lib/ai/interview-personas";
 
 /** Rachel — clear English female voice (ElevenLabs default catalog) */
 export const DEFAULT_ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
@@ -63,13 +61,21 @@ export async function synthesizeSpeech(
     throw new Error("Nothing to speak");
   }
 
-  const voice = getInterviewVoice(getElevenLabsVoiceId(options.voiceId));
+  // Accept persona id, OpenAI voice alias, or raw ElevenLabs id
+  const persona = getInterviewPersona(options.voiceId);
+  const resolvedVoiceId =
+    options.voiceId &&
+    (options.voiceId === persona.elevenLabsVoiceId ||
+      options.voiceId.length > 20)
+      ? getElevenLabsVoiceId(options.voiceId)
+      : persona.elevenLabsVoiceId;
+  const voiceId = getElevenLabsVoiceId(resolvedVoiceId);
   const lang = getInterviewLanguage(options.languageCode);
   const modelId = getElevenLabsModelId(options.languageCode);
   const speed = options.speed ?? 0.88;
 
   const response = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${voice.id}`,
+    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
     {
       method: "POST",
       headers: {

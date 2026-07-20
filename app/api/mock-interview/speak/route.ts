@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
 import {
-  getElevenLabsTtsStatus,
-  isElevenLabsConfigured,
-  synthesizeSpeech
-} from "@/lib/ai/elevenlabs-tts";
+  getUnifiedTtsStatus,
+  synthesizeInterviewSpeech
+} from "@/lib/ai/interview-tts";
 
 export const runtime = "nodejs";
 
@@ -13,7 +12,7 @@ const MAX_TEXT_LENGTH = 2500;
 export async function GET() {
   try {
     await getCurrentUserId();
-    return NextResponse.json({ tts: getElevenLabsTtsStatus() });
+    return NextResponse.json({ tts: getUnifiedTtsStatus() });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unable to check TTS status";
@@ -26,12 +25,13 @@ export async function POST(request: Request) {
   try {
     await getCurrentUserId();
 
-    if (!isElevenLabsConfigured()) {
+    const tts = getUnifiedTtsStatus();
+    if (!tts.available) {
       return NextResponse.json(
         {
-          error: "ElevenLabs is not configured",
+          error: "Cloud TTS is not configured",
           code: "TTS_UNAVAILABLE",
-          tts: getElevenLabsTtsStatus()
+          tts
         },
         { status: 503 }
       );
@@ -64,14 +64,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const audio = await synthesizeSpeech(text, { voiceId, languageCode });
+    const { audio, provider } = await synthesizeInterviewSpeech(text, {
+      voiceId,
+      languageCode
+    });
 
     return new NextResponse(audio, {
       status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
         "Cache-Control": "no-store",
-        "Content-Length": String(audio.byteLength)
+        "Content-Length": String(audio.byteLength),
+        "X-TTS-Provider": provider
       }
     });
   } catch (error) {

@@ -19,7 +19,6 @@ import type {
   MockInterviewSessionRecord,
   MockTurnRecord
 } from "@/lib/data/mock-interviews";
-import { MockInterviewRobot } from "@/components/dashboard/mock-interview-robot";
 import {
   MockInterviewMeet,
   type MeetRoomState
@@ -28,7 +27,15 @@ import {
   MockInterviewExitDialog,
   type SessionExitStats
 } from "@/components/dashboard/mock-interview-exit-dialog";
-import { DEFAULT_ELEVENLABS_VOICE_ID } from "@/lib/ai/elevenlabs-tts";
+import { VoiceSelector } from "@/components/dashboard/voice-selector";
+import { InterviewerAvatar } from "@/components/dashboard/interviewer-avatar";
+import {
+  DEFAULT_PERSONA_ID,
+  getInterviewPersona,
+  INTERVIEW_LANGUAGES,
+  INTERVIEW_PERSONAS,
+  type InterviewPersona
+} from "@/lib/ai/interview-personas";
 import {
   MAX_INTERVIEW_QUESTIONS,
   MIN_INTERVIEW_QUESTIONS
@@ -64,13 +71,16 @@ type LanguageOption = {
 
 type VoicesCatalog = {
   voices?: VoiceOption[];
+  personas?: InterviewPersona[];
   languages?: LanguageOption[];
   defaultVoiceId?: string;
+  defaultPersonaId?: string;
 };
 
 type TtsStatus = {
   available: boolean;
   message: string;
+  provider?: string;
 };
 
 function computeExitStats(
@@ -269,9 +279,22 @@ export function MockInterviewRoom() {
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [includeCoding, setIncludeCoding] = useState(false);
   const [languageCode, setLanguageCode] = useState("en");
-  const [voiceId, setVoiceId] = useState(DEFAULT_ELEVENLABS_VOICE_ID);
-  const [voiceOptions, setVoiceOptions] = useState<VoiceOption[]>([]);
-  const [languageOptions, setLanguageOptions] = useState<LanguageOption[]>([]);
+  const [voiceId, setVoiceId] = useState(DEFAULT_PERSONA_ID);
+  const [voiceOptions, setVoiceOptions] = useState<VoiceOption[]>(
+    INTERVIEW_PERSONAS.map((p) => ({
+      id: p.id,
+      name: p.name,
+      label: `${p.name} — ${p.role}`
+    }))
+  );
+  const [languageOptions, setLanguageOptions] = useState<LanguageOption[]>(
+    INTERVIEW_LANGUAGES.map((l) => ({
+      code: l.code,
+      label: l.label,
+      speechLang: l.speechLang
+    }))
+  );
+  const [previewingId, setPreviewingId] = useState<string | null>(null);
   const [totalQuestions, setTotalQuestions] = useState(6);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -306,6 +329,8 @@ export function MockInterviewRoom() {
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [exitStats, setExitStats] = useState<SessionExitStats | null>(null);
   const speechLangRef = useRef("en-IN");
+  const languageCodeRef = useRef(languageCode);
+  languageCodeRef.current = languageCode;
 
   const companyInputRef = useRef<HTMLInputElement>(null);
   const answerRef = useRef<HTMLTextAreaElement>(null);
@@ -545,7 +570,20 @@ export function MockInterviewRoom() {
       if (data.stt) setStt(data.stt);
       if (data.tts) setTts(data.tts);
       const catalog = data.voices;
-      if (catalog?.voices?.length) {
+      if (catalog?.personas?.length) {
+        setVoiceOptions(
+          catalog.personas.map((p) => ({
+            id: p.id,
+            name: p.name,
+            label: `${p.name} — ${p.role}`
+          }))
+        );
+        setVoiceId(
+          catalog.defaultPersonaId ??
+            catalog.defaultVoiceId ??
+            catalog.personas[0].id
+        );
+      } else if (catalog?.voices?.length) {
         setVoiceOptions(catalog.voices);
         setVoiceId(catalog.defaultVoiceId ?? catalog.voices[0].id);
       }
@@ -726,7 +764,7 @@ export function MockInterviewRoom() {
       if (text.trim()) {
         void submitAnswerRef.current();
       }
-    }, 5000);
+    }, 6000);
   }, []);
 
   async function transcribeWithWhisper(blob: Blob) {
@@ -734,6 +772,7 @@ export function MockInterviewRoom() {
     try {
       const form = new FormData();
       form.append("audio", blob, "answer.webm");
+      form.append("language", languageCodeRef.current);
       const res = await fetch("/api/mock-interview/transcribe", {
         method: "POST",
         body: form
@@ -744,13 +783,14 @@ export function MockInterviewRoom() {
       }
       const text = String(data.text || "").trim();
       if (!text) {
-        // Don't error — just let user try again or type
-        setLiveCaption("Couldn't capture speech — tap mic to try again or type below");
+        setLiveCaption(
+          "Couldn't capture speech — tap mic to try again or type below"
+        );
         return;
       }
       setAnswer(text);
       setLiveCaption(text);
-      toast.success("Answer captured — auto-submitting in 5s…");
+      toast.success("Answer captured — review and submit, or wait 6s");
       scheduleAutoSubmit(text);
     } catch (error) {
       toast.error(
@@ -825,6 +865,12 @@ export function MockInterviewRoom() {
     setLiveCaption("");
     setAnswer("");
 
+    // Prefer Whisper when available — far more reliable than Web Speech API
+    if (stt?.whisper) {
+      await startWhisperRecording();
+      return;
+    }
+
     const Ctor = getSpeechRecognitionCtor();
     if (Ctor) {
       usingWebSpeechRef.current = true;
@@ -851,22 +897,26 @@ export function MockInterviewRoom() {
         setLiveCaption(display);
         setAnswer(display);
 
-        // Reset the silence timer on every speech event — 5s of silence triggers auto-submit
         if (autoSubmitTimerRef.current) {
           window.clearTimeout(autoSubmitTimerRef.current);
         }
-        if (finalText.trim()) {
+        if (finalText.trim().split(/\s+/).length >= 4) {
           autoSubmitTimerRef.current = window.setTimeout(() => {
             if (finalTranscriptRef.current.trim() && !submitting && !feedback) {
               usingWebSpeechRef.current = false;
+              try {
+                recognitionRef.current?.stop();
+              } catch {
+                /* ignore */
+              }
               recognitionRef.current = null;
               setRecording(false);
               setAnswer(finalTranscriptRef.current);
               setLiveCaption(finalTranscriptRef.current);
-              toast.success("Answer captured — auto-submitting…");
+              toast.success("Answer captured — submitting…");
               void submitAnswerRef.current();
             }
-          }, 5000);
+          }, 6000);
         }
       };
 
@@ -881,30 +931,18 @@ export function MockInterviewRoom() {
       };
 
       recognition.onend = () => {
+        // Keep the session alive while the user is still answering.
+        // Do NOT auto-submit on end — browsers fire this often mid-answer.
         if (!usingWebSpeechRef.current) return;
-        const text = (
-          finalTranscriptRef.current || answerSnapshotRef.current
-        ).trim();
-        if (text) {
-          // Auto-submit when the browser stops detecting speech and we have text
-          usingWebSpeechRef.current = false;
-          recognitionRef.current = null;
-          setRecording(false);
-          setAnswer(text);
-          setLiveCaption(text);
-          toast.success("Answer captured — auto-submitting…");
-          void submitAnswerRef.current();
-          return;
-        }
-        // Keep listening if nothing captured yet — restart recognition
         try {
           recognition.start();
         } catch {
           usingWebSpeechRef.current = false;
           recognitionRef.current = null;
           setRecording(false);
-          // Don't show error — just let user try again or type
-          setLiveCaption("Listening stopped — tap mic to try again or type below");
+          setLiveCaption(
+            "Listening stopped — tap mic to try again or type below"
+          );
         }
       };
 
@@ -918,7 +956,6 @@ export function MockInterviewRoom() {
       }
     }
 
-    // Fallback: Whisper MediaRecorder path
     await startWhisperRecording();
   }, [
     recording,
@@ -928,9 +965,7 @@ export function MockInterviewRoom() {
     speaking,
     clearAudio,
     stopWebSpeech,
-    scheduleAutoSubmit,
-    stt,
-    browserSpeechAvailable
+    stt
   ]);
 
   useEffect(() => {
@@ -1068,6 +1103,52 @@ export function MockInterviewRoom() {
     }
   }
 
+  function repeatCurrentQuestion() {
+    const q = turns[questionIndex]?.question;
+    if (!q || speaking || submitting || recording) return;
+    if (autoSubmitTimerRef.current) {
+      window.clearTimeout(autoSubmitTimerRef.current);
+      autoSubmitTimerRef.current = null;
+    }
+    stopWebSpeech();
+    setRecording(false);
+    speakQuestionRef.current(q);
+  }
+
+  async function previewPersonaVoice(persona: InterviewPersona) {
+    setPreviewingId(persona.id);
+    clearAudio();
+    try {
+      const res = await fetch("/api/mock-interview/speak", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: persona.previewLine,
+          voiceId: persona.id,
+          languageCode
+        })
+      });
+      if (!res.ok) throw new Error("preview failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      audioUrlRef.current = url;
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => {
+        clearAudio();
+        setPreviewingId(null);
+      };
+      audio.onerror = () => {
+        clearAudio();
+        setPreviewingId(null);
+      };
+      await audio.play();
+    } catch {
+      setPreviewingId(null);
+      toast.error("Voice preview unavailable — check OPENAI_API_KEY");
+    }
+  }
+
   const goToNextQuestionRef = useRef(goToNextQuestion);
   goToNextQuestionRef.current = goToNextQuestion;
 
@@ -1149,16 +1230,23 @@ export function MockInterviewRoom() {
                 Virtual interview room
               </CardTitle>
               <p className="text-sm leading-6 text-muted-foreground">
-                Join a light Meet-style call — camera on the left, Apply
-                Interviewer on the right. Questions speak aloud; answers are
-                captioned live as you talk.
+                Pick a real interviewer, join a Meet-style call, answer out loud,
+                and get scored feedback — repeat any question anytime.
               </p>
               {ai?.available ? (
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
                   <Sparkle className="h-3.5 w-3.5" weight="fill" />
                   {ai.message}
-                  {tts?.available ? " · ElevenLabs voice" : ""}
-                  {browserSpeechAvailable ? " · live captions" : ""}
+                  {tts?.available
+                    ? tts.provider === "openai"
+                      ? " · OpenAI HD voice"
+                      : " · ElevenLabs voice"
+                    : ""}
+                  {stt?.whisper
+                    ? " · Whisper STT"
+                    : browserSpeechAvailable
+                      ? " · live captions"
+                      : ""}
                 </p>
               ) : null}
             </CardHeader>
@@ -1200,32 +1288,25 @@ export function MockInterviewRoom() {
                 />
               </div>
 
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Choose your interviewer
+                </label>
+                <VoiceSelector
+                  selectedId={voiceId}
+                  onSelect={(persona) => setVoiceId(persona.id)}
+                  onPreview={(persona) => void previewPersonaVoice(persona)}
+                  previewingId={previewingId}
+                />
+                {!tts?.available ? (
+                  <p className="mt-2 text-[11px] text-muted-foreground">
+                    Add <code className="font-mono">OPENAI_API_KEY</code> for HD
+                    interviewer voices (browser fallback otherwise).
+                  </p>
+                ) : null}
+              </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Interviewer voice
-                  </label>
-                  <select
-                    value={voiceId}
-                    onChange={(e) => setVoiceId(e.target.value)}
-                    disabled={!tts?.available || voiceOptions.length === 0}
-                    className="h-11 w-full rounded-xl border border-input bg-white px-3 text-sm font-medium text-foreground focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20 disabled:opacity-60"
-                  >
-                    {(voiceOptions.length
-                      ? voiceOptions
-                      : [{ id: voiceId, name: "Rachel", label: "Rachel — default voice" }]
-                    ).map((voice) => (
-                      <option key={voice.id} value={voice.id}>
-                        {voice.label}
-                      </option>
-                    ))}
-                  </select>
-                  {!tts?.available ? (
-                    <p className="mt-1 text-[11px] text-muted-foreground">
-                      ElevenLabs unavailable — browser voice fallback
-                    </p>
-                  ) : null}
-                </div>
                 <div>
                   <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Language
@@ -1335,7 +1416,7 @@ export function MockInterviewRoom() {
                   onChange={(e) => setVoiceEnabled(e.target.checked)}
                   className="h-4 w-4 rounded border-border accent-[hsl(var(--accent))]"
                 />
-                Speak questions aloud (ElevenLabs · browser fallback)
+                Speak questions aloud (OpenAI HD · ElevenLabs · browser fallback)
               </label>
 
               <div className="flex flex-wrap gap-3 pt-1">
@@ -1345,7 +1426,9 @@ export function MockInterviewRoom() {
                   ) : (
                     <Play className="h-4 w-4" weight="fill" />
                   )}
-                  {loading ? "Joining…" : "Start interview"}
+                  {loading
+                    ? "Joining…"
+                    : `Start call with ${getInterviewPersona(voiceId).name}`}
                 </Button>
                 {!ai?.available ? (
                   <Button
@@ -1358,8 +1441,9 @@ export function MockInterviewRoom() {
                 ) : null}
               </div>
               <p className="text-xs leading-5 text-muted-foreground">
-                After start, the flow is automatic: hear the question → speak →
-                live captions → auto-submit → next question. End call anytime.
+                Call flow: hear the question → tap mic → speak → tap stop →
+                submit (or wait 6s). Use Repeat question anytime. End call when
+                done.
               </p>
               <Link
                 href="/dashboard/interview"
@@ -1372,7 +1456,7 @@ export function MockInterviewRoom() {
           </Card>
 
           <div className="space-y-6">
-            <InterviewerPreview />
+            <InterviewerPreview personaId={voiceId} />
             <div>
               <p className="fine-label mb-3">Recent practice</p>
               {history.length ? (
@@ -1470,6 +1554,9 @@ export function MockInterviewRoom() {
           onSubmitAnswer={() => void submitAnswer()}
           onEndInterview={() => void endSession()}
           onNext={goToNextQuestion}
+          onRepeatQuestion={repeatCurrentQuestion}
+          turns={turns}
+          interviewer={getInterviewPersona(voiceId)}
         />
       ) : null}
 
@@ -1544,18 +1631,20 @@ export function MockInterviewRoom() {
   );
 }
 
-function InterviewerPreview() {
+function InterviewerPreview({ personaId }: { personaId: string }) {
+  const persona = getInterviewPersona(personaId);
   return (
     <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-gradient-to-br from-[#edf6f5] via-[#f7faf9] to-[#e8f0f2] p-5 shadow-sm">
       <div className="relative flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <MockInterviewRobot mood="idle" size="sm" />
+        <InterviewerAvatar persona={persona} size="md" statusLabel={persona.role} />
         <div className="text-center sm:text-left">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
-            Apply Interviewer
+            {persona.name}
           </p>
+          <p className="mt-1 text-sm font-semibold text-primary">{persona.role}</p>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            Light Meet-style room with your camera, a speaking interviewer, live
-            answer captions, and automatic next questions.
+            Meet-style call with your camera, a real interviewer voice, live
+            captions, and scored feedback after each answer.
           </p>
         </div>
       </div>

@@ -7,22 +7,22 @@ import {
   CircleNotch,
   ClosedCaptioning,
   Gear,
+  ListBullets,
   Microphone,
   MicrophoneSlash,
   PaperPlaneTilt,
   PhoneDisconnect,
+  ArrowCounterClockwise,
   User,
   VideoCamera,
   VideoCameraSlash,
   X
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import {
-  MockInterviewRobot,
-  type RobotMood
-} from "@/components/dashboard/mock-interview-robot";
+import { InterviewerAvatar } from "@/components/dashboard/interviewer-avatar";
 import { MockInterviewCodePanel } from "@/components/dashboard/mock-interview-code-panel";
-import type { MockCodeProblem } from "@/lib/data/mock-interviews";
+import type { MockCodeProblem, MockTurnRecord } from "@/lib/data/mock-interviews";
+import type { InterviewPersona } from "@/lib/ai/interview-personas";
 
 export type MeetRoomState =
   | "asking"
@@ -95,6 +95,9 @@ type MockInterviewMeetProps = {
   onSubmitAnswer: () => void;
   onEndInterview: () => void;
   onNext: () => void;
+  onRepeatQuestion: () => void;
+  turns: MockTurnRecord[];
+  interviewer: InterviewPersona;
 };
 
 function formatTime(totalSeconds: number) {
@@ -105,42 +108,22 @@ function formatTime(totalSeconds: number) {
   return `${m}:${s}`;
 }
 
-function toRobotMood(state: MeetRoomState): RobotMood {
+function interviewerStatus(state: MeetRoomState): string {
   switch (state) {
     case "speaking":
-      return "speaking";
+      return "Asking a question";
     case "recording":
-      return "recording";
-    case "listening":
-    case "asking":
-      return state === "listening" ? "listening" : "idle";
-    case "thinking":
-      return "thinking";
-    case "transcribing":
-      return "transcribing";
-    case "coaching":
-      return "coaching";
-    default:
-      return "idle";
-  }
-}
-
-function statusLabel(state: MeetRoomState): string {
-  switch (state) {
-    case "speaking":
-      return "Interviewer speaking";
-    case "recording":
-      return "You're speaking";
+      return "Listening to you";
     case "thinking":
       return "Evaluating";
     case "transcribing":
       return "Capturing answer";
     case "coaching":
-      return "Quick coaching";
+      return "Giving feedback";
     case "listening":
       return "Ready for your answer";
     default:
-      return "Ready";
+      return "On the call";
   }
 }
 
@@ -264,13 +247,15 @@ function CandidateTile({
 }
 
 function InterviewerTile({
-  mood,
+  persona,
+  roomState,
   question,
   captionsEnabled,
   active,
   speaking
 }: {
-  mood: RobotMood;
+  persona: InterviewPersona;
+  roomState: MeetRoomState;
   question: string;
   captionsEnabled: boolean;
   active?: boolean;
@@ -285,10 +270,15 @@ function InterviewerTile({
       )}
     >
       <div className="relative flex flex-1 flex-col items-center justify-center px-4 pb-16 pt-8 sm:pt-6">
-        <MockInterviewRobot mood={mood} size="lg" />
+        <InterviewerAvatar
+          persona={persona}
+          speaking={speaking}
+          statusLabel={interviewerStatus(roomState)}
+          size="lg"
+        />
       </div>
 
-      {captionsEnabled && speaking ? (
+      {captionsEnabled && (speaking || question) ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-12 z-10 flex justify-center px-4">
           <AnimatePresence mode="wait">
             <motion.div
@@ -307,7 +297,7 @@ function InterviewerTile({
       ) : null}
 
       <div className="absolute bottom-3 left-3 rounded-md bg-black/55 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
-        Apply Interviewer
+        {persona.name} · {persona.role}
       </div>
       {active ? (
         <span className="absolute right-3 top-3 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">
@@ -362,7 +352,7 @@ function VoiceSettingsPanel({
 
       {!ttsAvailable ? (
         <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-[11px] leading-4 text-amber-700">
-          Using browser voice. Add <code className="font-mono">ELEVENLABS_API_KEY</code> for premium human-like voices.
+          Using browser voice. Add <code className="font-mono">OPENAI_API_KEY</code> for HD human interviewers.
         </p>
       ) : null}
 
@@ -465,9 +455,13 @@ export function MockInterviewMeet({
   onStopRecording,
   onSubmitAnswer,
   onEndInterview,
-  onNext
+  onNext,
+  onRepeatQuestion,
+  turns,
+  interviewer
 }: MockInterviewMeetProps) {
   const [voicePanelOpen, setVoicePanelOpen] = useState(false);
+  const [questionsOpen, setQuestionsOpen] = useState(false);
   const reduceMotion = useReducedMotion();
   const progressPct = Math.round(
     (Math.min(questionNumber, totalQuestions) / totalQuestions) * 100
@@ -496,14 +490,14 @@ export function MockInterviewMeet({
             </p>
           </div>
           <p className="mt-0.5 truncate text-[11px] capitalize text-muted-foreground sm:text-xs">
-            {interviewType} · {difficulty} · {providerLabel}
-            {demoMode ? " · demo" : ""} · Q{questionNumber}/{totalQuestions} ·{" "}
-            {category}
+            with {interviewer.name} · {interviewType} · {difficulty} ·{" "}
+            {category} · {providerLabel}
+            {demoMode ? " · demo" : ""} · Q{questionNumber}/{totalQuestions}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <span className="hidden rounded-full border border-border bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-muted-foreground sm:inline-flex">
-            {statusLabel(roomState)}
+            {interviewerStatus(roomState)}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1.5 font-mono text-sm font-semibold tabular-nums text-primary">
             {formatTime(seconds)}
@@ -524,9 +518,9 @@ export function MockInterviewMeet({
         />
       </div>
 
-      {/* Two large side-by-side tiles */}
+      {/* Two large side-by-side tiles + questions rail */}
       <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-2 p-2 sm:gap-3 sm:p-4">
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[1fr_1fr_minmax(200px,240px)] sm:grid-cols-2 sm:gap-3">
           <CandidateTile
             cameraOn={cameraOn}
             stream={cameraStream}
@@ -534,12 +528,47 @@ export function MockInterviewMeet({
             active={recording}
           />
           <InterviewerTile
-            mood={toRobotMood(roomState)}
+            persona={interviewer}
+            roomState={roomState}
             question={question}
             captionsEnabled={captionsEnabled}
             active={speaking}
             speaking={speaking}
           />
+          <aside className="hidden min-h-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-white/85 p-3 shadow-sm backdrop-blur-md lg:flex">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              Questions asked
+            </p>
+            <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+              {turns.map((turn, index) => {
+                const answered = Boolean(turn.answer?.trim());
+                const isCurrent = index === questionNumber - 1;
+                return (
+                  <li
+                    key={`${index}-${turn.question.slice(0, 24)}`}
+                    className={cn(
+                      "rounded-xl border px-2.5 py-2 text-[11px] leading-4",
+                      isCurrent
+                        ? "border-accent/40 bg-accent/5 text-primary"
+                        : answered
+                          ? "border-border bg-white text-muted-foreground"
+                          : "border-dashed border-border/70 text-muted-foreground/70"
+                    )}
+                  >
+                    <span className="font-semibold text-foreground">
+                      Q{index + 1}
+                      {answered && turn.score != null
+                        ? ` · ${turn.score}/10`
+                        : isCurrent
+                          ? " · now"
+                          : ""}
+                    </span>
+                    <p className="mt-1 line-clamp-3">{turn.question}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          </aside>
         </div>
 
         {/* Live user caption + answer / feedback strip */}
@@ -622,14 +651,14 @@ export function MockInterviewMeet({
                 </label>
                 <p className="text-[10px] text-muted-foreground">
                   {recording
-                    ? "Listening… tap mic to stop"
+                    ? "Listening… tap Stop when done"
                     : transcribing
                       ? "Finalizing transcript…"
                       : submitting
                         ? "Evaluating…"
                         : speaking
                           ? "Wait for the question"
-                          : "Mic answers instantly · type optional"}
+                          : "Tap Mic → speak → Stop → Submit"}
                 </p>
               </div>
               <textarea
@@ -703,6 +732,61 @@ export function MockInterviewMeet({
                 />
               )}
             </MeetControlButton>
+
+            <MeetControlButton
+              label="Repeat"
+              onClick={onRepeatQuestion}
+              disabled={
+                Boolean(feedback) ||
+                submitting ||
+                recording ||
+                transcribing ||
+                speaking ||
+                !question.trim()
+              }
+            >
+              <ArrowCounterClockwise
+                className="h-5 w-5 sm:h-6 sm:w-6"
+                weight="bold"
+              />
+            </MeetControlButton>
+
+            <div className="relative lg:hidden">
+              <MeetControlButton
+                label="Qs"
+                onClick={() => setQuestionsOpen((v) => !v)}
+                active={questionsOpen}
+              >
+                <ListBullets className="h-5 w-5 sm:h-6 sm:w-6" weight="fill" />
+              </MeetControlButton>
+              <AnimatePresence>
+                {questionsOpen ? (
+                  <motion.div
+                    initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduceMotion ? undefined : { opacity: 0, y: 6 }}
+                    className="absolute bottom-full left-1/2 z-20 mb-3 w-72 -translate-x-1/2 rounded-2xl border border-border bg-white p-3 shadow-xl"
+                  >
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                      Questions asked
+                    </p>
+                    <ul className="max-h-56 space-y-2 overflow-y-auto">
+                      {turns.map((turn, index) => (
+                        <li
+                          key={`m-${index}`}
+                          className="rounded-lg border border-border px-2 py-1.5 text-[11px] leading-4 text-muted-foreground"
+                        >
+                          <span className="font-semibold text-foreground">
+                            Q{index + 1}
+                          </span>{" "}
+                          {turn.question}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </div>
 
             <MeetControlButton
               label="Captions"
