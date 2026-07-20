@@ -131,9 +131,6 @@ export default function RootLayout({
             process.env.NEXT_PUBLIC_CHATBOT_OWNER_ID ?? "usr_129633093731483650"
           }
           strategy="afterInteractive"
-          onError={() => {
-            // Apna AI server unreachable — fail silently, no broken widget
-          }}
         />
         <script
           dangerouslySetInnerHTML={{
