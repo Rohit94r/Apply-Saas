@@ -6,9 +6,9 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
-const title = "AI Mock Interview Practice Online (Free Start) | Apply";
+const title = "Free AI Mock Interview Online for Freshers | Apply";
 const description =
-  "Practice AI mock interviews for campus placements — Meet-style video room, ElevenLabs voice, Hindi/English options, coding rounds, and scored feedback. Free to start on Apply.";
+  "Practice free AI mock interviews for campus placements — Meet-style room, voice questions, Hindi/English, coding rounds with tests, and scored feedback. Start on Apply.";
 
 export const metadata: Metadata = {
   title: {
@@ -16,13 +16,13 @@ export const metadata: Metadata = {
   },
   description,
   keywords: [
+    "free AI mock interview for freshers",
     "mock interview practice online",
     "AI mock interview for freshers",
     "campus placement mock interview",
     "virtual mock interview India",
     "coding mock interview practice",
-    "TCS Infosys mock interview",
-    "AI interviewer voice practice",
+    "online mock interview with coding",
     "free mock interview for students"
   ],
   alternates: {
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
 const softwareJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "Apply AI Mock Interview",
+  name: "Apply Free AI Mock Interview",
   applicationCategory: "EducationalApplication",
   operatingSystem: "Web",
   url: absoluteUrl("/mock-interview"),
@@ -70,7 +70,7 @@ const softwareJsonLd = {
     "ElevenLabs interviewer voice",
     "English, Hindi, Tamil, Telugu, Marathi",
     "Coding questions with test runner",
-    "Turn-by-turn scoring and session summary"
+    "5–10 question sessions with scored feedback"
   ]
 };
 
@@ -80,10 +80,18 @@ const faqJsonLd = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "Is Apply's mock interview free?",
+      name: "Is Apply's AI mock interview free for freshers?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. You can start free after signing in. The web mock interview includes voice questions, live captions, and optional coding rounds."
+        text: "Yes. You can start free after signing in with Google. The web mock interview includes voice questions, live captions, optional coding rounds, and a score summary when you end the call."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "How many questions does one mock interview include?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Sessions run a focused 5–10 question flow so practice stays realistic for campus placement interviews instead of endless drills."
       }
     },
     {
@@ -91,7 +99,7 @@ const faqJsonLd = {
       name: "Does the mock interview include coding questions?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. You can enable coding questions at easy, medium, or hard difficulty. A terminal appears during coding turns so you can write and run tests."
+        text: "Yes. Enable coding at easy, medium, or hard difficulty. An editor and terminal appear so you can write code and run simple test cases during the meeting."
       }
     },
     {
@@ -101,17 +109,74 @@ const faqJsonLd = {
         "@type": "Answer",
         text: "English is the default. You can also choose Hindi, Tamil, Telugu, or Marathi, with ElevenLabs voice when configured."
       }
+    },
+    {
+      "@type": "Question",
+      name: "How should I prepare before a mock interview?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Solve a few company previous year coding questions first, then run a voice mock for the same company and role. Review scored feedback and repeat one weak answer the next day."
+      }
+    }
+  ]
+};
+
+const howToJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to practice a free AI mock interview on Apply",
+  description,
+  totalTime: "PT30M",
+  step: [
+    {
+      "@type": "HowToStep",
+      name: "Open the mock interview page",
+      text: "Go to apply.neexmeet.com/mock-interview and sign in with Google."
+    },
+    {
+      "@type": "HowToStep",
+      name: "Set company, role, and coding options",
+      text: "Enter your target company and role, choose HR/technical/mixed, language, and whether coding rounds are enabled."
+    },
+    {
+      "@type": "HowToStep",
+      name: "Answer spoken questions in the Meet-style room",
+      text: "The AI interviewer asks questions aloud. Speak your answers; captions and scoring follow each turn."
+    },
+    {
+      "@type": "HowToStep",
+      name: "Review scored feedback",
+      text: "End the call to see questions answered, strong answers, and coding tests passed, then practice weak areas again."
     }
   ]
 };
 
 const features = [
   "Google Meet–style layout: you on camera, AI interviewer on the right",
-  "Realistic ElevenLabs female interviewer voices (not robotic browser TTS)",
+  "Realistic ElevenLabs interviewer voices (not robotic browser TTS)",
+  "5–10 focused questions per session for campus placement realism",
   "Job description / interview notes optional for role-specific questions",
-  "Coding PYQ-style problems with Easy / Medium / Hard difficulty",
-  "End-call popup with questions answered, strong answers, and coding passed",
-  "History saved to Applications & progress (latest sessions)"
+  "Coding problems with Easy / Medium / Hard and a test runner in-meeting",
+  "End-call score summary plus history in Applications & progress"
+];
+
+const relatedGuides = [
+  {
+    href: "/blog/ai-mock-interview-practice-campus-placements",
+    label: "AI mock interview practice for campus placements"
+  },
+  {
+    href: "/blog/free-ai-mock-interview-for-freshers",
+    label: "Free AI mock interview guide for freshers"
+  },
+  {
+    href: "/blog/online-mock-interview-with-coding-round",
+    label: "Online mock interview with coding round"
+  },
+  {
+    href: "/blog/use-ai-mock-interview-feedback",
+    label: "How to use mock interview feedback"
+  }
 ];
 
 export default function MockInterviewMarketingPage() {
@@ -121,21 +186,22 @@ export default function MockInterviewMarketingPage() {
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([softwareJsonLd, faqJsonLd])
+          __html: JSON.stringify([softwareJsonLd, faqJsonLd, howToJsonLd])
         }}
       />
       <SiteHeader />
       <main>
         <section className="border-b border-border/70 py-20">
           <div className="section-shell max-w-4xl">
-            <p className="fine-label mb-5">AI Mock Interview</p>
+            <p className="fine-label mb-5">Free AI mock interview</p>
             <h1 className="font-serif text-5xl leading-[1.02] text-primary sm:text-6xl">
-              Online mock interview practice for campus placements.
+              Free AI mock interview practice for campus placements.
             </h1>
             <p className="mt-6 text-base leading-8 text-muted-foreground">
               Stop reading answers silently. Apply runs a live virtual interview —
               speaks the question, listens to your answer, scores you, and can add
-              coding rounds similar to company OA / previous year questions.
+              coding rounds like company OA / previous year questions. Free to start
+              for freshers and students.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
@@ -153,7 +219,9 @@ export default function MockInterviewMarketingPage() {
 
         <section className="border-b border-border/70 bg-[#fbfaf6] py-16">
           <div className="section-shell">
-            <h2 className="font-serif text-3xl text-primary">What you get</h2>
+            <h2 className="font-serif text-3xl text-primary">
+              What you get in one session
+            </h2>
             <ul className="mt-8 grid gap-4 sm:grid-cols-2">
               {features.map((item) => (
                 <li
@@ -171,7 +239,7 @@ export default function MockInterviewMarketingPage() {
           </div>
         </section>
 
-        <section className="py-16">
+        <section className="border-b border-border/70 py-16">
           <div className="section-shell max-w-3xl">
             <h2 className="font-serif text-3xl text-primary">
               Pair mock interviews with previous year papers
@@ -179,18 +247,13 @@ export default function MockInterviewMarketingPage() {
             <p className="mt-4 text-sm leading-7 text-muted-foreground">
               The strongest placement plan is: company PYQs → timed coding practice
               → voice mock interview for the same company and role. Start with{" "}
-              <Link href="/pyqs" className="font-semibold text-primary underline-offset-2 hover:underline">
-                previous year coding questions
-              </Link>
-              , then return here to rehearse speaking under pressure. After a
-              session, use the{" "}
               <Link
-                href="/blog/use-ai-mock-interview-feedback"
+                href="/pyqs"
                 className="font-semibold text-primary underline-offset-2 hover:underline"
               >
-                mock interview feedback workflow
-              </Link>{" "}
-              to turn the transcript into your next practice goal.
+                previous year coding questions
+              </Link>
+              , then return here to rehearse speaking under pressure.
             </p>
             <Button asChild className="mt-8">
               <Link href="/dashboard/mock-interview">
@@ -198,6 +261,26 @@ export default function MockInterviewMarketingPage() {
                 <ArrowRight className="h-4 w-4" weight="regular" />
               </Link>
             </Button>
+          </div>
+        </section>
+
+        <section className="py-16">
+          <div className="section-shell max-w-3xl">
+            <h2 className="font-serif text-3xl text-primary">
+              Guides that improve your next mock
+            </h2>
+            <ul className="mt-6 space-y-3">
+              {relatedGuides.map((guide) => (
+                <li key={guide.href}>
+                  <Link
+                    href={guide.href}
+                    className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
+                  >
+                    {guide.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       </main>

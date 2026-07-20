@@ -9,12 +9,14 @@ import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Placement Guides: Resumes, PYQs & Interviews | Apply"
+    absolute: "Placement Guides: Mock Interviews, PYQs, Salaries | Apply"
   },
   description:
-    "Guides for Indian campus placements: company previous year coding questions, AI mock interview practice, ATS resume tips, and fresher resume formats.",
+    "Campus placement guides: free AI mock interviews, company previous year coding questions, fresher salary India 2026, and ATS resume formats for IT companies.",
   keywords: [
+    "free AI mock interview for freshers",
     "previous year coding questions",
+    "fresher salary India IT companies",
     "mock interview practice online",
     "ATS resume tips India",
     "campus placement prep"
@@ -28,9 +30,9 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true }
   },
   openGraph: {
-    title: "Placement Guides — PYQs, Mock Interviews, ATS Resumes | Apply",
+    title: "Placement Guides — Mock Interviews, PYQs, Salaries | Apply",
     description:
-      "Guides for Indian campus placements: company previous year coding questions, AI mock interview practice, ATS resume tips, and fresher resume formats.",
+      "Campus placement guides: free AI mock interviews, company previous year coding questions, fresher salary India 2026, and ATS resume formats for IT companies.",
     url: absoluteUrl("/blog"),
     siteName: seoConfig.name,
     type: "website"
@@ -58,20 +60,20 @@ const blogJsonLd = {
 
 const intentGuides = [
   {
-    label: "Find better-fit fresher jobs",
-    href: "/blog/job-matching-from-resume-for-students"
+    label: "Start a free AI mock interview",
+    href: "/blog/free-ai-mock-interview-for-freshers"
   },
   {
-    label: "Improve from mock interview feedback",
-    href: "/blog/use-ai-mock-interview-feedback"
+    label: "Practice coding in a mock interview",
+    href: "/blog/online-mock-interview-with-coding-round"
   },
   {
-    label: "Get a first freelance client",
-    href: "/blog/first-freelance-client-college-student"
+    label: "Check fresher salary bands 2026",
+    href: "/blog/fresher-salary-india-it-companies-2026"
   },
   {
-    label: "Follow a 14-day company PYQ plan",
-    href: "/blog/company-pyq-14-day-placement-plan"
+    label: "Use company previous year PYQs",
+    href: "/blog/company-previous-year-coding-questions-india"
   }
 ];
 
@@ -92,13 +94,14 @@ export default function BlogPage() {
       <main>
         <section className="border-b border-border/70 py-20">
           <div className="section-shell">
-            <p className="fine-label mb-5">Resume guides</p>
+            <p className="fine-label mb-5">Placement guides</p>
             <h1 className="max-w-4xl font-serif text-5xl leading-[1.02] text-primary sm:text-6xl">
-              Resume and ATS guides for students worldwide.
+              Mock interviews, PYQs, salaries, and ATS resumes.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-muted-foreground">
-              Practical advice for engineering students, interns, and early-career
-              applicants who want cleaner, ATS-friendly resumes — wherever you are applying.
+              Practical campus placement guides for Indian engineering students —
+              free AI mock interviews, company coding PYQs, fresher pay bands, and
+              ATS-safe resume formats.
             </p>
           </div>
         </section>

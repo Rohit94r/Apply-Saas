@@ -73,14 +73,18 @@ export const seoConfig = {
     "India's placement preparation platform — ATS resumes, 64+ company previous year coding questions (PYQs), AI mock interviews, job match, and company prep guides. Free to start.",
   keywords: [
     "placement preparation for students",
+    "free AI mock interview for freshers",
+    "mock interview practice online",
     "company previous year coding questions",
     "campus placement coding PYQs",
     "AI mock interview for freshers",
+    "fresher salary India IT companies",
     "ATS resume builder for students",
     "resume tailoring from job description",
     "job matching for freshers",
     "company placement prep guides",
     "fresher resume format",
+    "online mock interview with coding",
     "freelancing for college students"
   ],
   publicRoutes: [

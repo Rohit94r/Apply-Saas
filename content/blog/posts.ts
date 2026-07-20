@@ -75,21 +75,26 @@ export const blogPosts = [
   },
   {
     slug: "fresher-resume-format-it-companies",
-    title: "Resume Format for Freshers: What TCS, Infosys, Wipro Actually Want",
+    title: "Fresher Resume Format for IT Companies (India)",
     description:
-      "A fresher resume format for Indian IT companies, campus placements, and service-based hiring rounds.",
+      "Fresher resume format for Indian IT companies, campus placements, and TCS/Infosys/Wipro-style hiring rounds. Simple one-page structure that ATS can read.",
     publishedAt: "2026-05-24",
-    updatedAt: "2026-05-24",
+    updatedAt: "2026-07-20",
     readingTime: "5 min read",
     category: "Fresher resumes",
     targetKeyword: "fresher resume format for IT companies",
     keywords: [
       "fresher resume format for IT companies",
+      "fresher resume format India",
       "TCS interview preparation resume",
       "Infosys internship resume format"
     ],
     excerpt:
       "For fresher hiring, recruiters want proof of fundamentals, projects, communication, and role fit more than heavy design.",
+    workflowLinks: [
+      { label: "Build an ATS resume", href: "/dashboard/generate" },
+      { label: "Compare resume builders", href: "/blog/best-resume-builder-india-students-comparison" }
+    ],
     sections: [
       {
         heading: "Use a simple one-page structure",
@@ -219,21 +224,28 @@ export const blogPosts = [
   },
   {
     slug: "engineering-student-resume-template",
-    title: "Engineering Student Resume Template: Free Structure and Examples",
+    title: "Engineering Student Resume Template (Free ATS)",
     description:
-      "A free engineering student resume structure with section order, bullet examples, and ATS-safe formatting tips.",
+      "Free engineering student resume template for Indian campus placements — section order, bullet examples, and ATS-safe formatting you can copy into Apply.",
     publishedAt: "2026-05-24",
-    updatedAt: "2026-05-24",
+    updatedAt: "2026-07-20",
     readingTime: "5 min read",
     category: "Templates",
     targetKeyword: "engineering student resume template",
     keywords: [
       "engineering student resume template",
+      "free engineering resume template India",
       "IIT student resume template",
-      "college student resume builder"
+      "college student resume builder",
+      "ATS resume template for engineering students"
     ],
     excerpt:
       "Use this engineering resume structure when you need a clean base resume for internships, campus placements, and fresher jobs.",
+    workflowLinks: [
+      { label: "Build this template in Apply", href: "/dashboard/generate" },
+      { label: "Fresher IT resume format", href: "/blog/fresher-resume-format-it-companies" },
+      { label: "Practice mock interviews", href: "/mock-interview" }
+    ],
     sections: [
       {
         heading: "Recommended section order",
@@ -267,12 +279,11 @@ export const blogPosts = [
   },
   {
     slug: "company-previous-year-coding-questions-india",
-    title:
-      "Company Previous Year Coding Questions (PYQs): Complete Campus Placement Guide 2026",
+    title: "Company Previous Year Coding Questions (PYQs)",
     description:
-      "How to use company previous year coding question papers for TCS, Infosys, Amazon, Zoho, Google, and 60+ firms — OA practice, hiring process, and mock interview tips.",
+      "Company previous year coding questions for TCS, Infosys, Amazon, Zoho, Google, and 60+ firms — OA practice, hiring process, and mock interview tips for campus placements.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-16",
+    updatedAt: "2026-07-20",
     readingTime: "8 min read",
     category: "Coding PYQs",
     targetKeyword: "previous year coding questions",
@@ -288,6 +299,14 @@ export const blogPosts = [
     ],
     excerpt:
       "Previous year coding questions (PYQs) are the fastest way to understand what a company's OA and coding rounds actually ask — if you practice them under time pressure and pair them with speaking mocks.",
+    workflowLinks: [
+      { label: "Open Company PYQs library", href: "/pyqs" },
+      { label: "Start coding mock interview", href: "/mock-interview" },
+      {
+        label: "14-day PYQ placement plan",
+        href: "/blog/company-pyq-14-day-placement-plan"
+      }
+    ],
     sections: [
       {
         heading: "What are company previous year coding questions?",
@@ -330,26 +349,33 @@ export const blogPosts = [
   },
   {
     slug: "ai-mock-interview-practice-campus-placements",
-    title:
-      "AI Mock Interview Practice for Campus Placements: Speak, Code, Score",
+    title: "AI Mock Interview Practice Online for Freshers",
     description:
-      "How to practice AI mock interviews online for Indian campus placements — Meet-style room, voice answers, coding rounds, and scored feedback on Apply.",
+      "Practice AI mock interviews online for Indian campus placements — Meet-style room, voice answers, coding rounds, and scored feedback. Free to start on Apply.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-16",
+    updatedAt: "2026-07-20",
     readingTime: "7 min read",
     category: "Mock interviews",
-    targetKeyword: "mock interview practice online",
+    targetKeyword: "AI mock interview for freshers",
     keywords: [
-      "mock interview practice online",
       "AI mock interview for freshers",
+      "mock interview practice online",
       "campus placement mock interview",
       "virtual mock interview India",
       "coding mock interview practice",
       "free mock interview for students",
-      "ElevenLabs AI interviewer"
+      "free AI mock interview online"
     ],
     excerpt:
       "A good mock interview should feel like a real call: you on camera, an interviewer speaking questions, live captions, optional coding, and a clear score when you hang up.",
+    workflowLinks: [
+      { label: "Start free mock interview", href: "/mock-interview" },
+      { label: "Browse company PYQs", href: "/pyqs" },
+      {
+        label: "Use interview feedback well",
+        href: "/blog/use-ai-mock-interview-feedback"
+      }
+    ],
     sections: [
       {
         heading: "Why reading answers is not enough",
@@ -1698,11 +1724,11 @@ export const blogPosts = [
   },
   {
     slug: "fresher-salary-india-it-companies-2026",
-    title: "Fresher Salary in India IT Companies 2026: TCS, Infosys, Amazon, Startups",
+    title: "Fresher Salary India 2026: TCS Infosys Amazon",
     description:
-      "Complete fresher salary guide for Indian IT companies 2026 — TCS, Infosys, Wipro, Amazon, Microsoft, Goldman Sachs, and startups. Base pay, bonuses, benefits, and negotiation tips.",
+      "Fresher salary in India IT companies 2026 — TCS, Infosys, Wipro, Amazon, Microsoft, Goldman Sachs, and startups. Base pay, bonuses, and negotiation tips for campus hires.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-16",
+    updatedAt: "2026-07-20",
     readingTime: "8 min",
     category: "Career",
     targetKeyword: "fresher salary India IT companies",
@@ -1720,6 +1746,14 @@ export const blogPosts = [
     ],
     excerpt:
       "How much do Indian IT companies pay freshers in 2026? Here's the complete salary breakdown — service companies, product companies, fintech, and startups — with benefits and negotiation tips.",
+    workflowLinks: [
+      { label: "Practice mock interviews", href: "/mock-interview" },
+      { label: "Browse company PYQs", href: "/pyqs" },
+      {
+        label: "Fresher resume format guide",
+        href: "/blog/fresher-resume-format-it-companies"
+      }
+    ],
     sections: [
       {
         heading: "Service company fresher salaries (2026)",
@@ -2390,6 +2424,124 @@ export const blogPosts = [
         body: [
           "Run one final timed set in your chosen language and environment. Review your checklist: input parsing, empty and boundary cases, overflow where relevant, output format, and a final sample test.",
           "Use the remaining time to revisit notes and sleep normally. The plan cannot guarantee a particular question or result; it gives you a repeatable way to use reported questions without mistaking memorization for preparation."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "free-ai-mock-interview-for-freshers",
+    title: "Free AI Mock Interview for Freshers: How to Start",
+    description:
+      "How freshers can start a free AI mock interview online for campus placements — setup, question types, coding rounds, and a simple weekly practice plan on Apply.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "6 min read",
+    category: "Mock interviews",
+    targetKeyword: "free AI mock interview for freshers",
+    keywords: [
+      "free AI mock interview for freshers",
+      "free mock interview for students",
+      "AI mock interview free online",
+      "campus placement mock interview free",
+      "virtual mock interview for freshers"
+    ],
+    excerpt:
+      "You do not need a paid coaching package to rehearse interviews. A free AI mock interview lets you practice speaking, coding, and recovering from silence before the real campus round.",
+    workflowLinks: [
+      { label: "Start free mock interview", href: "/mock-interview" },
+      { label: "Company PYQs library", href: "/pyqs" },
+      {
+        label: "Full campus mock interview guide",
+        href: "/blog/ai-mock-interview-practice-campus-placements"
+      }
+    ],
+    sections: [
+      {
+        heading: "What “free to start” should include",
+        body: [
+          "A useful free mock interview is more than a chatbot. You need spoken questions, a chance to answer out loud, optional coding, and feedback you can act on.",
+          "Apply’s web mock interview is free to start after Google sign-in. Sessions stay focused at 5–10 questions so practice feels like a real campus interview, not an endless quiz."
+        ]
+      },
+      {
+        heading: "How to set up your first session",
+        body: [
+          "Open apply.neexmeet.com/mock-interview, sign in, and enter a target company and role (for example TCS System Engineer or Amazon SDE Intern).",
+          "Choose HR, technical, or mixed. Add a short job description if you have one. Enable coding only after you can already solve a few Easy PYQs for that company.",
+          "Pick English first if that is your interview language. Switch to Hindi or another supported language only when you want to rehearse the same stories in that language."
+        ]
+      },
+      {
+        heading: "What to do after the score screen",
+        body: [
+          "Write down one weak answer and one strong answer. Rewrite the weak answer in your own words, then run a shorter mock the next day focused on that topic.",
+          "Do not memorize the AI’s phrasing. Interviewers notice scripted answers. Use the transcript to improve structure, evidence, and clarity."
+        ]
+      },
+      {
+        heading: "Weekly plan for freshers",
+        body: [
+          "Two coding PYQ blocks from the company library, one technical mock with coding, one HR/mixed mock, and one feedback rewrite day.",
+          "Track sessions in Applications & progress so you can see which companies and question types still feel shaky before placement week."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "online-mock-interview-with-coding-round",
+    title: "Online Mock Interview with Coding Round: Practice Guide",
+    description:
+      "How to practice an online mock interview with a coding round — editor, tests, difficulty levels, and a prep loop that pairs PYQs with voice answers on Apply.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "7 min read",
+    category: "Mock interviews",
+    targetKeyword: "online mock interview with coding",
+    keywords: [
+      "online mock interview with coding",
+      "coding mock interview practice",
+      "virtual interview coding round",
+      "OA mock interview practice",
+      "campus placement coding interview practice"
+    ],
+    excerpt:
+      "Campus and product interviews often mix spoken technical questions with live coding. Practice both in one online mock so you stop treating coding and communication as separate skills.",
+    workflowLinks: [
+      { label: "Open mock interview room", href: "/mock-interview" },
+      { label: "Solve company PYQs first", href: "/pyqs" },
+      {
+        label: "14-day PYQ placement plan",
+        href: "/blog/company-pyq-14-day-placement-plan"
+      }
+    ],
+    sections: [
+      {
+        heading: "Why coding-only practice is not enough",
+        body: [
+          "Students often solve LeetCode quietly, then freeze when they must explain an approach on a call. Online assessments and interviews expect both working code and clear narration.",
+          "An online mock with a coding round forces you to hear the prompt, clarify constraints, write in an editor, run tests, and keep talking when stuck."
+        ]
+      },
+      {
+        heading: "How Apply’s coding turn works",
+        body: [
+          "Enable coding at Easy, Medium, or Hard when you start the mock. When a coding turn begins, an editor and terminal appear inside the meeting.",
+          "Write a simple solution, run the provided test cases, and explain your approach out loud. The session score tracks coding tests passed along with spoken answers."
+        ]
+      },
+      {
+        heading: "Prep loop that compounds",
+        body: [
+          "Day A: solve 3–5 previous year questions for one company from the PYQs library without a timer pressure.",
+          "Day B: timed set for the same company. Day C: mock interview with coding enabled for that company and role.",
+          "After the mock, note whether failures came from problem selection, bugs, or explanation. Fix one category per week instead of changing everything at once."
+        ]
+      },
+      {
+        heading: "Safety and honesty notes",
+        body: [
+          "Use the practice room to improve your own skill. Do not treat reported PYQs as guaranteed questions, and do not submit fabricated project claims during HR turns.",
+          "Apply’s coding evaluator is built for practice with deterministic tests — use it to build confidence, then verify on the company’s real platform before the actual OA."
         ]
       }
     ]
