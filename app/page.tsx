@@ -20,16 +20,16 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { Testimonials } from "@/components/landing/testimonials";
 import {
   faqJsonLd,
-  organizationJsonLd,
   softwareJsonLd,
-  websiteJsonLd,
   seoConfig,
   absoluteUrl
 } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: seoConfig.title,
+  title: {
+    absolute: seoConfig.title
+  },
   description: seoConfig.description,
   keywords: [...seoConfig.keywords],
   alternates: {
@@ -62,10 +62,8 @@ export default function Home() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify([
-            organizationJsonLd,
-            websiteJsonLd,
-            softwareJsonLd,
-            faqJsonLd
+              softwareJsonLd,
+              faqJsonLd
           ])
         }}
       />

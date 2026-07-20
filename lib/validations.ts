@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  MAX_INTERVIEW_QUESTIONS,
+  MIN_INTERVIEW_QUESTIONS
+} from "@/lib/mock-interview/flow";
 
 const optionalTextWithDefault = (fallback: string, max = 120) =>
   z.preprocess(
@@ -125,6 +129,31 @@ export const offerUpdateSchema = offerCreateSchema.partial();
 
 export const mockInterviewTypeSchema = z.enum(["hr", "technical", "mixed"]);
 export const mockInterviewDifficultySchema = z.enum(["easy", "medium", "hard"]);
+const mockCodeProblemSchema = z.object({
+  title: z.string().trim().min(1).max(120),
+  description: z.string().trim().min(1).max(1200),
+  starterCode: z.string().max(4000),
+  testCases: z
+    .array(
+      z.object({
+        input: z.string().max(1000),
+        expected: z.string().max(1000),
+        label: z.string().trim().max(80).optional()
+      })
+    )
+    .min(1)
+    .max(5)
+});
+const mockTurnSchema = z.object({
+  question: z.string().min(1).max(2000),
+  category: z.string().max(40).optional(),
+  answer: z.string().max(8000).optional(),
+  strengths: z.array(z.string().max(500)).max(3).optional(),
+  improvements: z.array(z.string().max(500)).max(3).optional(),
+  score: z.number().min(1).max(10).optional(),
+  codeProblem: mockCodeProblemSchema.optional(),
+  codePassed: z.boolean().optional()
+});
 
 export const mockInterviewStartSchema = z.object({
   action: z.literal("start").optional(),
@@ -136,7 +165,13 @@ export const mockInterviewStartSchema = z.object({
   includeCoding: z.boolean().optional().default(false),
   languageCode: z.string().trim().max(8).optional().default("en"),
   voiceId: z.string().trim().max(64).optional(),
-  totalQuestions: z.number().int().min(5).max(8).optional().default(6),
+  totalQuestions: z
+    .number()
+    .int()
+    .min(MIN_INTERVIEW_QUESTIONS)
+    .max(MAX_INTERVIEW_QUESTIONS)
+    .optional()
+    .default(6),
   /** When true, allow labeled demo mode if no AI key is configured. */
   allowDemo: z.boolean().optional().default(false)
 });
@@ -146,28 +181,27 @@ export const mockInterviewAnswerSchema = z.object({
   sessionId: z.string().min(1),
   answer: z.string().trim().min(1, "Type an answer before submitting").max(8000),
   /** Client-held turns for local (non-persisted) sessions. */
-  turns: z
-    .array(
-      z.object({
-        question: z.string().min(1),
-        category: z.string().optional(),
-        answer: z.string().optional(),
-        strengths: z.array(z.string()).optional(),
-        improvements: z.array(z.string()).optional(),
-        score: z.number().optional()
-      })
-    )
-    .optional(),
+  turns: z.array(mockTurnSchema).max(MAX_INTERVIEW_QUESTIONS).optional(),
   company: z.string().trim().min(1).max(120).optional(),
   role: z.string().trim().min(1).max(120).optional(),
   interviewType: mockInterviewTypeSchema.optional(),
   difficulty: mockInterviewDifficultySchema.optional(),
-  totalQuestions: z.number().int().min(5).max(8).optional(),
+  totalQuestions: z
+    .number()
+    .int()
+    .min(MIN_INTERVIEW_QUESTIONS)
+    .max(MAX_INTERVIEW_QUESTIONS)
+    .optional(),
   resumeContext: z.string().max(12000).optional(),
   jobDescription: z.string().max(4000).optional(),
   includeCoding: z.boolean().optional(),
   languageCode: z.string().max(8).optional(),
-  questionIndex: z.number().int().min(0).max(20).optional(),
+  questionIndex: z
+    .number()
+    .int()
+    .min(0)
+    .max(MAX_INTERVIEW_QUESTIONS - 1)
+    .optional(),
   currentQuestion: z.string().min(1).max(2000).optional()
 });
 
@@ -175,23 +209,17 @@ export const mockInterviewEndSchema = z.object({
   action: z.literal("end"),
   sessionId: z.string().min(1),
   durationSeconds: z.number().int().min(0).max(60 * 60 * 4),
-  turns: z
-    .array(
-      z.object({
-        question: z.string().min(1),
-        category: z.string().optional(),
-        answer: z.string().optional(),
-        strengths: z.array(z.string()).optional(),
-        improvements: z.array(z.string()).optional(),
-        score: z.number().optional()
-      })
-    )
-    .optional(),
+  turns: z.array(mockTurnSchema).max(MAX_INTERVIEW_QUESTIONS).optional(),
   company: z.string().trim().min(1).max(120).optional(),
   role: z.string().trim().min(1).max(120).optional(),
   interviewType: mockInterviewTypeSchema.optional(),
   difficulty: mockInterviewDifficultySchema.optional(),
-  totalQuestions: z.number().int().min(5).max(8).optional(),
+  totalQuestions: z
+    .number()
+    .int()
+    .min(MIN_INTERVIEW_QUESTIONS)
+    .max(MAX_INTERVIEW_QUESTIONS)
+    .optional(),
   resumeContext: z.string().max(12000).optional()
 });
 

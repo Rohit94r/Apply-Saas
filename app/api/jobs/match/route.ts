@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server";
 import { getOptionalUserId } from "@/lib/auth";
 import { getJobMatchesForUser } from "@/lib/data/jobs";
+import { jobCountries } from "@/lib/config/job-countries";
 
 export async function GET(request: Request) {
   const userId = await getOptionalUserId();
@@ -17,8 +18,14 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const limit = Number(searchParams.get("limit") ?? "30");
+  const requestedLimit = Number(searchParams.get("limit") ?? "30");
+  const limit = Number.isInteger(requestedLimit)
+    ? Math.min(50, Math.max(1, requestedLimit))
+    : 30;
   const country = searchParams.get("country") ?? undefined;
+  if (country && !jobCountries.some((item) => item.id === country)) {
+    return NextResponse.json({ error: "Unsupported job market" }, { status: 400 });
+  }
   const jobTypeParam = searchParams.get("jobType");
   const jobType =
     jobTypeParam === "internship" ||
@@ -29,7 +36,7 @@ export async function GET(request: Request) {
 
   try {
     const result = await getJobMatchesForUser(userId, {
-      limit: Number.isFinite(limit) ? limit : 30,
+      limit,
       country,
       jobType
     });

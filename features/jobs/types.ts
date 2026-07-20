@@ -97,7 +97,13 @@ export type JobProviderFetchStatus = {
 /** Result returned to the dashboard and job search page. */
 export type JobMatchResult = {
   profile: JobSeekerProfile;
-  matches: Array<JobListing & { matchScore: number; matchReasons: string[] }>;
+  matches: Array<
+    JobListing & {
+      matchScore: number;
+      matchReasons: string[];
+      matchGaps: string[];
+    }
+  >;
   platformSearches: Array<{
     platform: JobSearchPlatform;
     label: string;

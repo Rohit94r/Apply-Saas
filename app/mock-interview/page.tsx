@@ -11,7 +11,9 @@ const description =
   "Practice AI mock interviews for campus placements — Meet-style video room, ElevenLabs voice, Hindi/English options, coding rounds, and scored feedback. Free to start on Apply.";
 
 export const metadata: Metadata = {
-  title,
+  title: {
+    absolute: title
+  },
   description,
   keywords: [
     "mock interview practice online",
@@ -180,7 +182,15 @@ export default function MockInterviewMarketingPage() {
               <Link href="/pyqs" className="font-semibold text-primary underline-offset-2 hover:underline">
                 previous year coding questions
               </Link>
-              , then return here to rehearse speaking under pressure.
+              , then return here to rehearse speaking under pressure. After a
+              session, use the{" "}
+              <Link
+                href="/blog/use-ai-mock-interview-feedback"
+                className="font-semibold text-primary underline-offset-2 hover:underline"
+              >
+                mock interview feedback workflow
+              </Link>{" "}
+              to turn the transcript into your next practice goal.
             </p>
             <Button asChild className="mt-8">
               <Link href="/dashboard/mock-interview">

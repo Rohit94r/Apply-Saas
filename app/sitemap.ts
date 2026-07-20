@@ -4,11 +4,23 @@ import { preparePages } from "@/lib/prepare";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const latestBlogUpdate = new Date(
+    Math.max(...blogPosts.map((post) => new Date(post.updatedAt).getTime()))
+  );
+  const latestPrepareUpdate = new Date(
+    Math.max(...preparePages.map((page) => new Date(page.updatedAt).getTime()))
+  );
+  const publicRouteUpdates: Record<string, Date> = {
+    "/": new Date("2026-07-19"),
+    "/blog": latestBlogUpdate,
+    "/prepare": latestPrepareUpdate,
+    "/pyqs": new Date("2026-07-19"),
+    "/mock-interview": new Date("2026-07-19")
+  };
   const publicRoutes = seoConfig.publicRoutes.map((route) => ({
     url: absoluteUrl(route),
-    lastModified: now,
-    changeFrequency: route === "/" ? ("weekly" as const) : ("daily" as const),
+    lastModified: publicRouteUpdates[route],
+    changeFrequency: "weekly" as const,
     priority: route === "/" ? 1 : 0.9
   }));
   const blogRoutes = blogPosts.map((post) => ({
@@ -27,5 +39,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [...publicRoutes, ...blogRoutes, ...prepareRoutes];
 }
 
-/** Refresh sitemap daily so Google sees updated lastmod dates. */
+/** Refresh daily to expose real content dates from the data modules. */
 export const revalidate = 86_400;

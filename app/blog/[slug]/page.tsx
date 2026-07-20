@@ -4,7 +4,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/ssr";
 import { Footer } from "@/components/landing/footer";
 import { SiteHeader } from "@/components/landing/site-header";
-import { blogPostUrl, blogPosts, getBlogPost } from "@/lib/blog";
+import {
+  blogMetadataTitle,
+  blogPostUrl,
+  blogPosts,
+  getBlogPost
+} from "@/lib/blog";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 type BlogPostPageProps = {
@@ -28,9 +33,12 @@ export async function generateMetadata({
   }
 
   const url = absoluteUrl(`/blog/${post.slug}`);
+  const image = absoluteUrl(`/blog/${post.slug}/opengraph-image`);
 
   return {
-    title: post.title,
+    title: {
+      absolute: blogMetadataTitle(post)
+    },
     description: post.description,
     keywords: post.keywords,
     alternates: {
@@ -43,12 +51,14 @@ export async function generateMetadata({
       siteName: seoConfig.name,
       type: "article",
       publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt
+      modifiedTime: post.updatedAt,
+      images: [{ url: image, alt: post.title }]
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.description
+      description: post.description,
+      images: [image]
     },
     robots: {
       index: true,
@@ -77,6 +87,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     headline: post.title,
     description: post.description,
     url: blogPostUrl(post),
+    image: absoluteUrl(`/blog/${post.slug}/opengraph-image`),
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     inLanguage: "en-IN",
@@ -91,6 +102,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": blogPostUrl(post)
+    },
+    isPartOf: {
+      "@id": absoluteUrl("/#website")
     },
     keywords: post.keywords
   };
@@ -125,6 +139,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       }
     ]
   };
+  const relatedPosts = blogPosts
+    .filter(
+      (candidate) =>
+        candidate.slug !== post.slug &&
+        (candidate.category === post.category ||
+          post.workflowLinks?.some(
+            (link) => link.href === `/blog/${candidate.slug}`
+          ))
+    )
+    .slice(0, 3);
 
   return (
     <>
@@ -156,8 +180,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </p>
               <div className="mt-6 flex flex-wrap gap-3 text-xs font-semibold text-muted-foreground">
                 <span>{post.readingTime}</span>
-                <span>Updated {post.updatedAt}</span>
-                <span>Target keyword: {post.targetKeyword}</span>
+                <time dateTime={post.updatedAt}>Updated {post.updatedAt}</time>
               </div>
             </div>
           </header>
@@ -182,23 +205,67 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   </div>
                 </section>
               ))}
+              {post.workflowLinks?.length ? (
+                <section className="border-t border-border pt-8">
+                  <h2 className="text-3xl font-bold leading-9 text-primary">
+                    Continue this workflow
+                  </h2>
+                  <p className="mt-4 text-base leading-8 text-muted-foreground">
+                    Put the guide into practice with the most relevant tools and
+                    supporting resources.
+                  </p>
+                  <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                    {post.workflowLinks.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="flex items-center justify-between gap-3 rounded-xl border border-border bg-[#fbfaf6] p-4 text-sm font-bold text-primary transition hover:border-accent/50 hover:text-accent"
+                        >
+                          {link.label}
+                          <ArrowRight className="h-4 w-4 shrink-0" weight="regular" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+              {relatedPosts.length ? (
+                <section className="border-t border-border pt-8">
+                  <h2 className="text-3xl font-bold leading-9 text-primary">
+                    Related guides
+                  </h2>
+                  <ul className="mt-5 space-y-3">
+                    {relatedPosts.map((relatedPost) => (
+                      <li key={relatedPost.slug}>
+                        <Link
+                          href={`/blog/${relatedPost.slug}`}
+                          className="inline-flex items-center gap-2 font-semibold text-primary transition hover:text-accent"
+                        >
+                          {relatedPost.title}
+                          <ArrowRight className="h-4 w-4 shrink-0" weight="regular" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
             </div>
 
             <aside className="lg:sticky lg:top-24 lg:self-start">
               <div className="rounded-xl border border-border bg-[#fbfaf6] p-5">
                 <p className="fine-label text-accent">Apply faster</p>
                 <h2 className="mt-4 text-xl font-bold text-primary">
-                  Turn this guide into a tailored resume.
+                  Continue in Apply.
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Upload your current resume, paste a job description, and review
-                  an ATS-optimized version before downloading.
+                  Use the product workflow that supports this guide, or upload a
+                  resume and tailor it to a real job description.
                 </p>
                 <Link
-                  href="/dashboard/generate"
+                  href={post.workflowLinks?.[0]?.href ?? "/dashboard/generate"}
                   className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-accent"
                 >
-                  Build free resume
+                  {post.workflowLinks?.[0]?.label ?? "Build free resume"}
                   <ArrowRight className="h-4 w-4" weight="regular" />
                 </Link>
               </div>

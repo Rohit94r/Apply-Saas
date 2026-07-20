@@ -7,8 +7,8 @@ export default function JobsPage() {
     <div>
       <PageHeader
         eyebrow="Job search"
-        title="Find jobs."
-        description="Upload your resume, then filter by type and work mode to find the best fits."
+        title="Find and act on better-fit jobs."
+        description="Compare transparent match evidence, verify source recency, save promising roles, and track applications."
       />
       <JobSearchWorkspace />
     </div>

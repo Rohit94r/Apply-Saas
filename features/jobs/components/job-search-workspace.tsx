@@ -26,6 +26,10 @@ import { jobCountries } from "@/lib/config/job-countries";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { JobMatchCard } from "@/features/jobs/components/job-match-card";
+import {
+  sortJobMatches,
+  type JobSort
+} from "@/features/jobs/lib/job-workflow";
 
 type JobTypeFilter = "all" | JobListing["type"];
 type WorkModeFilter = "all" | JobListing["workMode"];
@@ -81,14 +85,21 @@ export function JobSearchWorkspace() {
   const [typeFilter, setTypeFilter] = useState<JobTypeFilter>("all");
   const [workModeFilter, setWorkModeFilter] = useState<WorkModeFilter>("all");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
+  const [sort, setSort] = useState<JobSort>("best-match");
+  const [savedOnly, setSavedOnly] = useState(false);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [trackedIds, setTrackedIds] = useState<string[]>([]);
+  const [applyingId, setApplyingId] = useState<string | null>(null);
   const [country, setCountry] = useState<string>("in");
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadMatches = useCallback(
     async (selectedCountry: string, jobType: JobTypeFilter = "all") => {
       setLoading(true);
+      setError(null);
 
       try {
         const params = new URLSearchParams({
@@ -110,7 +121,9 @@ export function JobSearchWorkspace() {
 
         setResult(data);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Job load failed");
+        const message = error instanceof Error ? error.message : "Job load failed";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -121,6 +134,21 @@ export function JobSearchWorkspace() {
   useEffect(() => {
     void loadMatches(country, typeFilter);
   }, [country, typeFilter, loadMatches]);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("job-saved-ids") ?? "[]");
+      if (Array.isArray(stored)) {
+        setSavedIds(stored.filter((id): id is string => typeof id === "string"));
+      }
+      const tracked = JSON.parse(localStorage.getItem("job-tracked-ids") ?? "[]");
+      if (Array.isArray(tracked)) {
+        setTrackedIds(tracked.filter((id): id is string => typeof id === "string"));
+      }
+    } catch {
+      localStorage.removeItem("job-saved-ids");
+    }
+  }, []);
 
   async function handleResumeUpload(file: File) {
     setUploading(true);
@@ -155,7 +183,7 @@ export function JobSearchWorkspace() {
   const hasProfile = Boolean(profile?.isComplete);
 
   const visibleMatches = useMemo(() => {
-    return (result?.matches ?? []).filter((job) => {
+    const filtered = (result?.matches ?? []).filter((job) => {
       if (typeFilter !== "all" && job.type !== typeFilter) return false;
       if (workModeFilter !== "all" && job.workMode !== workModeFilter) {
         return false;
@@ -163,9 +191,58 @@ export function JobSearchWorkspace() {
       if (sourceFilter !== "all" && job.dataProvider !== sourceFilter) {
         return false;
       }
+      if (savedOnly && !savedIds.includes(job.id)) return false;
       return true;
     });
-  }, [result?.matches, typeFilter, workModeFilter, sourceFilter]);
+    return sortJobMatches(filtered, sort);
+  }, [
+    result?.matches,
+    typeFilter,
+    workModeFilter,
+    sourceFilter,
+    savedOnly,
+    savedIds,
+    sort
+  ]);
+
+  function toggleSaved(jobId: string) {
+    setSavedIds((current) => {
+      const next = current.includes(jobId)
+        ? current.filter((id) => id !== jobId)
+        : [...current, jobId];
+      localStorage.setItem("job-saved-ids", JSON.stringify(next));
+      return next;
+    });
+  }
+
+  async function markApplied(job: JobMatchResult["matches"][number]) {
+    setApplyingId(job.id);
+    try {
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company: job.company,
+          role: job.title,
+          location: job.location,
+          status: "applied",
+          notes: `Source: ${job.dataProvider ?? job.platform}. Verify listing: ${job.applyUrl}`
+        })
+      });
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) throw new Error(data.error ?? "Could not track application");
+      setTrackedIds((current) => {
+        const next = current.includes(job.id) ? current : [...current, job.id];
+        localStorage.setItem("job-tracked-ids", JSON.stringify(next));
+        return next;
+      });
+      toast.success("Added to your application tracker");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not track application");
+    } finally {
+      setApplyingId(null);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -289,6 +366,9 @@ export function JobSearchWorkspace() {
                     ? "Loading openings…"
                     : "No results yet"}
               </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Scores explain profile overlap; they are not employer predictions.
+              </p>
             </div>
           </div>
 
@@ -320,12 +400,38 @@ export function JobSearchWorkspace() {
                   onClick={() => setSourceFilter(option.id)}
                 />
               ))}
+              <span className="mx-1 hidden h-4 w-px bg-border sm:inline-block" />
+              <Chip
+                active={savedOnly}
+                label={`Saved${savedIds.length ? ` (${savedIds.length})` : ""}`}
+                onClick={() => setSavedOnly((value) => !value)}
+              />
+              <label className="ml-auto flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                Sort
+                <select
+                  value={sort}
+                  onChange={(event) => setSort(event.target.value as JobSort)}
+                  className="rounded-md border border-border bg-white px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
+                >
+                  <option value="best-match">Best match</option>
+                  <option value="newest">Newest known</option>
+                  <option value="company">Company A–Z</option>
+                </select>
+              </label>
             </div>
           </div>
         </div>
 
         <div className="px-2 sm:px-3">
-          {loading && !result?.matches.length ? (
+          {error && !result?.matches.length ? (
+            <div className="px-3 py-10 text-center" role="alert">
+              <p className="text-sm font-semibold text-foreground">Jobs could not load</p>
+              <p className="mt-1 text-xs text-muted-foreground">{error}</p>
+              <Button type="button" size="sm" className="mt-3" onClick={() => loadMatches(country, typeFilter)}>
+                Try again
+              </Button>
+            </div>
+          ) : loading && !result?.matches.length ? (
             <div className="space-y-2 py-3">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
@@ -334,7 +440,15 @@ export function JobSearchWorkspace() {
           ) : visibleMatches.length ? (
             <div className={loading ? "opacity-55 transition" : undefined}>
               {visibleMatches.map((job) => (
-                <JobMatchCard key={job.id} job={job} />
+                <JobMatchCard
+                  key={job.id}
+                  job={job}
+                  saved={savedIds.includes(job.id)}
+                  applying={applyingId === job.id}
+                  tracked={trackedIds.includes(job.id)}
+                  onSave={() => toggleSaved(job.id)}
+                  onApplied={() => void markApplied(job)}
+                />
               ))}
             </div>
           ) : (

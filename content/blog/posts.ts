@@ -14,6 +14,10 @@ export type BlogPost = {
   targetKeyword: string;
   keywords: string[];
   excerpt: string;
+  workflowLinks?: Array<{
+    label: string;
+    href: string;
+  }>;
   sections: Array<{
     heading: string;
     body: string[];
@@ -2128,6 +2132,264 @@ export const blogPosts = [
         heading: "Start your Accenture prep free",
         body: [
           "Apply has Accenture PYQs at /pyqs, Accenture resume template at /prepare/accenture-resume-template, and AI mock interviews at /mock-interview. All free to start."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "job-matching-from-resume-for-students",
+    title: "How to Use Your Resume to Find Better-Fit Jobs as a Student",
+    description:
+      "A practical workflow for turning your resume into focused job searches, checking skill fit, and deciding which student or fresher roles deserve an application.",
+    publishedAt: "2026-07-19",
+    updatedAt: "2026-07-19",
+    readingTime: "8 min read",
+    category: "Job search",
+    targetKeyword: "job matching from resume for students",
+    keywords: [
+      "job matching from resume for students",
+      "find jobs based on skills for freshers",
+      "how to shortlist jobs as a student",
+      "resume based job search"
+    ],
+    excerpt:
+      "A useful job match is not a promise that you will be hired. It is a structured comparison between the evidence in your resume and the work, skills, and constraints in a job description.",
+    workflowLinks: [
+      { label: "Match jobs in Apply", href: "/dashboard/jobs" },
+      { label: "Tailor your resume", href: "/dashboard/generate" },
+      { label: "Read the off-campus guide", href: "/blog/off-campus-placement-preparation-guide" }
+    ],
+    sections: [
+      {
+        heading: "Start with a resume that describes evidence",
+        body: [
+          "Job matching works better when your resume names what you actually built or did. Replace broad labels such as “web development” with evidence: the framework, the feature, your contribution, and a result you can defend.",
+          "For each project or internship, record the role family it supports. A React dashboard may support frontend roles; an API with authentication and database work may support backend roles. One project can support more than one path, but the evidence should be visible."
+        ]
+      },
+      {
+        heading: "Choose role families before searching",
+        body: [
+          "Pick two or three role families instead of searching every technology you know. Examples include frontend intern, Java backend fresher, data analyst intern, QA engineer, or technical support associate.",
+          "Write a short must-have list for each family. Separate skills you can demonstrate now from skills you are learning. This keeps a missing nice-to-have from looking like a reason to reject an otherwise sensible role."
+        ]
+      },
+      {
+        heading: "Read a match as a comparison, not a verdict",
+        body: [
+          "Compare the job description with four parts of your profile: required skills, relevant work or projects, seniority, and practical constraints such as location or work authorization. A high text overlap does not override a seniority mismatch.",
+          "Treat any automated match score as a prioritization aid. Open the original listing, verify that it is current, and read the responsibilities before applying. Job descriptions can be incomplete, duplicated, or written more broadly than the team’s actual needs."
+        ]
+      },
+      {
+        heading: "Use a simple apply, stretch, skip decision",
+        body: [
+          "Apply when you meet the core responsibilities and can show evidence for most must-haves. Mark a role as a stretch when the level fits but one learnable skill is missing. Skip roles that require substantially more experience, a mandatory credential you do not have, or constraints you cannot meet.",
+          "Keep one sentence explaining each decision. After a few weeks, those notes reveal whether you are rejecting too many viable roles or repeatedly targeting jobs with the same evidence gap."
+        ]
+      },
+      {
+        heading: "Tailor only after the role passes the check",
+        body: [
+          "Do not spend time tailoring every listing you open. First decide that the role is credible and relevant. Then reorder skills, select the strongest matching projects, and rewrite only the bullets whose meaning remains truthful.",
+          "Save the tailored resume with the company and role name, then track the application. If you get interviews from one role family, use that signal to focus your next search; if you get no response, review targeting, evidence, and resume clarity separately."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "use-ai-mock-interview-feedback",
+    title: "How to Use AI Mock Interview Feedback Without Memorizing Answers",
+    description:
+      "Learn how to review AI mock interview feedback, improve one skill at a time, and build truthful answers for fresher technical and behavioral interviews.",
+    publishedAt: "2026-07-19",
+    updatedAt: "2026-07-19",
+    readingTime: "8 min read",
+    category: "Mock interviews",
+    targetKeyword: "how to use AI mock interview feedback",
+    keywords: [
+      "how to use AI mock interview feedback",
+      "AI mock interview practice for freshers",
+      "improve interview answers with feedback",
+      "mock interview practice plan"
+    ],
+    excerpt:
+      "Mock-interview feedback is most useful as a practice signal. Review the transcript, choose one repeatable improvement, and answer the question again in your own words.",
+    workflowLinks: [
+      { label: "Start a mock interview", href: "/mock-interview" },
+      { label: "Browse company PYQs", href: "/pyqs" },
+      { label: "Read fresher interview tips", href: "/blog/interview-tips-for-freshers-first-job" }
+    ],
+    sections: [
+      {
+        heading: "Separate content, structure, and delivery",
+        body: [
+          "Review each answer in three passes. Content asks whether the answer was accurate and relevant. Structure asks whether the listener could follow it. Delivery covers pace, filler words, and whether you sounded certain about claims you can support.",
+          "A polished delivery cannot rescue an incorrect technical answer, and a correct answer can still be hard to follow. Label the problem before trying to fix it."
+        ]
+      },
+      {
+        heading: "Check automated feedback against the transcript",
+        body: [
+          "AI feedback can miss context or prefer one acceptable answer style. Read the transcript and compare technical suggestions with documentation, course notes, or a trusted reference before adopting them.",
+          "For questions about your resume, your own records are the source of truth. Correct any invented metric, responsibility, or tool immediately. The goal is a clearer account of your work, not a more impressive fictional one."
+        ]
+      },
+      {
+        heading: "Fix one pattern per practice round",
+        body: [
+          "Choose one behavior you can observe: state the conclusion first, explain one trade-off, give a concrete example, or pause instead of using filler words. Repeat a short round with that single goal.",
+          "Trying to improve accuracy, confidence, eye contact, vocabulary, and timing at once makes progress hard to measure. Keep a small practice log with the question, the chosen improvement, and what changed on the second attempt."
+        ]
+      },
+      {
+        heading: "Build answer outlines, not scripts",
+        body: [
+          "For behavioral questions, note Situation, Task, Action, and Result as four prompts. For technical questions, use definition, approach, trade-off, and example. These outlines preserve structure while letting you speak naturally.",
+          "Memorized paragraphs often break when an interviewer asks a follow-up. Practice the same story from different angles so you can explain your decisions rather than recite wording."
+        ]
+      },
+      {
+        heading: "Use a three-session improvement loop",
+        body: [
+          "Session one is a baseline: answer without notes and identify recurring gaps. Session two targets the weakest pattern with a smaller set of questions. Session three simulates the real format and checks whether the improvement holds under time pressure.",
+          "Pair company-specific question research with voice practice, but do not assume reported previous questions will repeat. Use them to understand themes and to test whether you can explain fundamentals clearly."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "first-freelance-client-college-student",
+    title: "How to Get a First Freelance Client as a College Student",
+    description:
+      "A realistic first-client workflow for students: choose a small service, build proof, find suitable prospects, write useful outreach, and scope paid work safely.",
+    publishedAt: "2026-07-19",
+    updatedAt: "2026-07-19",
+    readingTime: "9 min read",
+    category: "Student freelancing",
+    targetKeyword: "how to get first freelance client as a student",
+    keywords: [
+      "how to get first freelance client as a student",
+      "freelancing for college students",
+      "student freelancer outreach",
+      "first freelance project scope"
+    ],
+    excerpt:
+      "Your first freelance offer should be small enough to explain, demonstrate, price, and deliver. A focused service with visible proof is easier to trust than a long list of unrelated skills.",
+    workflowLinks: [
+      { label: "Open the freelance workspace", href: "/dashboard/freelancing" },
+      { label: "Build a tailored resume", href: "/dashboard/generate" },
+      { label: "Write a no-experience resume", href: "/blog/resume-with-no-experience-student" }
+    ],
+    sections: [
+      {
+        heading: "Choose one small, testable service",
+        body: [
+          "Start with an outcome you can deliver in days rather than an open-ended promise. Examples include fixing mobile layout issues on three pages, creating a simple portfolio site, cleaning a spreadsheet and dashboard, or editing a short batch of product videos.",
+          "Define who the service is for, what is included, what is excluded, and what the client receives. “I build websites” is vague; “I turn an existing design into a responsive three-page site” is easier to evaluate."
+        ]
+      },
+      {
+        heading: "Create proof before asking for trust",
+        body: [
+          "Build one representative sample using your own brief, a college club, or a clearly labeled redesign concept. Show the starting problem, your decisions, the finished work, and a link or screenshots.",
+          "Do not present concept work as a paid client project. Honest context still demonstrates skill, and it avoids creating a trust problem when a prospect asks for details."
+        ]
+      },
+      {
+        heading: "Find prospects with a visible, relevant problem",
+        body: [
+          "Look for local businesses, student organizations, creators, early-stage teams, or professionals whose public work reveals a problem your service solves. Prioritize fit over sending the same message to a large list.",
+          "Respect platform rules and privacy. Use published business contact channels, keep outreach relevant, and stop after a reasonable follow-up if there is no response."
+        ]
+      },
+      {
+        heading: "Write outreach that is useful on its own",
+        body: [
+          "A good message names a specific observation, explains one practical improvement, shows a relevant sample, and asks a small question. Avoid pretending you found a crisis or promising guaranteed revenue.",
+          "For example: “I noticed the booking page is difficult to use on a narrow screen. I made a short annotated example of how I would simplify it. Would it help if I scoped the three highest-impact fixes?”"
+        ]
+      },
+      {
+        heading: "Scope the first project before starting",
+        body: [
+          "Put deliverables, timeline, revision limits, payment schedule, ownership, and required client inputs in writing. For meaningful work, request a deposit or use a platform with payment protection where available.",
+          "Never pay a client to receive work, buy gift cards, move money through your account, or share passwords and identity documents without a legitimate need. Pause when the project, payment method, or contact identity cannot be verified."
+        ]
+      },
+      {
+        heading: "Turn delivery into reusable evidence",
+        body: [
+          "Confirm acceptance in writing, ask permission before publishing client details, and request a short testimonial tied to the delivered outcome. Write a case study that explains the problem, constraints, your work, and what was verified.",
+          "Add the project to your resume or portfolio with accurate scope. The next client should see stronger proof, a clearer process, and a narrower reason to trust you."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "company-pyq-14-day-placement-plan",
+    title: "14-Day Company PYQ Plan for Campus Placement Coding Rounds",
+    description:
+      "Use company previous-year coding questions in a focused 14-day plan with baseline testing, pattern review, timed practice, and interview explanation drills.",
+    publishedAt: "2026-07-19",
+    updatedAt: "2026-07-19",
+    readingTime: "8 min read",
+    category: "Placement preparation",
+    targetKeyword: "company PYQ preparation plan for placements",
+    keywords: [
+      "company PYQ preparation plan for placements",
+      "14 day coding round preparation",
+      "how to practice company previous year questions",
+      "campus placement coding plan"
+    ],
+    excerpt:
+      "Previous-year questions are a map of reported themes, not a prediction of the next assessment. Use them to diagnose gaps, practice patterns, and explain solutions under time pressure.",
+    workflowLinks: [
+      { label: "Browse company PYQs", href: "/pyqs" },
+      { label: "Choose a company guide", href: "/prepare" },
+      { label: "Practice a mock interview", href: "/mock-interview" }
+    ],
+    sections: [
+      {
+        heading: "Before day one: verify the current process",
+        body: [
+          "Read the current job or campus notice and the employer’s official careers information. Reported assessment patterns can change by role, batch, location, and hiring partner.",
+          "Choose one target company and role. Record the allowed languages, likely environment, time limit if known, and the fundamentals named in the role description. Treat third-party question reports as practice material rather than official policy."
+        ]
+      },
+      {
+        heading: "Days 1–2: take a baseline",
+        body: [
+          "Attempt a small mixed set without hints and under a reasonable time limit. Record whether each failure came from understanding, choosing an approach, implementing it, handling edge cases, or managing time.",
+          "Build a gap list by pattern: arrays and strings, hashing, two pointers, sliding window, sorting, stacks and queues, trees, graphs, dynamic programming, or basic mathematics. Your plan should follow evidence from the baseline."
+        ]
+      },
+      {
+        heading: "Days 3–7: repair the highest-value gaps",
+        body: [
+          "Spend each day on one or two recurring patterns. Review the concept, solve one guided example, then attempt two related questions without looking at the solution.",
+          "After every problem, write the input assumptions, approach, time and space complexity, and one edge case. If you cannot explain why the approach works, the problem is not finished."
+        ]
+      },
+      {
+        heading: "Days 8–11: practice company-style sets",
+        body: [
+          "Combine questions into timed sets that resemble the reported mix without assuming an exact repeat. Decide in advance when to move on from a blocked problem and return later.",
+          "Review wrong answers the same day. Classify the cause and re-solve from a blank editor after a gap. Copying a solution can create familiarity without recall."
+        ]
+      },
+      {
+        heading: "Days 12–13: explain and debug aloud",
+        body: [
+          "Practice stating a brute-force approach, improving it, testing an example, and naming complexity. Interviewers may care about your reasoning even when the final code is incomplete.",
+          "Use one mock session to explain a solved PYQ and one to debug a deliberately broken solution. This connects coding-round preparation with technical interview communication."
+        ]
+      },
+      {
+        heading: "Day 14: simulate, review, and stop cramming",
+        body: [
+          "Run one final timed set in your chosen language and environment. Review your checklist: input parsing, empty and boundary cases, overflow where relevant, output format, and a final sample test.",
+          "Use the remaining time to revisit notes and sleep normally. The plan cannot guarantee a particular question or result; it gives you a repeatable way to use reported questions without mistaking memorization for preparation."
         ]
       }
     ]

@@ -63,65 +63,88 @@ const fadeUp: Variants = {
   }
 };
 
-const tools: Array<{
+const staggerGroup: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05 } }
+};
+
+type Tool = {
   title: string;
   blurb: string;
   href: string;
   icon: PhosphorIcon;
-}> = [
+};
+
+/** Toolkit grouped to mirror the sidebar: resume → interview → jobs & tracking. */
+const toolGroups: Array<{ label: string; tools: Tool[] }> = [
   {
-    title: "Tailor resume",
-    blurb: "Fit your resume to one job.",
-    href: "/dashboard/generate",
-    icon: Sparkle
+    label: "Resume",
+    tools: [
+      {
+        title: "Tailor resume",
+        blurb: "Fit your resume to one job.",
+        href: "/dashboard/generate",
+        icon: Sparkle
+      },
+      {
+        title: "AI tools",
+        blurb: "Cover letter, critique, photo, offers.",
+        href: "/dashboard/tools",
+        icon: MagicWand
+      }
+    ]
   },
   {
-    title: "Job search",
-    blurb: "Find openings that match your skills.",
-    href: "/dashboard/jobs",
-    icon: MagnifyingGlass
+    label: "Interview",
+    tools: [
+      {
+        title: "Interview prep",
+        blurb: "Practice questions for that role.",
+        href: "/dashboard/interview",
+        icon: Briefcase
+      },
+      {
+        title: "Mock interview",
+        blurb: "Live AI interviewer — practice on the web.",
+        href: "/dashboard/mock-interview",
+        icon: Microphone
+      },
+      {
+        title: "Company prep",
+        blurb: "Guides for TCS, Infosys, Amazon…",
+        href: "/prepare",
+        icon: Buildings
+      }
+    ]
   },
   {
-    title: "Interview prep",
-    blurb: "Practice questions for that role.",
-    href: "/dashboard/interview",
-    icon: Briefcase
-  },
-  {
-    title: "Mock interview",
-    blurb: "Live AI interviewer — practice on the web.",
-    href: "/dashboard/mock-interview",
-    icon: Microphone
-  },
-  {
-    title: "Applications & progress",
-    blurb: "Tracker plus readiness and keyword stats.",
-    href: "/dashboard/applications",
-    icon: ListChecks
-  },
-  {
-    title: "Freelancing",
-    blurb: "Find client work while you study.",
-    href: "/dashboard/freelancing",
-    icon: Storefront
-  },
-  {
-    title: "Learning tracks",
-    blurb: "Short roadmaps for skill gaps.",
-    href: "/dashboard/learners",
-    icon: GraduationCap
-  },
-  {
-    title: "Company prep",
-    blurb: "Guides for TCS, Infosys, Amazon…",
-    href: "/prepare",
-    icon: Buildings
-  },
-  {
-    title: "AI tools",
-    blurb: "Cover letter, critique, photo, offers.",
-    href: "/dashboard/tools",
-    icon: MagicWand
+    label: "Jobs & tracking",
+    tools: [
+      {
+        title: "Job search",
+        blurb: "Find openings that match your skills.",
+        href: "/dashboard/jobs",
+        icon: MagnifyingGlass
+      },
+      {
+        title: "Applications & progress",
+        blurb: "Tracker plus readiness and keyword stats.",
+        href: "/dashboard/applications",
+        icon: ListChecks
+      },
+      {
+        title: "Freelancing",
+        blurb: "Find client work while you study.",
+        href: "/dashboard/freelancing",
+        icon: Storefront
+      },
+      {
+        title: "Learning tracks",
+        blurb: "Short roadmaps for skill gaps.",
+        href: "/dashboard/learners",
+        icon: GraduationCap
+      }
+    ]
   }
 ];
 
@@ -230,38 +253,49 @@ export function DashboardHome({
         </ul>
       </motion.header>
 
-      {/* Toolkit — restrained card grid (cover letter & offers nest under AI tools) */}
+      {/* Toolkit — grouped so it reads as three areas, not a wall of boxes */}
       <section>
         <p className="fine-label mb-2">Toolkit</p>
         <h2 className="font-serif text-3xl text-primary">What you can do</h2>
-        <motion.div
-          initial={reduceMotion ? false : "hidden"}
-          whileInView={reduceMotion ? undefined : "show"}
-          viewport={{ once: true, margin: "-40px" }}
-          variants={fadeUp}
-          className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        >
-          {tools.map((tool) => (
-            <Link key={tool.href} href={tool.href} className="group block h-full">
-              <Card className="flex h-full flex-col bg-[#fbfaf6] p-5 transition group-hover:border-primary/25">
-                <tool.icon
-                  className="h-5 w-5 text-accent"
-                  weight="regular"
-                />
-                <p className="mt-3 font-semibold text-foreground group-hover:text-primary">
-                  {tool.title}
-                </p>
-                <p className="mt-1 flex-1 text-sm leading-6 text-muted-foreground">
-                  {tool.blurb}
-                </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-accent">
-                  Open
-                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-                </span>
-              </Card>
-            </Link>
+        <div className="mt-5 space-y-8">
+          {toolGroups.map((group) => (
+            <motion.div
+              key={group.label}
+              initial={reduceMotion ? false : "hidden"}
+              whileInView={reduceMotion ? undefined : "show"}
+              viewport={{ once: true, margin: "-40px" }}
+              variants={staggerGroup}
+            >
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                {group.label}
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {group.tools.map((tool) => (
+                  <motion.div key={tool.href} variants={fadeUp} className="h-full">
+                    <Link href={tool.href} className="group block h-full">
+                      <Card className="flex h-full flex-col bg-[#fbfaf6] p-5 transition group-hover:border-primary/25">
+                        <tool.icon
+                          className="h-5 w-5 text-accent"
+                          weight="regular"
+                        />
+                        <p className="mt-3 font-semibold text-foreground group-hover:text-primary">
+                          {tool.title}
+                        </p>
+                        <p className="mt-1 flex-1 text-sm leading-6 text-muted-foreground">
+                          {tool.blurb}
+                        </p>
+                        <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-accent">
+                          Open
+                          <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                        </span>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
       {/* Jobs preview */}
@@ -297,7 +331,7 @@ export function DashboardHome({
                   href={job.applyUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="group flex items-center gap-3 py-3 transition hover:bg-[#f7f6f2]"
+                  className="group flex items-center gap-3 py-3 transition hover:bg-muted/60"
                 >
                   <span className="w-11 shrink-0 text-right text-xs font-bold tabular-nums text-accent">
                     {job.matchScore}%

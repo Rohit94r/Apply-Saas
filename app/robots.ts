@@ -16,7 +16,7 @@ export default function robots(): MetadataRoute.Robots {
         "/mock-interview",
         "/mock-interview/"
       ],
-      disallow: ["/api/", "/dashboard/", "/admin/", "/sign-in/", "/sign-up/", "/downloads"]
+      disallow: ["/api/", "/dashboard/", "/admin/", "/sign-in", "/sign-up", "/downloads"]
     },
     sitemap: absoluteUrl("/sitemap.xml")
   };

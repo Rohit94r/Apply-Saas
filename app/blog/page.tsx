@@ -8,7 +8,9 @@ import { preparePages } from "@/lib/prepare";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Placement Guides — PYQs, Mock Interviews, ATS Resumes | Apply",
+  title: {
+    absolute: "Placement Guides: Resumes, PYQs & Interviews | Apply"
+  },
   description:
     "Guides for Indian campus placements: company previous year coding questions, AI mock interview practice, ATS resume tips, and fresher resume formats.",
   keywords: [
@@ -54,6 +56,30 @@ const blogJsonLd = {
   }))
 };
 
+const intentGuides = [
+  {
+    label: "Find better-fit fresher jobs",
+    href: "/blog/job-matching-from-resume-for-students"
+  },
+  {
+    label: "Improve from mock interview feedback",
+    href: "/blog/use-ai-mock-interview-feedback"
+  },
+  {
+    label: "Get a first freelance client",
+    href: "/blog/first-freelance-client-college-student"
+  },
+  {
+    label: "Follow a 14-day company PYQ plan",
+    href: "/blog/company-pyq-14-day-placement-plan"
+  }
+];
+
+const newestBlogPosts = [...blogPosts].sort(
+  (a, b) =>
+    new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+);
+
 export default function BlogPage() {
   return (
     <>
@@ -77,9 +103,28 @@ export default function BlogPage() {
           </div>
         </section>
 
+        <nav aria-label="Popular guide workflows" className="border-b border-border bg-white py-8">
+          <div className="section-shell">
+            <p className="fine-label mb-4">Start with your goal</p>
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {intentGuides.map((guide) => (
+                <li key={guide.href}>
+                  <Link
+                    href={guide.href}
+                    className="flex h-full items-center justify-between gap-3 rounded-xl border border-border p-4 text-sm font-bold text-primary transition hover:border-accent/50 hover:text-accent"
+                  >
+                    {guide.label}
+                    <ArrowRight className="h-4 w-4 shrink-0" weight="regular" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+
         <section className="bg-[#f7f4ee] py-16">
           <div className="section-shell grid gap-5 md:grid-cols-2">
-            {blogPosts.map((post) => (
+            {newestBlogPosts.map((post) => (
               <article
                 key={post.slug}
                 className="flex h-full flex-col rounded-xl border border-border bg-white p-6 shadow-soft"
@@ -99,9 +144,12 @@ export default function BlogPage() {
                   {post.description}
                 </p>
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-                  <p className="text-xs font-semibold text-muted-foreground">
-                    Target keyword: {post.targetKeyword}
-                  </p>
+                  <time
+                    dateTime={post.updatedAt}
+                    className="text-xs font-semibold text-muted-foreground"
+                  >
+                    Updated {post.updatedAt}
+                  </time>
                   <Link
                     href={`/blog/${post.slug}`}
                     className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-accent"

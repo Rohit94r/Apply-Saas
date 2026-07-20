@@ -1,6 +1,9 @@
 # Apply
 
-Apply is an AI-powered job-search workspace for **students and early-career developers worldwide**. Upload or build a resume, tailor it to any role, follow learner roadmaps, prepare for interviews, and track readiness from one dashboard.
+Apply is India's placement preparation platform — ATS resume tailoring, **64+ company previous year coding questions (PYQs)**, AI mock interviews with voice, job matching, application tracking, and freelancing tools. Built for students and early-career developers.
+
+> **Research & data extraction by Rohit Jadhav** — Apply (apply.neexmeet.com)
+> Original PYQ guides curated by [Let's Code](https://www.lets-code.co.in) / Om Kute
 
 ---
 
@@ -10,13 +13,18 @@ Apply is an AI-powered job-search workspace for **students and early-career deve
 |-----|------|-------------|
 | Student with no resume | Answer guided questions and get a PDF | `/dashboard/build` |
 | Student with a resume | Upload PDF/Word and tailor to a job | `/dashboard/generate` |
-| 1st–4th year learner | Follow roadmaps before placement season | `/dashboard/learners` |
-| Interview candidate | Coding, HR, company Qs + video resources | `/dashboard/interview` |
+| Interview candidate | Company matcher + PYQs + video suggestions | `/dashboard/interview` |
+| Mock interview practice | Voice AI interviewer with live captions | `/dashboard/mock-interview` |
+| PYQs browser | 64+ company previous year coding questions | `/pyqs` |
+| Company prep guides | Interview, OA, resume, process guides | `/prepare` |
 | Active job seeker | Find jobs matched to resume profile | `/dashboard/jobs` |
+| Freelancer | Find clients via Maps/Justdial/IndiaMART | `/dashboard/freelancing` |
+| Offer comparison | Compare CTC, location, role side-by-side | `/dashboard/offers` |
+| Application tracker | Track applied / interview / offer / rejected | `/dashboard/applications` |
 | Job hunter | Track ATS scores and activity | `/dashboard/analytics` |
 | Returning user | See recent resumes and readiness | `/dashboard` |
 
-**Typical flow:** Build or improve resume → **see matched jobs** → apply on LinkedIn/Naukri → create interview prep plan → export PDF.
+**Typical flow:** Browse PYQs → tailor resume → practice mock interview → apply on LinkedIn/Naukri → track applications → compare offers.
 
 ---
 
@@ -24,7 +32,7 @@ Apply is an AI-powered job-search workspace for **students and early-career deve
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| Framework | **Next.js 15** (App Router) | Pages, API routes, SSR |
+| Framework | **Next.js 15** (App Router) | Pages, API routes, SSR/SSG |
 | UI | **React 19**, **TypeScript** | Components and type safety |
 | Styling | **Tailwind CSS**, **Framer Motion** | Layout, motion |
 | Icons | **Phosphor Icons** | Dashboard and landing UI |
@@ -32,13 +40,16 @@ Apply is an AI-powered job-search workspace for **students and early-career deve
 | Auth | **Auth.js** + **Google OAuth** (JWT) | Sign-in; users stored in Postgres |
 | Database | **Neon PostgreSQL** + **Drizzle** | User resumes, guides, master resume |
 | Fallback storage | Local JSON (`.data/resume-store.json`) | Dev/resilience when DB is unreachable |
-| AI | **Groq** (primary), **OpenAI** (fallback) | Resume tailoring, interview guides, cover letters |
+| AI (text) | **Groq** (primary), **Gemini** (long context), **OpenAI** (fallback) | Resume tailoring, interview guides, cover letters |
+| AI (voice TTS) | **ElevenLabs** (premium), browser SpeechSynthesis (fallback) | Mock interview voice — 9 voices, 5 languages |
+| AI (voice STT) | **Groq Whisper** (server), Web Speech API (client) | Voice answer capture in mock interview |
 | Validation | **Zod** | API request schemas |
 | PDF | **@react-pdf/renderer**, **pdf-lib**, **puppeteer-core** | Generate and patch PDFs |
 | File import | **pdf-parse**, **mammoth**, **word-extractor** | Extract text from uploads |
 | Uploads | **UploadThing** | Profile photo uploads |
 | Toasts | **Sonner** | In-app notifications |
 | Analytics | **Umami** (optional) | Public site traffic |
+| Testing | **Vitest** | Unit tests (45 passing) |
 
 ---
 
@@ -61,7 +72,9 @@ The repo includes a root `.npmrc` with `legacy-peer-deps=true` so installs stay 
 | `DATABASE_URL` | Neon Postgres (app data via Drizzle) |
 | `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | Auth.js JWT + Google sign-in |
 | `GROQ_API_KEY`, `GROQ_MODEL` | AI generation (recommended) |
+| `GEMINI_API_KEY` | AI generation (long context — resume tailoring, cover letters) |
 | `OPENAI_API_KEY` | Optional AI fallback |
+| `ELEVENLABS_API_KEY` | Premium voice for mock interview (optional — browser fallback works) |
 | `UPLOADTHING_TOKEN`, `UPLOADTHING_SECRET`, `UPLOADTHING_APP_ID` | Photo uploads |
 | `NEXT_PUBLIC_UMAMI_SRC`, `NEXT_PUBLIC_UMAMI_WEBSITE_ID` | Optional web analytics |
 | `ADZUNA_APP_ID`, `ADZUNA_APP_KEY`, `ADZUNA_COUNTRY` | Live jobs via Adzuna (India default: `in`) |
@@ -76,19 +89,40 @@ See [docs/job-apis-setup.md](docs/job-apis-setup.md) for registration links and 
 
 ## Product routes
 
+### Public routes (indexed by Google)
+
 | Route | Description |
 |-------|-------------|
-| `/` | Public landing page |
+| `/` | Public landing page — PYQs + mock interview first |
+| `/pyqs` | **64+ company previous year coding questions library** |
+| `/prepare` | 26 company prep guides (interview, OA, resume, process) |
+| `/prepare/[slug]` | Individual company prep guide (SSG) |
+| `/mock-interview` | Mock interview landing page |
+| `/blog` | 24 SEO blog posts on placements, resumes, interviews |
+| `/blog/[slug]` | Individual blog post (SSG) |
+| `/downloads` | Apply Desktop coming soon (noindex) |
+
+### Dashboard routes (auth-protected, noindex)
+
+| Route | Description |
+|-------|-------------|
 | `/dashboard` | Overview, readiness score, quick actions, activity |
 | `/dashboard/resumes` | All saved resume versions |
 | `/dashboard/build` | Guided resume builder with live side-by-side preview |
 | `/dashboard/generate` | Upload resume + company search + tailor to job |
-| `/dashboard/jobs` | **Job search** — profile-based matches + LinkedIn/Naukri links |
+| `/dashboard/interview` | **Company matcher → shortlist + PYQs + video suggestions** |
+| `/dashboard/mock-interview` | **AI mock interview with voice, live captions, auto-submit** |
+| `/dashboard/jobs` | Job search — profile-based matches + LinkedIn/Naukri links |
 | `/dashboard/learners` | Student roadmaps (Web Dev, DSA, System Design, AI/ML) |
-| `/dashboard/interview` | Interview prep plan, coding Qs, YouTube videos |
-| `/dashboard/tools` | Cover letter, PDF editing, photo tools |
+| `/dashboard/applications` | Placement tracker (applied / interview / offer / rejected) |
+| `/dashboard/offers` | Offer comparison (CTC, location, role, deadline) |
+| `/dashboard/cover-letters` | Saved cover letter history |
+| `/dashboard/tools` | Cover letter, critique, photo, PDF, offers |
 | `/dashboard/analytics` | ATS stats, keyword coverage, activity feed |
-| `/blog/*` | SEO blog posts |
+| `/dashboard/freelancing` | Find clients via Maps/Justdial/IndiaMART + pipeline tracker |
+| `/dashboard/settings` | Profile, preferences, account |
+| `/dashboard/upgrade` | Pro checkout (UPI / Stripe) |
+| `/dashboard/admin` | Founder admin panel |
 
 ---
 
@@ -101,6 +135,8 @@ See [docs/job-apis-setup.md](docs/job-apis-setup.md) for registration links and 
 | `GET` | `/api/jobs/profile` | Inferred job seeker profile only |
 | `POST` | `/api/resumes/build` | Build resume from guided form |
 | `POST` | `/api/resumes/generate` | Tailor uploaded resume to job |
+| `POST` | `/api/resumes/refine` | AI refine by prompt |
+| `POST` | `/api/resumes/analyze` | ATS keyword score |
 | `POST` | `/api/resumes/import` | Upload and extract resume file |
 | `GET/POST` | `/api/resumes/master` | Load/save master resume text |
 | `PATCH` | `/api/resumes/:resumeId` | Update generated resume |
@@ -109,139 +145,221 @@ See [docs/job-apis-setup.md](docs/job-apis-setup.md) for registration links and 
 | `POST` | `/api/critique` | ATS critique |
 | `POST` | `/api/photo` | Professional photo plan |
 | `GET/POST` | `/api/pdf` | Render or download PDF |
+| `GET/POST` | `/api/mock-interview` | Start / answer / end mock interview session |
+| `POST` | `/api/mock-interview/transcribe` | Whisper voice transcription |
+| `POST` | `/api/mock-interview/speak` | ElevenLabs TTS for questions |
+| `GET/POST` | `/api/billing/*` | Billing status + payment |
+| `POST` | `/api/admin/*` | Admin panel APIs |
+| `POST` | `/api/activity/track` | Analytics event |
 | `GET` | `/api/health` | Health check |
 
 All dashboard APIs are protected by Auth.js middleware (Google JWT session).
 
 ---
 
-## Folder structure (learning guide)
+## Key features
 
-Read the repo top-down in this order if you are new to the codebase.
+### Company PYQs Library (`/pyqs`)
+- **64 companies** across 3 categories: Product & Tech (30), BFSI & Consulting (13), IT Services (21)
+- Each company links to its previous year coding questions guide
+- Searchable + filterable by category
+- Extracted from [Let's Code Google Doc](https://docs.google.com/document/d/1JFyZTIxCKj6Q2UJTOmA3lvhmI99etfBtnsSxCeDX4-o) — research by Rohit Jadhav
+- Data stored in `dataset/company-coding-questions/raw-data.json`
+- Content module: `content/coding-questions/index.ts`
+
+### AI Mock Interview (`/dashboard/mock-interview`)
+- Meet-style full-screen UI with camera + AI interviewer robot
+- **Voice questions**: ElevenLabs premium voices (9 voices: 5 female, 4 male) + browser fallback (Indian English prioritized)
+- **Voice answers**: Groq Whisper (server) + Web Speech API (client) — auto-captures speech
+- **Auto-flow**: Question speaks → mic auto-starts → user speaks → 5s silence → auto-submit → AI evaluates → next question
+- Live captions during recording
+- In-call voice & language picker (English, Hindi, Tamil, Telugu, Marathi)
+- Optional coding rounds with in-browser code execution
+- Session history saved to database
+- Exit dialog with session stats
+
+### Interview Prep Matcher (`/dashboard/interview`)
+- Simple form: company type (product/service/startup/BFSI), domain, role, city, experience, education
+- Shortlists 12 matching companies from 35 job listings + 64 PYQ guides
+- Each result shows match score, role, location, salary, apply link, PYQ link
+- Suggests 4 relevant videos based on company type + domain
+- No resume upload or JD paste required — just pick preferences
+
+### SEO Content Engine
+- **24 blog posts** targeting high-volume India placement keywords
+- **26 company prep guides** (SSG) with interview/OA/resume/process categories
+- **Dynamic OG images** for every blog post and prep guide
+- JSON-LD structured data: Organization, WebSite, SoftwareApplication, FAQPage, BlogPosting, Article, BreadcrumbList, CollectionPage
+- Sitemap + robots.txt auto-generated
+- 51 global keywords + ~200 per-post keywords
+- Google Search Console verified
+
+### Resume Tools
+- ATS resume tailoring from job descriptions (Groq + Gemini)
+- Resume builder with live PDF preview
+- Cover letter generator
+- Resume critique with keyword analysis
+- PDF export (clean ATS-friendly)
+- Resume version history
+
+### Placement Tracker + Offers
+- Track job applications: applied → interview → offer → rejected
+- Compare offers side-by-side: CTC, location, role, deadline
+- Activity feed and readiness score
+
+### Freelancing (`/dashboard/freelancing`)
+- Find clients via Google Maps, Justdial, IndiaMART deep links
+- Client pipeline tracker (lead → contacted → proposal → won/lost)
+- Pitch message generator
+
+---
+
+## Folder structure
 
 ```
 Resume-editor/
-├── app/                          # Next.js App Router — start here for routes
+├── app/                          # Next.js App Router
 │   ├── page.tsx                  # Public landing
-│   ├── layout.tsx                # Root layout, Umami
+│   ├── layout.tsx                # Root layout + global JSON-LD
+│   ├── loading.tsx               # Root loading skeleton
+│   ├── not-found.tsx             # 404 (noindex)
+│   ├── sitemap.ts                # Auto sitemap (blog + prepare + public)
+│   ├── robots.ts                 # Auto robots.txt
+│   ├── manifest.ts               # PWA manifest
 │   ├── (auth)/                   # Sign-in / sign-up (Google OAuth)
-│   ├── dashboard/                # Authenticated workspace pages
-│   │   ├── page.tsx              # Overview + readiness
-│   │   ├── build/                # Build resume page
-│   │   ├── generate/             # Improve resume page
-│   │   ├── jobs/                 # Job search page
-│   │   ├── learners/             # Learner preparation page
-│   │   ├── interview/            # Interview prep page
-│   │   ├── analytics/            # Analytics page
-│   │   ├── resumes/              # Resume list
-│   │   └── tools/                # AI tools workspace
-│   ├── api/                      # Backend API routes
-│   │   ├── company/lookup/       # Company search API
-│   │   ├── jobs/                 # Job match + profile API
-│   │   ├── resumes/              # Resume CRUD + build + generate
-│   │   ├── interview/            # Interview guide generation
-│   │   ├── pdf/                  # PDF rendering
-│   │   └── …                     # cover-letter, critique, photo, health
-│   └── blog/                     # SEO blog pages
+│   ├── dashboard/                # Authenticated workspace (15 sub-routes)
+│   │   ├── loading.tsx           # Dashboard-shaped skeleton
+│   │   ├── interview/            # Company matcher + PYQs browser
+│   │   ├── mock-interview/       # AI voice mock interview
+│   │   └── */loading.tsx         # Per-route loading skeletons
+│   ├── blog/                     # 24 SEO blog posts (SSG)
+│   │   ├── [slug]/opengraph-image.tsx  # Dynamic OG image
+│   │   └── loading.tsx
+│   ├── prepare/                  # 26 company prep guides (SSG)
+│   │   ├── [slug]/opengraph-image.tsx  # Dynamic OG image
+│   │   └── loading.tsx
+│   ├── pyqs/                     # 64+ company PYQs library
+│   ├── mock-interview/           # Mock interview landing
+│   ├── downloads/                # Desktop coming soon (noindex)
+│   └── api/                      # Backend API routes (34 handlers)
 │
 ├── components/
-│   ├── landing/                  # Marketing sections (public site)
-│   ├── dashboard/                # Workspace UI — main product surface
-│   │   ├── dashboard-shell.tsx   # Sidebar navigation
-│   │   ├── dashboard-overview.tsx# Hero, activity feed, keyword charts
-│   │   ├── company-search-input.tsx
-│   │   ├── learner-prep-workspace.tsx
-│   │   ├── youtube-video-grid.tsx
-│   │   ├── interview-guide-form.tsx
-│   │   ├── resume-builder/       # Build resume form
-│   │   └── resume-improve/       # Improve resume form
-│   └── ui/                       # Shared primitives (Button, Card, Input…)
+│   ├── landing/                  # Marketing sections
+│   ├── dashboard/                # Workspace UI
+│   │   ├── mock-interview-room.tsx     # Mock interview controller
+│   │   ├── mock-interview-meet.tsx     # Meet-style UI
+│   │   ├── mock-interview-robot.tsx    # SVG robot with 7 moods
+│   │   ├── interview-prep-matcher.tsx  # Company shortlist matcher
+│   │   ├── company-coding-questions.tsx# PYQs browser
+│   │   └── ...
+│   └── ui/                       # Shared primitives
 │
-├── content/                      # ✨ Editable SEO & learning copy (intern-friendly)
-│   ├── blog/posts.ts             # Blog articles → /blog
-│   └── learning/tracks.ts        # Learner roadmaps + YouTube links
+├── content/                      # Editable SEO & learning content
+│   ├── blog/posts.ts             # 24 blog articles
+│   ├── companies/pages.ts        # 26 company prep guides
+│   ├── coding-questions/         # 64 company PYQ links (typed)
+│   └── learning/tracks.ts        # Learner roadmaps + YouTube
 │
-├── features/                     # Product modules — each has README.md
-│   ├── jobs/                     # Job Search (full module)
-│   ├── freelancing/              # Find clients
-│   ├── resume-studio/            # Build resume (map → components + lib)
-│   ├── resume-tailor/            # Upload & tailor
-│   ├── interview-prep/
-│   ├── learning/
-│   ├── ai-tools/
-│   ├── billing/
-│   └── analytics/
+├── dataset/                      # Extracted data (raw + typed)
+│   └── company-coding-questions/
+│       ├── raw-data.json         # Full extracted dataset
+│       ├── types.ts              # TypeScript types
+│       └── README.md
 │
-├── apps/                         # 🔜 Future: web (root today) + desktop (Tauri)
-├── packages/                     # 🔜 Future: db, shared, ai (Postgres migration)
-├── services/                     # 🔜 Future: realtime WebSocket
+├── features/                     # Product modules
+│   ├── jobs/                     # Job search
+│   ├── freelancing/              # Find clients + pipeline
+│   └── ...
 │
-├── lib/                          # Business logic — read after app/
-│   ├── ai/                       # AI client, prompts, resume engine
-│   ├── data/                     # MongoDB services + static data
-│   │   └── learning-resources.ts # Re-exports content/learning/tracks.ts
-│   ├── pdf/
-│   └── …
+├── lib/                          # Business logic
+│   ├── ai/                       # AI clients + prompts + router
+│   │   ├── router.ts             # Task → model routing
+│   │   ├── elevenlabs-tts.ts     # Premium voice synthesis
+│   │   ├── elevenlabs-voices.ts  # 9 voices + 5 languages
+│   │   └── ...
+│   ├── data/                     # Data access layer
+│   ├── seo.ts                    # SEO config + JSON-LD schemas
+│   └── ...
 │
-├── models/                       # Mongoose schemas
-├── types/index.ts
+├── tests/                        # Vitest tests (45 passing)
 ├── docs/                         # Internal documentation
-│   ├── folder-guide.md           # Master folder map
-│   ├── WHERE-TO-EDIT.md          # Quick edit cheat sheet
-│   ├── intern-onboarding.md      # Day 1 for new contributors
-│   ├── built-features-phase-two.md
-│   └── futureupgradation.md
 └── .data/                        # Local fallback (gitignored)
 ```
 
-**Full tree:** see [docs/folder-guide.md](docs/folder-guide.md)
+---
 
-### Suggested reading order for contributors
+## SEO architecture
 
-1. `docs/intern-onboarding.md` — Day 1 guide for new contributors
-2. `docs/WHERE-TO-EDIT.md` — quick cheat sheet (what file to change)
-3. `docs/futureupgradation.md` — roadmap: Postgres, Better Auth, desktop app
-4. `docs/built-features-phase-two.md` — what's built, quality upgrades, Phase 2
-5. `docs/folder-guide.md` — full architecture map
-6. `docs/system-design.md` — product flows
-7. `features/jobs/README.md` — job search walkthrough
+| Component | Implementation |
+|-----------|----------------|
+| Sitemap | `app/sitemap.ts` — auto-includes blog + prepare + public routes, daily revalidate |
+| Robots | `app/robots.ts` — allows public routes, disallows dashboard/api/downloads |
+| Metadata | 10 `export const metadata` + 2 `generateMetadata` (blog, prepare) |
+| Canonical | All 9 public routes via `absoluteUrl()` |
+| JSON-LD | Organization + WebSite (global in layout), SoftwareApplication + FAQPage (homepage), BlogPosting + BreadcrumbList (blog), Article + BreadcrumbList (prepare), CollectionPage (pyqs, prepare index) |
+| OG images | Dynamic `opengraph-image.tsx` for blog + prepare (38 unique images) |
+| Keywords | 51 global + ~200 per-post keywords targeting India placement prep |
+| Indexable pages | ~58 (24 blog SSG + 26 prepare SSG + 8 public) |
+| 404 page | `noindex` (prevents soft-404 indexing) |
+
+---
+
+## Mock interview voice pipeline
+
+```
+Question text
+  → POST /api/mock-interview/speak (ElevenLabs TTS, 9 voices, 5 languages)
+  → Audio plays in browser
+  → Mic auto-starts after speech ends (800ms delay)
+  → User speaks
+  → Web Speech API captures live captions (or Groq Whisper fallback)
+  → 5-second silence → auto-submit
+  → POST /api/mock-interview (action: answer)
+  → AI evaluates → feedback → next question
+```
+
+**Voice options**: Rachel, Bella, Elli, Freya, Lily (female) + Antoni, Adam, Sam, Josh (male)
+**Languages**: English (en-IN), Hindi (hi-IN), Tamil (ta-IN), Telugu (te-IN), Marathi (mr-IN)
+**Browser fallback**: Prioritizes Indian English voices, sentence-chunk splitting for natural pauses, rate 0.92
 
 ---
 
 ## Where to find all data
 
-### User data (MongoDB / local fallback)
+### User data (Neon Postgres via Drizzle)
 
-| Data | Model | Access layer | Stored fields |
-|------|-------|--------------|---------------|
-| Master resume | `models/MasterResume.ts` | `lib/data/resumes.ts` | `rawText`, skills, projects, experience, source file path |
-| Generated resume | `models/GeneratedResume.ts` | `lib/data/resumes.ts` | `company`, `role`, `atsScore`, `keywords`, `generatedContent`, `status` |
-| Interview guide | `models/InterviewGuide.ts` | `lib/data/resumes.ts` | `roadmap`, `codingQuestions`, `companyQuestions`, `freeResources`, etc. |
-
-Local fallback path: `RESUME_LOCAL_STORE_PATH` or `.data/resume-store.json` (see `lib/data/resumes.ts`).
+| Data | Access layer | Stored fields |
+|------|--------------|---------------|
+| Master resume | `lib/data/resumes.ts` | `rawText`, skills, projects, experience, source file path |
+| Generated resume | `lib/data/resumes.ts` | `company`, `role`, `atsScore`, `keywords`, `generatedContent`, `status` |
+| Interview guide | `lib/data/resumes.ts` | `roadmap`, `codingQuestions`, `companyQuestions`, `freeResources` |
+| Mock interview session | `lib/data/mock-interviews.ts` | `turns`, `overallScore`, `durationSeconds`, `company`, `role` |
+| Cover letters | `lib/data/cover-letters.ts` | `company`, `role`, `content`, `resumeId` |
+| Job applications | `lib/data/applications.ts` | `company`, `role`, `status`, `notes`, `appliedAt` |
+| Offers | `lib/data/offers.ts` | `company`, `role`, `ctc`, `location`, `deadline` |
 
 ### Static curated data (in repo)
 
-| Content | File | Used in |
-|---------|------|---------|
-| Company profiles (20+ companies) | `lib/data/companies.ts` | Improve flow, Interview prep, `GET /api/company/lookup` |
-| Job listings (25+ openings) | `lib/data/job-listings.ts` | Job Search matcher, `/dashboard/jobs` |
-| Job seeker profile (derived) | `features/jobs/lib/build-profile.ts` | Built from master/generated resume — not stored separately |
-| Learner tracks & roadmaps | `content/learning/tracks.ts` | `/dashboard/learners` |
-| YouTube video IDs & metadata | `content/learning/tracks.ts` | Interview prep, Learner prep |
-| Course links (Google, Coursera, etc.) | `content/learning/tracks.ts` | Interview prep, Learner prep |
-| Coding platform links | `content/learning/tracks.ts` | Interview resources, Learner prep |
-| Dashboard stats helpers | `lib/data/resumes.ts` → `buildDashboardStats`, `buildActivityFeed`, `buildReadinessScore` | Overview, Analytics |
-| Blog posts | `content/blog/posts.ts` | `/blog` |
-| SEO metadata | `lib/seo.ts` | Public pages |
+| Content | File | Count |
+|---------|------|-------|
+| Company PYQs links | `dataset/company-coding-questions/raw-data.json` | 64 companies |
+| Company PYQs (typed) | `content/coding-questions/index.ts` | 64 companies |
+| Blog posts | `content/blog/posts.ts` | 24 posts |
+| Company prep guides | `content/companies/pages.ts` | 26 guides |
+| Company profiles | `lib/data/companies.ts` | 21 profiles |
+| Job listings | `lib/data/job-listings.ts` | 35 listings |
+| Learner tracks | `content/learning/tracks.ts` | 12 tracks |
+| Interview prep videos | `content/learning/tracks.ts` | 5 videos |
+| Coding platforms | `content/learning/tracks.ts` | 6 platforms |
 
 ### AI-generated data (runtime)
 
-Produced by Groq/OpenAI via `lib/ai/resume-engine.ts` and saved through `lib/data/resumes.ts`:
-
+Produced by Groq/Gemini/OpenAI via `lib/ai/resume-engine.ts` and `lib/ai/mock-interview.ts`:
 - Tailored resume text, ATS scores, keywords
 - Interview roadmaps, coding questions, HR questions
 - Cover letters and critiques
+- Mock interview questions, feedback, session summaries
+- Voice synthesis (ElevenLabs) and transcription (Groq Whisper)
 
 Prompts live in `lib/ai/prompts.ts`.
 
@@ -249,73 +367,15 @@ Prompts live in `lib/ai/prompts.ts`.
 
 ## References used in the product
 
-Curated links and media embedded in the app (not external dependencies). Full lists are in `lib/data/learning-resources.ts` and `lib/data/companies.ts`.
-
 ### Practice platforms
+- [LeetCode](https://leetcode.com/problemset/) · [HackerRank](https://www.hackerrank.com/domains/algorithms) · [Codeforces](https://codeforces.com/problemset) · [GeeksforGeeks](https://www.geeksforgeeks.org/dsa-roadmap-for-beginner-to-advanced/) · [NeetCode](https://neetcode.io/practice) · [InterviewBit](https://www.interviewbit.com/courses/programming/)
 
-- [LeetCode](https://leetcode.com/problemset/)
-- [HackerRank](https://www.hackerrank.com/domains/algorithms)
-- [Codeforces](https://codeforces.com/problemset)
-- [GeeksforGeeks DSA Roadmap](https://www.geeksforgeeks.org/dsa-roadmap-for-beginner-to-advanced/)
-- [NeetCode](https://neetcode.io/practice)
-- [InterviewBit](https://www.interviewbit.com/courses/programming/)
-- [Kaggle Learn](https://www.kaggle.com/learn)
-- [Hugging Face Learn](https://huggingface.co/learn)
+### Job boards (deep-link redirects)
+- [LinkedIn Jobs](https://www.linkedin.com/jobs/) · [Naukri.com](https://www.naukri.com/) · [Indeed India](https://in.indeed.com/) · [Instahyre](https://www.instahyre.com/) · [Cutshort](https://cutshort.io/) · [Wellfound](https://wellfound.com/)
 
-### Courses & learning paths
-
-- [freeCodeCamp](https://www.freecodecamp.org/learn/) — web, JS, backend certifications
-- [Google ML Crash Course](https://developers.google.com/machine-learning/crash-course)
-- [Google IT Support Certificate](https://www.coursera.org/professional-certificates/google-it-support) (Coursera)
-- [Meta Front-End Developer](https://www.coursera.org/professional-certificates/meta-front-end-developer) (Coursera)
-- [Stanford Algorithms Specialization](https://www.coursera.org/specializations/algorithms) (Coursera)
-- [Deep Learning Specialization](https://www.coursera.org/specializations/deep-learning) (DeepLearning.AI)
-- [The Odin Project](https://www.theodinproject.com/paths/full-stack-javascript)
-- [Full Stack Open](https://fullstackopen.com/en/) (University of Helsinki)
-- [Educative – Grokking System Design](https://www.educative.io/courses/grokking-the-system-design-interview)
-- [Educative – Grokking Coding Interview](https://www.educative.io/courses/grokking-the-coding-interview)
-
-### YouTube channels & videos (embedded by video ID)
-
-Thumbnails served from `https://img.youtube.com/vi/{id}/mqdefault.jpg`. Featured creators include:
-
-- **freeCodeCamp** — HTML/CSS, JavaScript, React, DSA, Node.js, ML
-- **Traversy Media** — Web dev roadmaps, crash courses
-- **Gaurav Sen** — System design interviews
-- **NeetCode** — Blind 75, dynamic programming
-- **Clément Mihailescu** — Google coding interview walkthrough
-- **3Blue1Brown** — Neural networks
-- **Fireship** — Quick tech intros
-- **Andrej Karpathy** — LLM / ChatGPT explained
-
-Specific video IDs are listed in `interviewPrepVideos` and each `learnerTracks[].videos` in `lib/data/learning-resources.ts`.
-
-### Company reference data
-
-Interview style, hiring focus, and common roles for companies such as Google, Amazon, Microsoft, TCS, Infosys, Wipro, Flipkart, Razorpay, Zoho, Meta, and others — maintained manually in `lib/data/companies.ts`.
-
-### Job board references (Job Search redirects)
-
-Apply deep-links users to search/apply on these platforms (no scraping):
-
-- [LinkedIn Jobs](https://www.linkedin.com/jobs/)
-- [Naukri.com](https://www.naukri.com/)
-- [Indeed India](https://in.indeed.com/)
-- [Glassdoor India](https://www.glassdoor.co.in/)
-- [Instahyre](https://www.instahyre.com/)
-- [Cutshort](https://cutshort.io/)
-- [Wellfound](https://wellfound.com/)
-
-URL builders live in `features/jobs/lib/platform-links.ts`. Curated listings in `lib/data/job-listings.ts`.
-
-### Documentation references
-
-- [Next.js App Router docs](https://nextjs.org/docs/app)
-- [Auth.js](https://authjs.dev)
-- [Drizzle ORM](https://orm.drizzle.team/docs/overview)
-- [Google OAuth](https://console.cloud.google.com/apis/credentials)
-- [Groq API](https://console.groq.com/docs)
-- [React PDF Renderer](https://react-pdf.org/)
+### PYQ source
+- [Let's Code](https://www.lets-code.co.in) — original company-wise previous year coding question guides
+- Extracted from [Google Doc](https://docs.google.com/document/d/1JFyZTIxCKj6Q2UJTOmA3lvhmI99etfBtnsSxCeDX4-o) by Rohit Jadhav
 
 ---
 
@@ -327,19 +387,25 @@ npm run build      # Production build
 npm run start      # Start production server
 npm run lint       # ESLint
 npm run typecheck  # TypeScript check
+npm run test       # Vitest (45 tests)
+npm run test:watch # Vitest watch mode
 ```
 
 ---
 
-## Pricing placeholder
+## Pricing
 
-- **Free:** up to 5 resume generations worldwide (per account + per device)
-- **Pro:** affordable monthly plan — UPI for INR, contact support for other regions
-- **Admin:** log in as `rjdhav67@gmail.com` → `/dashboard/admin` to add subscription days after payment
+- **Free:** 5 resume generations (per account + per device), unlimited PYQs, unlimited mock interviews
+- **Pro:** ₹50/month (UPI) or ₹299/month (Stripe) — unlimited resumes, premium features
+- **Admin:** log in as `rjdhav67@gmail.com` → `/dashboard/admin` to manage subscriptions
 
-### Vercel deploy blocked?
+---
 
-If you see *“commit author did not have contributing access”* on Hobby + private repo, follow **[docs/vercel-deploy.md](docs/vercel-deploy.md)** — verify `rjdhav67@gmail.com` on GitHub and reconnect Vercel to account **Rohit94r**.
+## Copyright
+
+© 2026 Rohit Jadhav — Apply (apply.neexmeet.com). All rights reserved.
+
+Research & data extraction by Rohit Jadhav. Original PYQ question guides curated by Let's Code (lets-code.co.in) / Om Kute.
 
 ---
 

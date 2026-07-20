@@ -54,11 +54,11 @@ function uniqueReasons(reasons: string[]) {
 
 function scoreJob(profile: JobSeekerProfile, job: JobListing) {
   const reasons: string[] = [];
+  const matchedSkills: string[] = [];
   let score = 0;
 
   if (job.dataProvider && job.dataProvider !== "curated") {
     score += 8;
-    reasons.push(`Live · ${job.dataProvider}`);
   }
 
   const profileSkills = tokenSet(profile.skills);
@@ -69,7 +69,7 @@ function scoreJob(profile: JobSeekerProfile, job: JobListing) {
     for (const ps of profileSkills) {
       if (ps.includes(skill) || skill.includes(ps)) {
         skillHits += 1;
-        reasons.push(`Skill: ${skill}`);
+        matchedSkills.push(skill);
         break;
       }
     }
@@ -81,6 +81,9 @@ function scoreJob(profile: JobSeekerProfile, job: JobListing) {
       ? Math.min(25, skillHits * 8)
       : 0;
   score += skillScore;
+  if (matchedSkills.length) {
+    reasons.push(`Skills: ${matchedSkills.slice(0, 3).join(", ")}`);
+  }
 
   const roleScore = Math.round(roleSimilarity(profile.targetRoles, job.title) * 25);
   if (roleScore > 0) {
@@ -109,7 +112,10 @@ function scoreJob(profile: JobSeekerProfile, job: JobListing) {
   return {
     ...job,
     matchScore: Math.min(100, score),
-    matchReasons: uniqueReasons(reasons).slice(0, 4)
+    matchReasons: uniqueReasons(reasons).slice(0, 4),
+    matchGaps: [...jobSkills]
+      .filter((skill) => !matchedSkills.includes(skill))
+      .slice(0, 3)
   };
 }
 
@@ -141,18 +147,9 @@ export function scoreListingsForProfile(
     .sort((a, b) => b.matchScore - a.matchScore)
     .slice(0, limit);
 
-  const finalMatches =
-    matches.length > 0
-      ? matches
-      : listings.slice(0, 8).map((job) => ({
-          ...scoreJob(profile, job),
-          matchScore: Math.max(35, scoreJob(profile, job).matchScore),
-          matchReasons: ["Trending opening"]
-        }));
-
   return {
     profile,
-    matches: finalMatches,
+    matches,
     platformSearches: buildPlatformSearchLinks(profile, country),
     totalListingsScanned: listings.length,
     providerStatus,

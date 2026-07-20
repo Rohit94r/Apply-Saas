@@ -4,21 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  Briefcase,
   CaretLineLeft,
   CaretLineRight,
   Desktop,
-  FileText,
-  GraduationCap,
-  House,
-  ListChecks,
-  MagicWand,
-  Microphone,
-  ShieldCheck,
-  Sparkle,
-  Storefront
+  ShieldCheck
 } from "@phosphor-icons/react";
-import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { UserMenu } from "@/components/auth/user-menu";
 import { AuthSetupNotice } from "@/components/auth/auth-setup-notice";
 import { Logo } from "@/components/landing/logo";
@@ -26,127 +16,13 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { CreditsBadge } from "@/components/billing/credits-badge";
 import { isAdminEmail } from "@/lib/admin/client";
 import { authClient } from "@/lib/auth/client";
+import {
+  dashboardNavGroups,
+  dashboardTitleForPath,
+  isDashboardPathActive,
+  type DashboardNavGroup
+} from "@/lib/dashboard-nav";
 import { cn } from "@/lib/utils";
-
-const navItems: Array<{
-  label: string;
-  href: string;
-  icon: PhosphorIcon;
-  /** Shorter label for the mobile chip row */
-  shortLabel?: string;
-}> = [
-  { label: "Home", href: "/dashboard", icon: House },
-  { label: "My resumes", href: "/dashboard/resumes", icon: FileText, shortLabel: "Resumes" },
-  {
-    label: "Applications & progress",
-    href: "/dashboard/applications",
-    icon: ListChecks,
-    shortLabel: "Apps"
-  },
-  { label: "Learning", href: "/dashboard/learners", icon: GraduationCap },
-  {
-    label: "Interview prep",
-    href: "/dashboard/interview",
-    icon: Briefcase,
-    shortLabel: "Prep"
-  },
-  {
-    label: "Mock interview",
-    href: "/dashboard/mock-interview",
-    icon: Microphone,
-    shortLabel: "Mock"
-  },
-  { label: "Freelancing", href: "/dashboard/freelancing", icon: Storefront },
-  { label: "AI tools", href: "/dashboard/tools", icon: MagicWand, shortLabel: "Tools" },
-  { label: "Upgrade", href: "/dashboard/upgrade", icon: Sparkle }
-];
-
-const pageTitles: Array<{ match: (path: string) => boolean; title: string; eyebrow: string }> = [
-  {
-    match: (p) => p === "/dashboard",
-    title: "Your Apply home",
-    eyebrow: "Placement prep"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/applications"),
-    title: "Applications & progress",
-    eyebrow: "Tracker + readiness"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/tools"),
-    title: "AI tools",
-    eyebrow: "Cover letter, offers & more"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/offers"),
-    title: "Compare offers",
-    eyebrow: "AI tools"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/cover-letters"),
-    title: "Cover letters",
-    eyebrow: "Saved history"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/generate"),
-    title: "Tailor resume",
-    eyebrow: "Job-ready PDF"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/mock-interview"),
-    title: "Mock interview",
-    eyebrow: "Practice room"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/interview"),
-    title: "Interview prep",
-    eyebrow: "Questions & roadmap"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/jobs"),
-    title: "Job search",
-    eyebrow: "Find openings"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/resumes"),
-    title: "My resumes",
-    eyebrow: "Your library"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/freelancing"),
-    title: "Freelancing",
-    eyebrow: "Client outreach"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/learners"),
-    title: "Learning",
-    eyebrow: "Skill gaps"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/settings"),
-    title: "Settings",
-    eyebrow: "Account"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/upgrade"),
-    title: "Upgrade",
-    eyebrow: "Pro access"
-  },
-  {
-    match: (p) => p.startsWith("/dashboard/admin"),
-    title: "Admin",
-    eyebrow: "Founder tools"
-  }
-];
-
-function titleForPath(pathname: string) {
-  return (
-    pageTitles.find((entry) => entry.match(pathname)) ?? {
-      title: "Your Apply home",
-      eyebrow: "Placement prep"
-    }
-  );
-}
 
 export function DashboardShell({
   children,
@@ -177,27 +53,20 @@ function AuthenticatedDashboardShell({
   const [collapsed, setCollapsed] = useState(false);
   const displayName = user?.name ?? user?.email ?? "Apply user";
   const isAdmin = isAdminEmail(user?.email);
-  const sidebarItems = isAdmin
+  const navGroups: DashboardNavGroup[] = isAdmin
     ? [
-        ...navItems,
-        { label: "Admin", href: "/dashboard/admin", icon: ShieldCheck }
+        ...dashboardNavGroups,
+        {
+          label: "Founder",
+          items: [
+            { label: "Admin", href: "/dashboard/admin", icon: ShieldCheck }
+          ]
+        }
       ]
-    : navItems;
-  const pageMeta = titleForPath(pathname);
-
-  /** Home is exact-only so nested routes never highlight it. */
-  const isActive = (href: string) => {
-    if (href === "/dashboard") {
-      return pathname === "/dashboard";
-    }
-    if (href === "/dashboard/tools") {
-      return (
-        pathname.startsWith("/dashboard/tools") ||
-        pathname.startsWith("/dashboard/cover-letters")
-      );
-    }
-    return pathname === href || pathname.startsWith(`${href}/`);
-  };
+    : dashboardNavGroups;
+  const flatNavItems = navGroups.flatMap((group) => group.items);
+  const pageMeta = dashboardTitleForPath(pathname);
+  const isActive = (href: string) => isDashboardPathActive(pathname, href);
 
   return (
     <div className="min-h-screen bg-[#f7f4ee] dark:bg-[#131318]">
@@ -222,28 +91,48 @@ function AuthenticatedDashboardShell({
             )}
           </button>
         </div>
-        <nav className="mt-10 space-y-1 overflow-y-auto pb-24" style={{ maxHeight: "calc(100vh - 8rem)" }}>
-          {sidebarItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={item.label}
-              className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
-                collapsed && "justify-center px-0",
-                isActive(item.href) && "bg-muted text-primary"
-              )}
-            >
-              <item.icon className="h-4 w-4" weight="regular" />
-              <span className={cn(collapsed && "sr-only")}>{item.label}</span>
-            </Link>
+        <nav
+          aria-label="Dashboard"
+          className="mt-8 overflow-y-auto pb-24"
+          style={{ maxHeight: "calc(100vh - 8rem)" }}
+        >
+          {navGroups.map((group, groupIndex) => (
+            <div key={group.label ?? "home"}>
+              {groupIndex > 0 ? (
+                group.label && !collapsed ? (
+                  <p className="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
+                    {group.label}
+                  </p>
+                ) : (
+                  <div className="my-3 border-t border-border/70" />
+                )
+              ) : null}
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={item.label}
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                    className={cn(
+                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-muted-foreground transition hover:bg-muted hover:text-primary",
+                      collapsed && "justify-center px-0",
+                      isActive(item.href) && "bg-muted text-primary"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" weight="regular" />
+                    <span className={cn(collapsed && "sr-only")}>{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
           {!collapsed ? (
-            <p className="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+            <p className="px-3 pb-1 pt-5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
               Coming soon
             </p>
           ) : (
-            <div className="my-3 border-t border-border" />
+            <div className="my-3 border-t border-border/70" />
           )}
           <Link
             href="/downloads"
@@ -292,20 +181,22 @@ function AuthenticatedDashboardShell({
               <UserMenu />
             </div>
           </div>
-          <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
-            {sidebarItems.map((item) => (
+          <nav
+            aria-label="Dashboard"
+            className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden"
+          >
+            {flatNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
                 className={cn(
                   "flex shrink-0 items-center gap-2 rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-muted-foreground",
                   isActive(item.href) && "border-primary/30 text-primary"
                 )}
               >
                 <item.icon className="h-3.5 w-3.5" weight="regular" />
-                {"shortLabel" in item && item.shortLabel
-                  ? item.shortLabel
-                  : item.label}
+                {item.shortLabel ?? item.label}
               </Link>
             ))}
             <Link
@@ -318,7 +209,6 @@ function AuthenticatedDashboardShell({
           </nav>
         </header>
         <main className="px-5 py-8 lg:px-8 lg:py-10 dark:text-foreground">{children}</main>
-
       </div>
     </div>
   );

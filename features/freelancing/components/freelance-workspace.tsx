@@ -41,6 +41,7 @@ import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ClientPipelineBoard } from "@/features/freelancing/components/client-pipeline-board";
 import {
   buildFindClientLinks,
   freelanceCities,
@@ -114,10 +115,9 @@ export function FreelanceWorkspace() {
                 Find freelance clients in your city
               </h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Pick a service you can deliver, see the exact skills and
-                deliverables clients want, then jump straight to Google Maps,
-                Justdial or IndiaMART to find real local businesses with phone
-                numbers — and call them with a ready pitch.
+                Pick a service you can deliver, research public business
+                directories, qualify a genuine need, and track respectful
+                outreach from first contact to proposal.
               </p>
             </div>
             <div className="w-full max-w-xs">
@@ -217,6 +217,14 @@ export function FreelanceWorkspace() {
           </div>
         </div>
       </Card>
+
+      {selected ? (
+        <ClientPipelineBoard
+          services={freelanceSubdomains}
+          selectedService={selected}
+          city={city}
+        />
+      ) : null}
 
       {/* Selected subdomain detail */}
       {selected ? (
@@ -349,7 +357,7 @@ function SubdomainDetail({
             <div className="rounded-xl border border-accent/20 bg-accent/5 p-4">
               <div className="flex items-center gap-2 text-accent">
                 <Lightbulb className="h-4 w-4" weight="regular" />
-                <p className="text-xs font-bold uppercase">Why this works</p>
+                <p className="text-xs font-bold uppercase">Service rationale</p>
               </div>
               <p className="mt-2 text-sm leading-6 text-foreground">
                 {subdomain.whySuggested}
@@ -358,7 +366,7 @@ function SubdomainDetail({
             <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
               <div className="flex items-center gap-2 text-primary">
                 <Target className="h-4 w-4" weight="regular" />
-                <p className="text-xs font-bold uppercase">Opportunity signal</p>
+                <p className="text-xs font-bold uppercase">Qualification hypothesis</p>
               </div>
               <p className="mt-2 text-sm leading-6 text-foreground">
                 {subdomain.opportunitySignal}
@@ -425,11 +433,15 @@ function SubdomainDetail({
           <div className="mb-3 flex items-center gap-2">
             <ChatCircle className="h-5 w-5 text-primary" weight="regular" />
             <h4 className="text-lg font-semibold text-foreground">
-              Call pitch
+              Starter outreach draft
             </h4>
           </div>
           <p className="rounded-xl border border-border bg-[#fbfaf6] p-4 text-sm italic leading-6 text-foreground">
             “{subdomain.pitchScript}”
+          </p>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            Personalize this after research. Treat pricing and outcomes as
+            starting points, not verified facts or guarantees.
           </p>
           <Button
             type="button"
@@ -444,7 +456,7 @@ function SubdomainDetail({
             }}
           >
             <Copy className="h-4 w-4" weight="regular" />
-            Copy pitch
+            Copy draft
           </Button>
         </Card>
       </div>
@@ -459,8 +471,9 @@ function SubdomainDetail({
             </h4>
           </div>
           <p className="mb-4 text-sm leading-6 text-muted-foreground">
-            These open real directories pre-filtered to {city}. Find businesses,
-            see their phone numbers, and call with the pitch above.
+            These open third-party directories pre-filtered to {city}. Verify
+            each business and use only public contact details for personalized
+            outreach.
           </p>
           <div className="space-y-4">
             {subdomain.clientSearchTerms.map((term) => (
@@ -504,9 +517,9 @@ function SubdomainDetail({
             <p className="text-xs font-bold uppercase">Outreach tip</p>
           </div>
           <p className="mt-2 text-sm leading-6 text-foreground">
-            Call during business hours, lead with the savings/opportunity, and
-            follow up on WhatsApp with a free mockup. Track every lead — repeat
-            clients and referrals are where the real money is.
+            Research before contacting. Mention one observable need, ask
+            permission to continue, and stop after one unanswered follow-up.
+            Never mass-message directory results.
           </p>
         </Card>
       </div>

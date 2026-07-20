@@ -41,7 +41,7 @@ export function BlogPreviewSection() {
                 </p>
                 <div className="mt-6 flex items-center justify-between gap-3 text-xs font-semibold text-muted-foreground">
                   <span>{post.readingTime}</span>
-                  <span>{post.targetKeyword}</span>
+                  <span>{post.category}</span>
                 </div>
               </article>
             </Reveal>

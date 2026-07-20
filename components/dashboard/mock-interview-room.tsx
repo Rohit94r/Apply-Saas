@@ -29,6 +29,10 @@ import {
   type SessionExitStats
 } from "@/components/dashboard/mock-interview-exit-dialog";
 import { DEFAULT_ELEVENLABS_VOICE_ID } from "@/lib/ai/elevenlabs-tts";
+import {
+  MAX_INTERVIEW_QUESTIONS,
+  MIN_INTERVIEW_QUESTIONS
+} from "@/lib/mock-interview/flow";
 
 type InterviewType = "hr" | "technical" | "mixed";
 type Difficulty = "easy" | "medium" | "hard";
@@ -1301,12 +1305,12 @@ export function MockInterviewRoom() {
                 </div>
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Questions ({totalQuestions})
+                    Questions ({totalQuestions} · max {MAX_INTERVIEW_QUESTIONS})
                   </label>
                   <input
                     type="range"
-                    min={5}
-                    max={8}
+                    min={MIN_INTERVIEW_QUESTIONS}
+                    max={MAX_INTERVIEW_QUESTIONS}
                     value={totalQuestions}
                     onChange={(e) => setTotalQuestions(Number(e.target.value))}
                     className="w-full accent-[hsl(var(--accent))]"

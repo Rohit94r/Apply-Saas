@@ -112,6 +112,13 @@ export function FreelancingSection() {
                   <ArrowRight className="h-4 w-4" weight="regular" />
                 </Link>
               </Button>
+              <Link
+                href="/blog/first-freelance-client-college-student"
+                className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-accent"
+              >
+                Read the first-client guide
+                <ArrowRight className="h-4 w-4" weight="regular" />
+              </Link>
               <p className="text-xs text-muted-foreground">
                 Free for everyone — included with your Apply account.
               </p>

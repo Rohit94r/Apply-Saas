@@ -1,6 +1,10 @@
 import { getGeminiClient } from "@/lib/ai/gemini";
 import { getTextAIClient } from "@/lib/ai/openai";
 import { getTextAIForTask } from "@/lib/ai/router";
+import {
+  hasReachedQuestionLimit,
+  normalizeQuestionCount
+} from "@/lib/mock-interview/flow";
 
 export type MockInterviewType = "hr" | "technical" | "mixed";
 export type MockDifficulty = "easy" | "medium" | "hard";
@@ -176,16 +180,80 @@ function jobDescriptionBlock(jobDescription?: string) {
 function codingGuidance(includeCoding?: boolean, difficulty?: MockDifficulty) {
   if (!includeCoding) return "";
   return `
-Include coding/DSA questions in this session (~30-40% of questions when type allows).
+Include at most two coding questions in this session when the interview type allows.
 Coding difficulty: ${difficulty ?? "medium"}.
-When asking a coding question, set category to "coding" and include codeProblem:
-{
-  "title": string,
-  "description": string (problem statement),
-  "starterCode": string (JavaScript function solve(input) starter),
-  "testCases": [{ "input": string, "expected": string, "label": string }]
+When asking one, set category to "coding". The application will attach a
+safe, locally evaluated JavaScript problem. Do not claim code was executed,
+compiled, or tested by you.`;
 }
-Use 2-3 small test cases. Keep problems solvable in 10-15 minutes.`;
+
+function languageGuidance(languageCode?: string) {
+  const names: Record<string, string> = {
+    en: "English",
+    hi: "Hindi",
+    ta: "Tamil",
+    te: "Telugu",
+    mr: "Marathi"
+  };
+  const language = names[languageCode ?? "en"] ?? "English";
+  return `Conduct the interview in ${language}. Keep technical terms in English when that is clearer.`;
+}
+
+function supportedCodeProblem(difficulty: MockDifficulty): MockCodeProblem {
+  if (difficulty === "easy") {
+    return {
+      title: "Reverse a string",
+      description:
+        "Return the trimmed input string in reverse order. Use the supported local JavaScript subset.",
+      starterCode: `function solve(input) {
+  return input.trim();
+}`,
+      testCases: [
+        { input: "hello", expected: "olleh", label: "Basic word" },
+        { input: "racecar", expected: "racecar", label: "Palindrome" },
+        { input: " apply ", expected: "ylppa", label: "Trim spaces" }
+      ]
+    };
+  }
+  if (difficulty === "hard") {
+    return {
+      title: "Square a number",
+      description:
+        "Parse the trimmed numeric input and return its square. The local evaluator supports Number(input.trim()) ** 2.",
+      starterCode: `function solve(input) {
+  return Number(input.trim());
+}`,
+      testCases: [
+        { input: "7", expected: "49", label: "Positive" },
+        { input: "-4", expected: "16", label: "Negative" },
+        { input: " 12 ", expected: "144", label: "Trimmed input" }
+      ]
+    };
+  }
+  return {
+    title: "Count words",
+    description:
+      "Return the number of whitespace-separated words in the trimmed input. Use split(/\\s+/).",
+    starterCode: `function solve(input) {
+  return input.trim().length;
+}`,
+    testCases: [
+      { input: "one two three", expected: "3", label: "Three words" },
+      { input: "single", expected: "1", label: "Single word" },
+      { input: "space   between", expected: "2", label: "Repeated spaces" }
+    ]
+  };
+}
+
+function normalizeQuestion(
+  question: MockQuestionOut,
+  ctx: SessionContext
+): MockQuestionOut {
+  if (question.category !== "coding") return { ...question, codeProblem: undefined };
+  if (!ctx.includeCoding || ctx.interviewType === "hr") {
+    return { ...question, category: "technical", codeProblem: undefined };
+  }
+  return { ...question, codeProblem: supportedCodeProblem(ctx.difficulty) };
 }
 
 function difficultyGuidance(difficulty: MockDifficulty) {
@@ -229,7 +297,7 @@ function demoAnswerResult(
     answered < 40 ? 4 : answered < 120 ? 6 : answered < 280 ? 7 : 8
   );
   const questionNumber = questionIndex + 1;
-  const done = questionNumber >= ctx.totalQuestions;
+  const done = hasReachedQuestionLimit(questionIndex, ctx.totalQuestions);
 
   const bank: MockQuestionOut[] = [
     {
@@ -255,8 +323,35 @@ function demoAnswerResult(
     {
       category: "technical",
       question: `Explain a core concept from your toolkit as if I were a teammate starting on day one.`
+    },
+    {
+      category: "behavioral",
+      question: "Tell me about a decision you made with incomplete information. What did you learn?"
+    },
+    {
+      category: "technical",
+      question: `How would you improve the reliability of a system used by ${ctx.company}'s customers?`
+    },
+    {
+      category: "closing",
+      question: `Before we wrap up, what would you like to ask about the ${ctx.role} role or team?`
     }
   ];
+  const nextIndex = Math.min(questionNumber - 1, bank.length - 1);
+  const next =
+    ctx.includeCoding &&
+    ctx.interviewType !== "hr" &&
+    questionNumber === Math.min(3, normalizeQuestionCount(ctx.totalQuestions) - 1)
+      ? normalizeQuestion(
+          {
+            category: "coding",
+            question:
+              "Let's do a short coding exercise. Talk me through your approach, then run the local tests.",
+            codeProblem: supportedCodeProblem(ctx.difficulty)
+          },
+          ctx
+        )
+      : bank[nextIndex];
 
   return {
     feedback: {
@@ -272,7 +367,7 @@ function demoAnswerResult(
       ],
       score
     },
-    nextQuestion: done ? null : bank[questionIndex % bank.length],
+    nextQuestion: done ? null : next,
     done
   };
 }
@@ -314,7 +409,7 @@ export async function generateFirstQuestion(
     category?: string;
     codeProblem?: MockCodeProblem;
   }>(
-    "You are Apply Interviewer — a professional, calm AI interviewer for early-career candidates in India. Return only valid JSON.",
+    "You are Apply Interviewer — a warm, attentive professional interviewer. Sound human, not scripted. Never claim personal experience, company knowledge, or actions you did not actually perform. Return only valid JSON.",
     `Start a ${ctx.totalQuestions}-question mock interview.
 
 Company: ${ctx.company}
@@ -323,13 +418,16 @@ Interview type: ${ctx.interviewType}
 Difficulty: ${ctx.difficulty}
 ${typeGuidance(ctx.interviewType)}
 ${difficultyGuidance(ctx.difficulty)}
+${languageGuidance(ctx.languageCode)}
 ${jobDescriptionBlock(ctx.jobDescription)}
 ${codingGuidance(ctx.includeCoding, ctx.difficulty)}
 
 Candidate resume context:
 ${resumeSnippet(ctx.resumeContext)}
 
-Ask the FIRST question only. Make it specific to company + role. Do not answer it.
+Ask the FIRST question only in one or two concise sentences. Begin naturally,
+without a long welcome or generic filler. Make it specific to company + role.
+Do not answer it and do not stack multiple questions.
 
 Return JSON:
 { "question": string, "category": "intro" | "behavioral" | "technical" | "coding" | "company" | "closing" | "general", "codeProblem"?: { "title": string, "description": string, "starterCode": string, "testCases": [{ "input": string, "expected": string, "label"?: string }] } }`,
@@ -341,11 +439,11 @@ Return JSON:
   }
 
   return {
-    question: {
+    question: normalizeQuestion({
       question: result.parsed.question.trim(),
       category: result.parsed.category?.trim() || "general",
       codeProblem: result.parsed.codeProblem
-    },
+    }, ctx),
     provider: result.provider,
     demoMode: false
   };
@@ -357,14 +455,23 @@ export async function evaluateAnswerAndContinue(input: {
   currentQuestion: string;
   answer: string;
   questionIndex: number;
+  currentCodePassed?: boolean;
 }): Promise<{
   result: MockAnswerResult;
   provider: MockAIProvider;
   demoMode: boolean;
 }> {
-  const { ctx, history, currentQuestion, answer, questionIndex } = input;
+  const {
+    ctx,
+    history,
+    currentQuestion,
+    answer,
+    questionIndex,
+    currentCodePassed
+  } = input;
   const status = getMockInterviewAIStatus();
-  const remaining = ctx.totalQuestions - (questionIndex + 1);
+  const totalQuestions = normalizeQuestionCount(ctx.totalQuestions);
+  const remaining = totalQuestions - (questionIndex + 1);
 
   if (!status.available) {
     return {
@@ -391,11 +498,12 @@ export async function evaluateAnswerAndContinue(input: {
     nextCodeProblem?: MockCodeProblem;
     done?: boolean;
   }>(
-    "You are Apply Interviewer. Give brief, actionable coaching. Never invent fake praise. Return only valid JSON.",
+    "You are Apply Interviewer. Respond like an attentive human interviewer: acknowledge only what the candidate actually said, give brief actionable coaching, and never invent praise, facts, test results, or personal/company claims. Return only valid JSON.",
     `Mock interview in progress for ${ctx.role} at ${ctx.company}.
 Type: ${ctx.interviewType}. Difficulty: ${ctx.difficulty}.
 Questions planned: ${ctx.totalQuestions}. This was question ${questionIndex + 1}.
 Remaining after this: ${remaining}.
+${languageGuidance(ctx.languageCode)}
 ${jobDescriptionBlock(ctx.jobDescription)}
 ${codingGuidance(ctx.includeCoding, ctx.difficulty)}
 
@@ -411,6 +519,9 @@ ${currentQuestion}
 Candidate answer:
 ${answer}
 
+Local deterministic coding-test status:
+${currentCodePassed === undefined ? "Not run or not a coding question" : currentCodePassed ? "All visible tests passed" : "One or more visible tests failed"}
+
 Return JSON:
 {
   "strengths": string[] (1-3 short bullets),
@@ -423,7 +534,11 @@ Return JSON:
 }
 
 If done or remaining is 0, set done=true and nextQuestion=null.
-Otherwise ask a distinct next question aligned to type/difficulty — do not repeat prior questions.`,
+Otherwise ask one concise, distinct question. Prefer a relevant follow-up on a
+specific detail in the latest answer; if there is no useful detail, progress to
+a new competency. Do not repeat, stack questions, use canned praise, or claim
+to know facts not present above. Move from introduction to evidence, depth,
+role/company fit, then closing.`,
     {
       strengths: fallback.feedback.strengths,
       improvements: fallback.feedback.improvements,
@@ -440,6 +555,7 @@ Otherwise ask a distinct next question aligned to type/difficulty — do not rep
 
   const done =
     Boolean(result.parsed.done) ||
+    hasReachedQuestionLimit(questionIndex, totalQuestions) ||
     remaining <= 0 ||
     !result.parsed.nextQuestion?.trim();
 
@@ -457,11 +573,11 @@ Otherwise ask a distinct next question aligned to type/difficulty — do not rep
       nextQuestion:
         done || !result.parsed.nextQuestion?.trim()
           ? null
-          : {
+          : normalizeQuestion({
               question: result.parsed.nextQuestion.trim(),
               category: result.parsed.nextCategory?.trim() || "general",
               codeProblem: result.parsed.nextCodeProblem
-            },
+            }, ctx),
       done
     },
     provider: result.provider,

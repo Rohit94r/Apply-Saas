@@ -11,12 +11,14 @@ import {
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
 const title =
-  "Company Previous Year Coding Questions (PYQs) — 64+ Guides | Apply";
+  "Company Coding PYQs: 64+ Placement Guides | Apply";
 const description =
   "Free previous year coding question papers and OA PYQs from 64+ companies — TCS, Infosys, Amazon, Google, Zoho, Flipkart, Goldman Sachs, Deloitte, and more. Approach hints + hiring process for Indian campus placements.";
 
 export const metadata: Metadata = {
-  title,
+  title: {
+    absolute: title
+  },
   description,
   keywords: [
     "previous year coding questions",
@@ -235,6 +237,17 @@ export default function PyqsPage() {
                 {" "}with coding difficulty matched to your target.
               </li>
             </ol>
+            <p className="mt-6 text-sm leading-7 text-muted-foreground">
+              Need a day-by-day routine? Follow the{" "}
+              <Link
+                href="/blog/company-pyq-14-day-placement-plan"
+                className="font-semibold text-primary underline-offset-2 hover:underline"
+              >
+                14-day company PYQ placement plan
+              </Link>
+              , which includes a baseline, pattern repair, timed sets, and
+              explanation practice.
+            </p>
           </div>
         </section>
       </main>

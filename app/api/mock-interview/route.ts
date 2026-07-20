@@ -27,6 +27,11 @@ import {
   mockInterviewEndSchema,
   mockInterviewStartSchema
 } from "@/lib/validations";
+import {
+  getActiveQuestionIndex,
+  hasReachedQuestionLimit,
+  normalizeQuestionCount
+} from "@/lib/mock-interview/flow";
 
 function isLocalSessionId(id: string) {
   return id.startsWith("local-");
@@ -152,7 +157,7 @@ async function handleStart(userId: string, body: unknown) {
   }
 
   const resumeContext = await loadResumeContextForUser(userId);
-  const totalQuestions = input.totalQuestions;
+  const totalQuestions = normalizeQuestionCount(input.totalQuestions);
 
   const first = await generateFirstQuestion({
     company: input.company,
@@ -239,7 +244,7 @@ async function handleAnswer(userId: string, body: unknown) {
   let role = input.role ?? "";
   let interviewType = (input.interviewType ?? "mixed") as MockInterviewType;
   let difficulty = (input.difficulty ?? "medium") as MockDifficulty;
-  let totalQuestions = input.totalQuestions ?? 6;
+  let totalQuestions = normalizeQuestionCount(input.totalQuestions);
   let turns: MockTurnRecord[] = input.turns ?? [];
   let resumeContext = input.resumeContext ?? "";
 
@@ -251,7 +256,7 @@ async function handleAnswer(userId: string, body: unknown) {
         role = existing.role;
         interviewType = existing.interviewType;
         difficulty = existing.difficulty;
-        totalQuestions = existing.totalQuestions;
+        totalQuestions = normalizeQuestionCount(existing.totalQuestions);
         turns = existing.turns.length ? existing.turns : turns;
       }
     } catch {
@@ -270,16 +275,18 @@ async function handleAnswer(userId: string, body: unknown) {
     resumeContext = await loadResumeContextForUser(userId);
   }
 
-  const questionIndex =
-    input.questionIndex ??
-    Math.max(
-      0,
-      turns.findIndex((t) => !t.answer?.trim())
+  turns = turns.slice(0, totalQuestions);
+  // Derive progression from stored/client-held turn state. Never trust a
+  // caller-supplied index to skip ahead or rewrite an answered turn.
+  const questionIndex = getActiveQuestionIndex(turns, totalQuestions);
+
+  if (questionIndex >= totalQuestions) {
+    return NextResponse.json(
+      { error: "This interview has reached its question limit.", done: true },
+      { status: 409 }
     );
-  const current =
-    input.currentQuestion ??
-    turns[questionIndex]?.question ??
-    turns[turns.length - 1]?.question;
+  }
+  const current = turns[questionIndex]?.question;
 
   if (!current) {
     return NextResponse.json(
@@ -309,7 +316,8 @@ async function handleAnswer(userId: string, body: unknown) {
     history,
     currentQuestion: current,
     answer: input.answer,
-    questionIndex
+    questionIndex,
+    currentCodePassed: turns[questionIndex]?.codePassed
   });
 
   const updatedTurns: MockTurnRecord[] = [...turns];
@@ -323,21 +331,27 @@ async function handleAnswer(userId: string, body: unknown) {
     score: evaluation.result.feedback.score
   };
 
+  const reachedLimit = hasReachedQuestionLimit(questionIndex, totalQuestions);
+  const done =
+    reachedLimit ||
+    evaluation.result.done ||
+    !evaluation.result.nextQuestion;
   let nextTurn: MockTurnRecord | null = null;
-  if (!evaluation.result.done && evaluation.result.nextQuestion) {
+  if (!done && evaluation.result.nextQuestion) {
     nextTurn = {
       question: evaluation.result.nextQuestion.question,
       category: evaluation.result.nextQuestion.category,
       codeProblem: evaluation.result.nextQuestion.codeProblem
     };
-    updatedTurns.push(nextTurn);
+    updatedTurns[questionIndex + 1] = nextTurn;
   }
+  const cappedTurns = updatedTurns.slice(0, totalQuestions);
 
   if (!isLocalSessionId(input.sessionId)) {
     try {
       await updateMockSession(userId, input.sessionId, {
-        turns: updatedTurns,
-        questions: updatedTurns.map((t) => ({
+        turns: cappedTurns,
+        questions: cappedTurns.map((t) => ({
           question: t.question,
           tip: t.tip ?? "",
           sampleAnswer: t.sampleAnswer ?? "",
@@ -354,8 +368,8 @@ async function handleAnswer(userId: string, body: unknown) {
   return NextResponse.json({
     feedback: evaluation.result.feedback,
     nextTurn,
-    done: evaluation.result.done,
-    turns: updatedTurns,
+    done,
+    turns: cappedTurns,
     questionIndex: nextTurn ? questionIndex + 1 : questionIndex,
     totalQuestions,
     provider: evaluation.provider,
@@ -373,7 +387,7 @@ async function handleEnd(userId: string, body: unknown) {
   let role = input.role ?? "";
   let interviewType = (input.interviewType ?? "mixed") as MockInterviewType;
   let difficulty = (input.difficulty ?? "medium") as MockDifficulty;
-  let totalQuestions = input.totalQuestions ?? 6;
+  let totalQuestions = normalizeQuestionCount(input.totalQuestions);
   let turns: MockTurnRecord[] = input.turns ?? [];
   let resumeContext = input.resumeContext ?? "";
 
@@ -385,7 +399,7 @@ async function handleEnd(userId: string, body: unknown) {
         role = existing.role || role;
         interviewType = existing.interviewType;
         difficulty = existing.difficulty;
-        totalQuestions = existing.totalQuestions;
+        totalQuestions = normalizeQuestionCount(existing.totalQuestions);
         turns = existing.turns.length ? existing.turns : turns;
       }
     } catch {
@@ -397,6 +411,7 @@ async function handleEnd(userId: string, body: unknown) {
     resumeContext = await loadResumeContextForUser(userId);
   }
 
+  turns = turns.slice(0, totalQuestions);
   const summary = await generateSessionSummary({
     ctx: {
       company: company || "Company",

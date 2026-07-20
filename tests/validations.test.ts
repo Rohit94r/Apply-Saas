@@ -206,6 +206,16 @@ describe("mockInterviewStartSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("accepts ten questions and rejects eleven", () => {
+    const base = { company: "TCS", role: "Software Engineer" };
+    expect(
+      mockInterviewStartSchema.safeParse({ ...base, totalQuestions: 10 }).success
+    ).toBe(true);
+    expect(
+      mockInterviewStartSchema.safeParse({ ...base, totalQuestions: 11 }).success
+    ).toBe(false);
+  });
 });
 
 describe("mockInterviewCompleteSchema", () => {

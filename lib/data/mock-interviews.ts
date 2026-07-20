@@ -10,6 +10,7 @@ import type {
   MockInterviewType,
   MockAIProvider
 } from "@/lib/ai/mock-interview";
+import { normalizeQuestionCount } from "@/lib/mock-interview/flow";
 
 export type MockQuestion = {
   question: string;
@@ -105,7 +106,7 @@ function serialize(
     role: row.role,
     interviewType: (row.interviewType as MockInterviewType) || "mixed",
     difficulty: (row.difficulty as MockDifficulty) || "medium",
-    totalQuestions: row.totalQuestions ?? 6,
+    totalQuestions: normalizeQuestionCount(row.totalQuestions),
     questions: (row.questions as MockQuestion[]) ?? [],
     turns: (row.turns as MockTurnRecord[]) ?? [],
     provider: row.provider,
@@ -204,7 +205,7 @@ export async function createMockSession(
       role: input.role.trim(),
       interviewType: input.interviewType ?? "mixed",
       difficulty: input.difficulty ?? "medium",
-      totalQuestions: input.totalQuestions ?? 6,
+      totalQuestions: normalizeQuestionCount(input.totalQuestions),
       questions: (input.questions ?? []) as MockQuestionJson[],
       turns: (input.turns ?? []) as MockTurnJson[],
       provider: input.provider ?? "",

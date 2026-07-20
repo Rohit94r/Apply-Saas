@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   CheckCircle,
   CircleNotch,
@@ -276,6 +276,7 @@ function InterviewerTile({
   active?: boolean;
   speaking?: boolean;
 }) {
+  const reduceMotion = useReducedMotion();
   return (
     <div
       className={cn(
@@ -292,9 +293,9 @@ function InterviewerTile({
           <AnimatePresence mode="wait">
             <motion.div
               key={question}
-              initial={{ opacity: 0, y: 8 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
               className="max-w-xl rounded-xl bg-black/70 px-4 py-2.5 text-center shadow-lg backdrop-blur-md"
             >
               <p className="text-sm leading-relaxed text-white sm:text-[15px]">
@@ -336,12 +337,13 @@ function VoiceSettingsPanel({
   ttsAvailable: boolean;
   onClose: () => void;
 }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12, scale: 0.96 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 8, scale: 0.97 }}
-      transition={{ duration: 0.2 }}
+      exit={reduceMotion ? undefined : { opacity: 0, y: 8, scale: 0.97 }}
+      transition={{ duration: reduceMotion ? 0 : 0.2 }}
       className="absolute bottom-full right-0 mb-3 w-72 rounded-2xl border border-border bg-white p-4 shadow-xl"
     >
       <div className="mb-3 flex items-center justify-between">
@@ -351,6 +353,7 @@ function VoiceSettingsPanel({
         <button
           type="button"
           onClick={onClose}
+          aria-label="Close voice settings"
           className="text-muted-foreground hover:text-foreground"
         >
           <X className="h-4 w-4" weight="regular" />
@@ -465,6 +468,7 @@ export function MockInterviewMeet({
   onNext
 }: MockInterviewMeetProps) {
   const [voicePanelOpen, setVoicePanelOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
   const progressPct = Math.round(
     (Math.min(questionNumber, totalQuestions) / totalQuestions) * 100
   );
@@ -512,7 +516,11 @@ export function MockInterviewMeet({
           className="h-full bg-accent"
           initial={false}
           animate={{ width: `${progressPct}%` }}
-          transition={{ type: "spring", stiffness: 120, damping: 22 }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 120, damping: 22 }
+          }
         />
       </div>
 
@@ -535,7 +543,11 @@ export function MockInterviewMeet({
         </div>
 
         {/* Live user caption + answer / feedback strip */}
-        <div className="shrink-0 rounded-2xl border border-border/70 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md sm:px-5">
+        <div
+          className="shrink-0 rounded-2xl border border-border/70 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md sm:px-5"
+          aria-live="polite"
+          aria-busy={busy}
+        >
           {showLiveCaption ? (
             <p className="mb-2 line-clamp-2 text-center text-sm text-muted-foreground">
               <span className="mr-1.5 text-[10px] font-bold uppercase tracking-wide text-accent">
@@ -547,7 +559,7 @@ export function MockInterviewMeet({
 
           {feedback ? (
             <motion.div
-              initial={{ opacity: 0, y: 6 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-3"
             >
