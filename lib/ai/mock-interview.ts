@@ -5,6 +5,18 @@ import {
   hasReachedQuestionLimit,
   normalizeQuestionCount
 } from "@/lib/mock-interview/flow";
+import {
+  buildCompanyPromptSnippet,
+  resolveCompanyIntelligence,
+  type ResolvedCompanyIntelligence
+} from "@/lib/mock-interview/company-question-bank";
+import { pickCodeProblem } from "@/lib/mock-interview/coding-problems";
+import {
+  phaseCategoryHint,
+  phaseFromIndex,
+  phaseLabel,
+  type InterviewPhase
+} from "@/lib/mock-interview/phases";
 
 export type MockInterviewType = "hr" | "technical" | "mixed";
 export type MockDifficulty = "easy" | "medium" | "hard";
@@ -177,14 +189,109 @@ function jobDescriptionBlock(jobDescription?: string) {
   return `\nJob description / interview notes from candidate:\n${text.slice(0, 2000)}\n`;
 }
 
-function codingGuidance(includeCoding?: boolean, difficulty?: MockDifficulty) {
+function codingGuidance(
+  includeCoding: boolean | undefined,
+  difficulty: MockDifficulty | undefined,
+  phase: InterviewPhase
+) {
   if (!includeCoding) return "";
+  if (phase !== "coding-basic" && phase !== "coding-company") {
+    return `
+Coding is enabled for this session, but this turn is NOT a coding turn.
+Do not ask a coding exercise yet. Stay in the current interview phase.`;
+  }
+  const flavor =
+    phase === "coding-basic"
+      ? "Ask a BASIC coding warm-up (category must be \"coding\")."
+      : "Ask a COMPANY-FLAVORED coding exercise inspired by reported OA patterns (category must be \"coding\"). Phrase as practice inspired by patterns — never claim an exact copyrighted PYQ.";
   return `
-Include at most two coding questions in this session when the interview type allows.
-Coding difficulty: ${difficulty ?? "medium"}.
-When asking one, set category to "coding". The application will attach a
-safe, locally evaluated JavaScript problem. Do not claim code was executed,
-compiled, or tested by you.`;
+This turn IS a coding turn. ${flavor}
+Coding difficulty target: ${difficulty ?? "medium"}.
+The application attaches a safe, locally evaluated JavaScript problem with Run tests.
+Do not claim code was executed, compiled, or tested by you.
+Keep the spoken question to 1–2 sentences inviting them to solve in the editor/terminal panel.`;
+}
+
+function sessionPhase(
+  questionIndex: number,
+  ctx: SessionContext
+): InterviewPhase {
+  return phaseFromIndex(questionIndex, ctx.totalQuestions, {
+    includeCoding: ctx.includeCoding,
+    interviewType: ctx.interviewType
+  });
+}
+
+function intelligenceFor(ctx: SessionContext): ResolvedCompanyIntelligence {
+  return resolveCompanyIntelligence(ctx.company);
+}
+
+function attachCodeProblem(
+  question: MockQuestionOut,
+  ctx: SessionContext,
+  phase: InterviewPhase,
+  intelligence: ResolvedCompanyIntelligence
+): MockQuestionOut {
+  if (question.category !== "coding") {
+    return { ...question, codeProblem: undefined };
+  }
+  if (!ctx.includeCoding || ctx.interviewType === "hr") {
+    return { ...question, category: "technical", codeProblem: undefined };
+  }
+  const flavor = phase === "coding-company" ? "company" : "basic";
+  return {
+    ...question,
+    codeProblem: pickCodeProblem({
+      difficulty: ctx.difficulty,
+      flavor,
+      company: intelligence.primary
+    })
+  };
+}
+
+function normalizeQuestion(
+  question: MockQuestionOut,
+  ctx: SessionContext,
+  phase: InterviewPhase,
+  intelligence: ResolvedCompanyIntelligence
+): MockQuestionOut {
+  const category =
+    question.category?.trim() ||
+    (phase === "coding-basic" || phase === "coding-company"
+      ? "coding"
+      : phaseCategoryHint(phase));
+
+  // Force coding category on coding phases when includeCoding is on.
+  if (
+    (phase === "coding-basic" || phase === "coding-company") &&
+    ctx.includeCoding &&
+    ctx.interviewType !== "hr"
+  ) {
+    return attachCodeProblem(
+      { ...question, category: "coding" },
+      ctx,
+      phase,
+      intelligence
+    );
+  }
+
+  return attachCodeProblem(
+    { ...question, category },
+    ctx,
+    phase,
+    intelligence
+  );
+}
+
+function phasePromptBlock(
+  phase: InterviewPhase,
+  ctx: SessionContext,
+  intelligence: ResolvedCompanyIntelligence
+) {
+  return `Interview phase for this turn: ${phase} (${phaseLabel(phase)}).
+Progress through intro → role → company-specific across the session. Do not skip ahead or repeat a finished phase.
+${buildCompanyPromptSnippet(intelligence, phase)}
+${codingGuidance(ctx.includeCoding, ctx.difficulty, phase)}`;
 }
 
 function languageGuidance(languageCode?: string) {
@@ -199,63 +306,6 @@ function languageGuidance(languageCode?: string) {
   return `Conduct the interview in ${language}. Keep technical terms in English when that is clearer.`;
 }
 
-function supportedCodeProblem(difficulty: MockDifficulty): MockCodeProblem {
-  if (difficulty === "easy") {
-    return {
-      title: "Reverse a string",
-      description:
-        "Return the trimmed input string in reverse order. Use the supported local JavaScript subset.",
-      starterCode: `function solve(input) {
-  return input.trim();
-}`,
-      testCases: [
-        { input: "hello", expected: "olleh", label: "Basic word" },
-        { input: "racecar", expected: "racecar", label: "Palindrome" },
-        { input: " apply ", expected: "ylppa", label: "Trim spaces" }
-      ]
-    };
-  }
-  if (difficulty === "hard") {
-    return {
-      title: "Square a number",
-      description:
-        "Parse the trimmed numeric input and return its square. The local evaluator supports Number(input.trim()) ** 2.",
-      starterCode: `function solve(input) {
-  return Number(input.trim());
-}`,
-      testCases: [
-        { input: "7", expected: "49", label: "Positive" },
-        { input: "-4", expected: "16", label: "Negative" },
-        { input: " 12 ", expected: "144", label: "Trimmed input" }
-      ]
-    };
-  }
-  return {
-    title: "Count words",
-    description:
-      "Return the number of whitespace-separated words in the trimmed input. Use split(/\\s+/).",
-    starterCode: `function solve(input) {
-  return input.trim().length;
-}`,
-    testCases: [
-      { input: "one two three", expected: "3", label: "Three words" },
-      { input: "single", expected: "1", label: "Single word" },
-      { input: "space   between", expected: "2", label: "Repeated spaces" }
-    ]
-  };
-}
-
-function normalizeQuestion(
-  question: MockQuestionOut,
-  ctx: SessionContext
-): MockQuestionOut {
-  if (question.category !== "coding") return { ...question, codeProblem: undefined };
-  if (!ctx.includeCoding || ctx.interviewType === "hr") {
-    return { ...question, category: "technical", codeProblem: undefined };
-  }
-  return { ...question, codeProblem: supportedCodeProblem(ctx.difficulty) };
-}
-
 function difficultyGuidance(difficulty: MockDifficulty) {
   if (difficulty === "easy") {
     return "Keep questions approachable for early-career / campus candidates.";
@@ -266,25 +316,70 @@ function difficultyGuidance(difficulty: MockDifficulty) {
   return "Balanced difficulty for early-career to mid-level candidates.";
 }
 
-function demoFirstQuestion(ctx: SessionContext): MockQuestionOut {
+function demoQuestionForPhase(
+  ctx: SessionContext,
+  phase: InterviewPhase,
+  intelligence: ResolvedCompanyIntelligence
+): MockQuestionOut {
   const c = ctx.company;
   const r = ctx.role;
-  if (ctx.interviewType === "technical") {
-    return {
-      category: "technical",
-      question: `Walk me through a technical project or problem you solved that would matter for a ${r} role at ${c}.`
-    };
+  const hint = intelligence.primary;
+
+  if (phase === "coding-basic" || phase === "coding-company") {
+    return normalizeQuestion(
+      {
+        category: "coding",
+        question:
+          phase === "coding-basic"
+            ? "Let's start with a short coding warm-up. Open the editor, implement solve(input), then run the local tests."
+            : `Next is a ${c}-style coding practice question inspired by reported OA patterns. Implement solve(input) in the editor and run the tests.`
+      },
+      ctx,
+      phase,
+      intelligence
+    );
   }
-  if (ctx.interviewType === "hr") {
+
+  if (phase === "intro") {
     return {
       category: "intro",
-      question: `Tell me about yourself and why you want the ${r} role at ${c}.`
+      question:
+        hint.introHints[0]
+          ? `Introduce yourself for the ${r} role at ${c}. ${hint.introHints[0]}.`
+          : `Introduce yourself and how your background fits ${r} at ${c}.`
     };
   }
+
+  if (phase === "role") {
+    const topic = hint.roleHints[0] ?? hint.technicalTopics[0];
+    return {
+      category: ctx.interviewType === "hr" ? "behavioral" : "technical",
+      question: topic
+        ? `For ${r} at ${c}: ${topic}. Walk me through a concrete example.`
+        : `Walk me through a project or skill that makes you a strong fit for ${r} at ${c}.`
+    };
+  }
+
+  if (phase === "company") {
+    const behavioral = hint.companyBehavioral[0];
+    return {
+      category: "company",
+      question: behavioral
+        ? `${c} interviewers often probe: ${behavioral}. Share a specific story relevant to ${r}.`
+        : `What do you know about ${c}, and how would you contribute in your first 90 days as a ${r}?`
+    };
+  }
+
   return {
-    category: "intro",
-    question: `Introduce yourself and how your background fits ${r} at ${c}.`
+    category: "closing",
+    question: `Before we wrap up, what questions do you have about the ${r} team at ${c}?`
   };
+}
+
+function demoFirstQuestion(ctx: SessionContext): MockQuestionOut {
+  const intelligence = intelligenceFor(ctx);
+  const phase = sessionPhase(0, ctx);
+  return demoQuestionForPhase(ctx, phase, intelligence);
 }
 
 function demoAnswerResult(
@@ -296,62 +391,12 @@ function demoAnswerResult(
   const score = clampScore(
     answered < 40 ? 4 : answered < 120 ? 6 : answered < 280 ? 7 : 8
   );
-  const questionNumber = questionIndex + 1;
   const done = hasReachedQuestionLimit(questionIndex, ctx.totalQuestions);
-
-  const bank: MockQuestionOut[] = [
-    {
-      category: "behavioral",
-      question: `Describe a time you collaborated under pressure. How would that help you at ${ctx.company}?`
-    },
-    {
-      category: "technical",
-      question: `For a ${ctx.role} interview, how would you approach debugging a production issue end-to-end?`
-    },
-    {
-      category: "company",
-      question: `What do you know about ${ctx.company}, and how would you contribute in your first 90 days as a ${ctx.role}?`
-    },
-    {
-      category: "behavioral",
-      question: "Tell me about a failure or stuck moment. What changed in how you work?"
-    },
-    {
-      category: "closing",
-      question: `What questions do you have for us about the ${ctx.role} team at ${ctx.company}?`
-    },
-    {
-      category: "technical",
-      question: `Explain a core concept from your toolkit as if I were a teammate starting on day one.`
-    },
-    {
-      category: "behavioral",
-      question: "Tell me about a decision you made with incomplete information. What did you learn?"
-    },
-    {
-      category: "technical",
-      question: `How would you improve the reliability of a system used by ${ctx.company}'s customers?`
-    },
-    {
-      category: "closing",
-      question: `Before we wrap up, what would you like to ask about the ${ctx.role} role or team?`
-    }
-  ];
-  const nextIndex = Math.min(questionNumber - 1, bank.length - 1);
-  const next =
-    ctx.includeCoding &&
-    ctx.interviewType !== "hr" &&
-    questionNumber === Math.min(3, normalizeQuestionCount(ctx.totalQuestions) - 1)
-      ? normalizeQuestion(
-          {
-            category: "coding",
-            question:
-              "Let's do a short coding exercise. Talk me through your approach, then run the local tests.",
-            codeProblem: supportedCodeProblem(ctx.difficulty)
-          },
-          ctx
-        )
-      : bank[nextIndex];
+  const intelligence = intelligenceFor(ctx);
+  const nextPhase = sessionPhase(questionIndex + 1, ctx);
+  const next = done
+    ? null
+    : demoQuestionForPhase(ctx, nextPhase, intelligence);
 
   return {
     feedback: {
@@ -367,7 +412,7 @@ function demoAnswerResult(
       ],
       score
     },
-    nextQuestion: done ? null : next,
+    nextQuestion: next,
     done
   };
 }
@@ -395,15 +440,18 @@ export async function generateFirstQuestion(
   ctx: SessionContext
 ): Promise<{ question: MockQuestionOut; provider: MockAIProvider; demoMode: boolean }> {
   const status = getMockInterviewAIStatus();
+  const intelligence = intelligenceFor(ctx);
+  const phase = sessionPhase(0, ctx);
+  const fallback = demoFirstQuestion(ctx);
+
   if (!status.available) {
     return {
-      question: demoFirstQuestion(ctx),
+      question: fallback,
       provider: "demo",
       demoMode: true
     };
   }
 
-  const fallback = demoFirstQuestion(ctx);
   const result = await completeJson<{
     question?: string;
     category?: string;
@@ -416,21 +464,22 @@ Company: ${ctx.company}
 Role: ${ctx.role}
 Interview type: ${ctx.interviewType}
 Difficulty: ${ctx.difficulty}
+Question index: 1 of ${ctx.totalQuestions}
 ${typeGuidance(ctx.interviewType)}
 ${difficultyGuidance(ctx.difficulty)}
 ${languageGuidance(ctx.languageCode)}
 ${jobDescriptionBlock(ctx.jobDescription)}
-${codingGuidance(ctx.includeCoding, ctx.difficulty)}
+${phasePromptBlock(phase, ctx, intelligence)}
 
 Candidate resume context:
 ${resumeSnippet(ctx.resumeContext)}
 
 Ask the FIRST question only in one or two concise sentences. Begin naturally,
-without a long welcome or generic filler. Make it specific to company + role.
+without a long welcome or generic filler. Stay strictly in the current phase.
 Do not answer it and do not stack multiple questions.
 
 Return JSON:
-{ "question": string, "category": "intro" | "behavioral" | "technical" | "coding" | "company" | "closing" | "general", "codeProblem"?: { "title": string, "description": string, "starterCode": string, "testCases": [{ "input": string, "expected": string, "label"?: string }] } }`,
+{ "question": string, "category": "intro" | "behavioral" | "technical" | "coding" | "company" | "closing" | "general" }`,
     fallback
   );
 
@@ -439,11 +488,16 @@ Return JSON:
   }
 
   return {
-    question: normalizeQuestion({
-      question: result.parsed.question.trim(),
-      category: result.parsed.category?.trim() || "general",
-      codeProblem: result.parsed.codeProblem
-    }, ctx),
+    question: normalizeQuestion(
+      {
+        question: result.parsed.question.trim(),
+        category: result.parsed.category?.trim() || phaseCategoryHint(phase),
+        codeProblem: result.parsed.codeProblem
+      },
+      ctx,
+      phase,
+      intelligence
+    ),
     provider: result.provider,
     demoMode: false
   };
@@ -472,16 +526,18 @@ export async function evaluateAnswerAndContinue(input: {
   const status = getMockInterviewAIStatus();
   const totalQuestions = normalizeQuestionCount(ctx.totalQuestions);
   const remaining = totalQuestions - (questionIndex + 1);
+  const intelligence = intelligenceFor(ctx);
+  const nextPhase = sessionPhase(questionIndex + 1, ctx);
+  const fallback = demoAnswerResult(ctx, questionIndex, answer);
 
   if (!status.available) {
     return {
-      result: demoAnswerResult(ctx, questionIndex, answer),
+      result: fallback,
       provider: "demo",
       demoMode: true
     };
   }
 
-  const fallback = demoAnswerResult(ctx, questionIndex, answer);
   const historyBlock = history
     .map(
       (t, i) =>
@@ -501,11 +557,15 @@ export async function evaluateAnswerAndContinue(input: {
     "You are Apply Interviewer. Respond like an attentive human interviewer: acknowledge only what the candidate actually said, give brief actionable coaching, and never invent praise, facts, test results, or personal/company claims. Return only valid JSON.",
     `Mock interview in progress for ${ctx.role} at ${ctx.company}.
 Type: ${ctx.interviewType}. Difficulty: ${ctx.difficulty}.
-Questions planned: ${ctx.totalQuestions}. This was question ${questionIndex + 1}.
+Questions planned: ${totalQuestions}. This was question ${questionIndex + 1}.
 Remaining after this: ${remaining}.
 ${languageGuidance(ctx.languageCode)}
 ${jobDescriptionBlock(ctx.jobDescription)}
-${codingGuidance(ctx.includeCoding, ctx.difficulty)}
+${
+  remaining > 0
+    ? phasePromptBlock(nextPhase, ctx, intelligence)
+    : "This was the final planned question — set done=true."
+}
 
 Resume context:
 ${resumeSnippet(ctx.resumeContext)}
@@ -529,16 +589,14 @@ Return JSON:
   "score": number (1-10),
   "done": boolean (true if this should be the last question OR remaining is 0),
   "nextQuestion": string | null (required if done is false; null if done),
-  "nextCategory": string,
-  "nextCodeProblem"?: { "title": string, "description": string, "starterCode": string, "testCases": [{ "input": string, "expected": string, "label"?: string }] }
+  "nextCategory": string
 }
 
 If done or remaining is 0, set done=true and nextQuestion=null.
-Otherwise ask one concise, distinct question. Prefer a relevant follow-up on a
-specific detail in the latest answer; if there is no useful detail, progress to
-a new competency. Do not repeat, stack questions, use canned praise, or claim
-to know facts not present above. Move from introduction to evidence, depth,
-role/company fit, then closing.`,
+Otherwise ask one concise, distinct question for the NEXT phase listed above.
+Prefer a relevant follow-up on a specific detail in the latest answer only if it
+still fits that next phase; otherwise progress cleanly. Do not repeat, stack
+questions, use canned praise, or claim facts not present above.`,
     {
       strengths: fallback.feedback.strengths,
       improvements: fallback.feedback.improvements,
@@ -573,11 +631,18 @@ role/company fit, then closing.`,
       nextQuestion:
         done || !result.parsed.nextQuestion?.trim()
           ? null
-          : normalizeQuestion({
-              question: result.parsed.nextQuestion.trim(),
-              category: result.parsed.nextCategory?.trim() || "general",
-              codeProblem: result.parsed.nextCodeProblem
-            }, ctx),
+          : normalizeQuestion(
+              {
+                question: result.parsed.nextQuestion.trim(),
+                category:
+                  result.parsed.nextCategory?.trim() ||
+                  phaseCategoryHint(nextPhase),
+                codeProblem: result.parsed.nextCodeProblem
+              },
+              ctx,
+              nextPhase,
+              intelligence
+            ),
       done
     },
     provider: result.provider,

@@ -86,11 +86,14 @@ export function MockInterviewCodePanel({
       <div className="grid max-h-[42vh] gap-0 overflow-auto lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="border-b border-white/10 lg:border-b-0 lg:border-r">
           <div className="border-b border-white/10 bg-[#161b22] px-4 py-2">
-            <p className="text-xs leading-5 text-[#b7c3d0]">{problem.description}</p>
-            <p className="mt-1 text-[10px] text-[#7d8996]">
-              Safe local subset · one return expression · no arbitrary execution
+            <p className="text-[11px] font-semibold text-[#e6edf3]">{problem.title}</p>
+            <p className="mt-1 text-xs leading-5 text-[#b7c3d0]">{problem.description}</p>
+            <p className="mt-1.5 text-[10px] text-[#7d8996]">
+              Write your solution in the editor · run local tests in the terminal ·
+              safe subset (one return expression, no arbitrary execution)
             </p>
           </div>
+
           <div className="grid grid-cols-[2.5rem_minmax(0,1fr)] bg-[#0d1117]">
             <div
               aria-hidden="true"
