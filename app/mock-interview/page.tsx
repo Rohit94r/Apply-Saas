@@ -6,9 +6,9 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
-const title = "Free AI Mock Interview Online for Freshers | Apply";
+const title = "Free Mock Interview Online — AI Interview Practice | Apply";
 const description =
-  "Practice free AI mock interviews for campus placements — Meet-style room, voice questions, Hindi/English, coding rounds with tests, and scored feedback. Start on Apply.";
+  "Practice free AI mock interviews online for campus placements — Meet-style room, voice questions, live captions, coding rounds, and scored feedback. Mock interview practice for freshers. Start free on Apply.";
 
 export const metadata: Metadata = {
   title: {
@@ -16,14 +16,20 @@ export const metadata: Metadata = {
   },
   description,
   keywords: [
-    "free AI mock interview for freshers",
-    "mock interview practice online",
+    "mock interview",
+    "mock interview online",
+    "mock interview practice",
+    "AI mock interview",
+    "online interview practice",
+    "free online interview practice",
+    "mock interview practice for freshers",
     "AI mock interview for freshers",
     "campus placement mock interview",
     "virtual mock interview India",
     "coding mock interview practice",
-    "online mock interview with coding",
-    "free mock interview for students"
+    "free mock interview for students",
+    "mock interview practice online free",
+    "AI interviewer practice"
   ],
   alternates: {
     canonical: absoluteUrl("/mock-interview")
@@ -161,6 +167,18 @@ const features = [
 ];
 
 const relatedGuides = [
+  {
+    href: "/blog/mock-interview-online-free-practice-2026",
+    label: "Mock interview online free: how to practice for placements in 2026"
+  },
+  {
+    href: "/blog/ai-mock-interview-free-for-freshers-2026",
+    label: "AI mock interview free for freshers: complete guide"
+  },
+  {
+    href: "/blog/online-interview-practice-free-india",
+    label: "Online interview practice free: how to practice from home in India"
+  },
   {
     href: "/blog/ai-mock-interview-practice-campus-placements",
     label: "AI mock interview practice for campus placements"

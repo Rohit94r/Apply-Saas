@@ -2541,7 +2541,711 @@ export const blogPosts = [
         heading: "Safety and honesty notes",
         body: [
           "Use the practice room to improve your own skill. Do not treat reported PYQs as guaranteed questions, and do not submit fabricated project claims during HR turns.",
-          "Apply’s coding evaluator is built for practice with deterministic tests — use it to build confidence, then verify on the company’s real platform before the actual OA."
+          "Apply's coding evaluator is built for practice with deterministic tests — use it to build confidence, then verify on the company's real platform before the actual OA."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "mock-interview-online-free-practice-2026",
+    title: "Mock Interview Online Free: How to Practice for Placements in 2026",
+    description:
+      "Complete guide to free online mock interview practice in 2026 — AI voice interviewers, coding rounds, HR questions, and how to use mock interviews to crack campus placements.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "10 min",
+    category: "Mock Interview",
+    targetKeyword: "mock interview online",
+    keywords: [
+      "mock interview online",
+      "mock interview practice",
+      "free online interview practice",
+      "mock interview practice online free",
+      "online mock interview for freshers",
+      "AI mock interview online",
+      "virtual mock interview free",
+      "campus placement mock interview online",
+      "how to practice mock interview online",
+      "best free mock interview tool India"
+    ],
+    excerpt:
+      "Mock interview practice online is the fastest way to prepare for campus placements. Here's how to use free AI mock interview tools — voice questions, coding rounds, and scored feedback.",
+    sections: [
+      {
+        heading: "Why mock interview practice matters",
+        body: [
+          "Reading interview questions silently is not practice. Real interviews test your ability to think out loud, handle pressure, and communicate clearly — skills you can only develop by speaking answers aloud.",
+          "Mock interview practice online lets you simulate real interview conditions from your hostel room: an interviewer asks a question, you answer verbally, and you get feedback on your response.",
+          "Students who practice 5+ mock interviews before their first real placement interview are significantly more confident and articulate — and it shows in the result."
+        ]
+      },
+      {
+        heading: "What is an online mock interview",
+        body: [
+          "An online mock interview is a simulated interview conducted over the web. You join a virtual room, an interviewer (AI or human) asks questions, and you answer by voice or text.",
+          "Apply's free AI mock interview at /mock-interview works like a Google Meet call — the AI interviewer appears on screen, speaks questions aloud using natural voice, and listens to your spoken answers with live captions.",
+          "After each answer, the AI evaluates your response and gives scored feedback: strengths, improvements, and a score out of 10. This is the closest you can get to a real interview without a human partner."
+        ]
+      },
+      {
+        heading: "How to practice mock interview online for free",
+        body: [
+          "Step 1: Open apply.neexmeet.com/mock-interview and sign in with Google.",
+          "Step 2: Enter your target company (e.g. TCS, Amazon, Infosys) and role (e.g. SDE Intern, Analyst).",
+          "Step 3: Choose interview type — HR (behavioral), technical (coding + CS), or mixed (both).",
+          "Step 4: Select difficulty — easy, medium, or hard. Choose whether to include coding rounds.",
+          "Step 5: Click 'Start interview'. The AI interviewer speaks the first question aloud.",
+          "Step 6: Speak your answer. The AI captures your voice with live captions. After 5 seconds of silence, it auto-submits.",
+          "Step 7: Review feedback — strengths, improvements, score. The next question starts automatically.",
+          "Step 8: After 5-8 questions, end the call to see your overall session score and stats."
+        ]
+      },
+      {
+        heading: "Types of mock interview you can practice",
+        body: [
+          "HR mock interview: Behavioral questions — tell me about yourself, strengths, weaknesses, why this company. Practice STAR-format answers. Best for TCS, Infosys, Wipro HR rounds.",
+          "Technical mock interview: Coding problems + CS fundamentals (OS, DBMS, OOP). The AI asks you to solve a problem and explain your approach. Best for Amazon, Microsoft, Google.",
+          "Mixed mock interview: Both HR and technical questions in one session. Most realistic for campus placements where both rounds happen on the same day.",
+          "Coding mock interview: Optional coding rounds with an in-browser code editor and test runner. Practice solving problems while explaining your thought process aloud."
+        ]
+      },
+      {
+        heading: "Free vs paid mock interview tools",
+        body: [
+          "Apply: Free AI mock interview with voice, live captions, coding rounds, scored feedback, and session history. 9 interviewer voices, 5 languages (English, Hindi, Tamil, Telugu, Marathi). No credit card needed.",
+          "Pramp: Free peer-to-peer mock interviews with other developers. Good for human practice but scheduling can be hard. No AI voice or coding rounds.",
+          "Interviewing.io: Paid anonymous technical mock interviews with real engineers. $100-250 per session. High quality but expensive for students.",
+          "PrepInsta: Static interview content but no interactive mock interview. You read questions but don't practice speaking answers.",
+          "For Indian students preparing for campus placements, Apply is the best free option — it's built specifically for India, supports Indian languages, and includes company-specific PYQs."
+        ]
+      },
+      {
+        heading: "Mock interview tips for first-time practitioners",
+        body: [
+          "Speak aloud, don't whisper. The AI needs to hear you clearly. Use a quiet room with minimal background noise.",
+          "Think out loud. Even if you don't know the full answer, explain your thought process. Interviewers (including AI) reward structured thinking.",
+          "Use STAR format for HR questions: Situation → Task → Action → Result. This keeps your answer structured and 60-90 seconds long.",
+          "For coding questions, explain your approach before writing code. 'First I'd use a hash map for O(1) lookup, then iterate through the array...'",
+          "Review your feedback after every session. Identify one weakness and focus on it in the next session. Improvement is iterative."
+        ]
+      },
+      {
+        heading: "Company-specific mock interview practice",
+        body: [
+          "TCS mock interview: Set company to TCS, type to mixed, difficulty to easy/medium. TCS interviews focus on basics + HR. Check TCS interview questions on Apply /prepare.",
+          "Amazon mock interview: Set company to Amazon, type to technical, difficulty to medium/hard. Amazon asks coding + leadership principles. Check Amazon OA questions on Apply /prepare.",
+          "Infosys mock interview: Set company to Infosys, type to mixed. Infosys SP/DSE needs harder coding. Check Infosys SP DSE guide on Apply /blog.",
+          "Wipro mock interview: Set company to Wipro, type to HR + technical. Wipro is easier than product companies. Check Wipro Elite NTH guide on Apply /blog.",
+          "Browse 64+ company PYQs at /pyqs before your mock interview — know what each company actually asks."
+        ]
+      },
+      {
+        heading: "How many mock interviews should you practice",
+        body: [
+          "Minimum: 3 mock interviews before your first real placement interview. This gets you comfortable speaking aloud.",
+          "Recommended: 5-8 mock interviews spread over 2 weeks. One per day in the final week before placements.",
+          "For product companies (Amazon, Microsoft, Google): 10+ mock interviews with coding rounds. The bar is higher.",
+          "Track your scores over time. If your average score is 6/10, aim for 7/10 in the next session. Improvement is measurable."
+        ]
+      },
+      {
+        heading: "Start your free mock interview now",
+        body: [
+          "Apply's AI mock interview is free to start — no credit card, no download. Sign in with Google, pick your company and role, and join the interview room.",
+          "Open /mock-interview to start practicing. Pair every mock with company PYQs at /pyqs for maximum placement readiness."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "ai-mock-interview-free-for-freshers-2026",
+    title: "AI Mock Interview Free for Freshers: Complete Guide to AI Interview Practice",
+    description:
+      "How AI mock interviews work, why they're better than reading questions, and how freshers can use free AI interview practice tools to crack campus placements in India.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "9 min",
+    category: "Mock Interview",
+    targetKeyword: "AI mock interview",
+    keywords: [
+      "AI mock interview",
+      "AI mock interview for freshers",
+      "AI interview practice",
+      "AI interviewer online",
+      "artificial intelligence mock interview",
+      "AI powered mock interview free",
+      "AI mock interview India",
+      "AI interview simulator",
+      "AI interview preparation tool",
+      "free AI mock interview for students"
+    ],
+    excerpt:
+      "AI mock interviews are replacing static interview prep. Here's how AI interview practice works, why it's more effective than reading questions, and how to use it free.",
+    sections: [
+      {
+        heading: "What is an AI mock interview",
+        body: [
+          "An AI mock interview is a simulated interview where an AI — not a human — asks you questions, listens to your answers, and gives feedback. It's like having a personal interview coach available 24/7.",
+          "Apply's AI mock interview uses large language models (Groq Llama 3.3 + Gemini) to generate realistic interview questions based on your target company and role. It speaks questions aloud using ElevenLabs voice technology and captures your spoken answers with speech-to-text.",
+          "Unlike static interview question lists, the AI adapts: if your answer is weak, it follows up with a simpler question. If your answer is strong, it goes deeper. This is closer to a real interview than any static prep."
+        ]
+      },
+      {
+        heading: "Why AI mock interviews are better than reading questions",
+        body: [
+          "Active vs passive: Reading 'Tell me about yourself' and thinking the answer is passive. Speaking it aloud to an AI that listens and evaluates is active — you develop actual communication skills.",
+          "Pressure simulation: Real interviews have time pressure and someone watching you. AI mock interviews recreate this — the AI asks, you answer in real-time, there's no pause button.",
+          "Immediate feedback: After each answer, the AI tells you what was good, what was missing, and your score. You don't wait 3 days for a peer to review your answer.",
+          "Company-specific: The AI generates questions based on the company you select — TCS asks aptitude + HR, Amazon asks coding + leadership principles. Static lists can't do this.",
+          "Unlimited practice: You can practice 100 mock interviews at 2 AM without booking anyone's time. Human mock interview partners are limited by availability."
+        ]
+      },
+      {
+        heading: "How AI mock interviews work technically",
+        body: [
+          "Question generation: The AI (Groq Llama 3.3 or Gemini) generates a question based on your company, role, interview type, and difficulty. It uses your resume context and job description if provided.",
+          "Voice synthesis: The question is converted to speech using ElevenLabs TTS — natural human-like voice, not robotic. You can choose from 9 voices (5 female, 4 male) and 5 languages.",
+          "Answer capture: You speak your answer. The browser's Web Speech API or Groq Whisper transcribes it in real-time with live captions. No need to type.",
+          "Evaluation: The AI evaluates your answer against criteria — clarity, structure, relevance, depth, communication. It gives a score (1-10) and specific feedback (strengths + improvements).",
+          "Adaptive flow: Based on your answer quality, the AI adjusts the next question's difficulty. Good answer → harder follow-up. Weak answer → simpler redirect."
+        ]
+      },
+      {
+        heading: "Free AI mock interview for freshers — how to start",
+        body: [
+          "Apply offers free AI mock interview practice for freshers. No credit card, no download. Here's how to start:",
+          "1. Go to apply.neexmeet.com/mock-interview",
+          "2. Sign in with Google (free account)",
+          "3. Enter your target company (e.g. TCS, Amazon, Infosys)",
+          "4. Enter your target role (e.g. SDE Intern, Analyst, GET)",
+          "5. Choose interview type: HR, Technical, or Mixed",
+          "6. Choose difficulty: Easy, Medium, or Hard",
+          "7. Click 'Start interview' — the AI begins asking questions",
+          "8. Speak your answers — the AI listens and evaluates",
+          "9. After 5-8 questions, end the call to see your session score"
+        ]
+      },
+      {
+        heading: "AI mock interview vs human mock interview",
+        body: [
+          "AI mock interview: Free, available 24/7, no scheduling, instant feedback, company-specific questions, voice + coding, unlimited sessions. Best for: initial practice, building confidence, company-specific prep.",
+          "Human mock interview (peer): Free, real human interaction, unpredictable questions, body language feedback. Best for: final round practice, human connection. Hard to schedule.",
+          "Human mock interview (paid coach): $50-250/session, expert feedback, personalized tips. Best for: senior roles, specific company prep. Expensive for students.",
+          "Best strategy: Start with AI mock interviews (free, unlimited) for your first 5 sessions. Then do 1-2 human mock interviews for real interaction. Alternate between both."
+        ]
+      },
+      {
+        heading: "What companies can you practice AI mock interviews for",
+        body: [
+          "Service companies: TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini, HCL — HR + basic technical. Set difficulty to easy/medium.",
+          "Product companies: Amazon, Microsoft, Google, Apple, Meta, Adobe — coding + system design. Set difficulty to medium/hard. Include coding rounds.",
+          "Fintech: Goldman Sachs, JP Morgan, Morgan Stanley, Deloitte — DP + arrays + finance domain. Set type to technical.",
+          "Startups: Swiggy, Zomato, PhonePe, Razorpay, Paytm — medium coding + culture fit. Set type to mixed.",
+          "Browse 64+ company PYQs at /pyqs to see what each company actually asks before your mock interview."
+        ]
+      },
+      {
+        heading: "AI mock interview features on Apply",
+        body: [
+          "Voice questions: ElevenLabs natural voice (9 voices) — not robotic. Choose male or female interviewer.",
+          "Voice answers: Speak naturally — AI captures with live captions. 5-second silence auto-submits.",
+          "Live captions: See your answer transcribed in real-time as you speak. Great for verifying clarity.",
+          "Coding rounds: Optional in-browser code editor with test runner. Practice solving problems while explaining aloud.",
+          "Scored feedback: After each answer — strengths, improvements, score out of 10. After session — overall score and stats.",
+          "5 languages: English, Hindi, Tamil, Telugu, Marathi. Indian English voice prioritized for browser fallback.",
+          "Session history: Every session saved. Track your score over time. See which areas to improve.",
+          "In-call voice change: Switch interviewer voice or language mid-interview without restarting."
+        ]
+      },
+      {
+        heading: "Start your AI mock interview free",
+        body: [
+          "Apply's AI mock interview is the most realistic free interview practice tool for Indian students. Voice questions, live captions, coding rounds, scored feedback, 9 voices, 5 languages — all free to start.",
+          "Open /mock-interview, sign in with Google, and start your first AI mock interview in 30 seconds."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "online-interview-practice-free-india",
+    title: "Online Interview Practice Free: How to Practice Interviews from Home in India",
+    description:
+      "Complete guide to free online interview practice for Indian students — AI mock interviews, peer practice, coding rounds, HR questions, and tools that work on hostel wifi.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "8 min",
+    category: "Mock Interview",
+    targetKeyword: "online interview practice",
+    keywords: [
+      "online interview practice",
+      "free online interview practice",
+      "online interview practice for freshers",
+      "interview practice online free India",
+      "how to practice interview online",
+      "online interview preparation",
+      "virtual interview practice free",
+      "online mock interview practice",
+      "interview rehearsal online",
+      "online interview coaching free"
+    ],
+    excerpt:
+      "You don't need a human partner or expensive coaching to practice interviews. Here's how to practice interviews online for free — from your hostel room, on any device.",
+    sections: [
+      {
+        heading: "Why online interview practice is essential",
+        body: [
+          "In 2026, most campus placement interviews happen online — via Zoom, Google Meet, or company-specific platforms. Practicing in the same medium (online) is critical.",
+          "Online interviews feel different from in-person: you're looking at a screen, audio can lag, and body language is harder to read. You need to practice in this exact format.",
+          "Free online interview practice tools let you simulate this experience from your hostel room — no travel, no scheduling, no partner needed."
+        ]
+      },
+      {
+        heading: "3 ways to practice interviews online for free",
+        body: [
+          "1. AI mock interview (recommended): An AI interviewer asks questions, you speak answers, get instant feedback. Available 24/7, unlimited sessions. Apply's AI mock interview at /mock-interview is free for Indian students.",
+          "2. Peer mock interview: Practice with a friend over Google Meet. One plays interviewer, the other answers. Switch roles. Free but requires scheduling.",
+          "3. Mirror practice: Stand in front of a mirror and answer questions aloud. Free but no feedback. Better than nothing if you have no other option."
+        ]
+      },
+      {
+        heading: "How to practice online interview with AI — step by step",
+        body: [
+          "Open apply.neexmeet.com/mock-interview on any device (laptop, phone, tablet).",
+          "Sign in with Google — free, no credit card.",
+          "Enter your target company and role. The AI uses this to generate relevant questions.",
+          "Choose interview type: HR (behavioral), Technical (coding + CS), or Mixed (both).",
+          "Enable 'Speak questions aloud' — the AI will voice the question like a real interviewer.",
+          "Click 'Start interview'. The AI speaks the first question. Answer by speaking naturally.",
+          "Your answer is captured with live captions. After 5 seconds of silence, it auto-submits.",
+          "The AI evaluates and gives feedback. The next question starts automatically.",
+          "After 5-8 questions, click 'End call' to see your session score and stats."
+        ]
+      },
+      {
+        heading: "What you need for online interview practice",
+        body: [
+          "Device: Any laptop, phone, or tablet with a browser. No app download needed.",
+          "Microphone: Built-in laptop/phone mic is fine. For better quality, use earphones with a mic.",
+          "Internet: Works on hostel wifi (3G+ is enough). Audio uses ~50KB/s, video optional.",
+          "Quiet space: A room with minimal background noise. Library or empty classroom works.",
+          "Browser: Chrome, Edge, Safari, or Firefox. Chrome recommended for best speech recognition.",
+          "No webcam required: Camera is optional in Apply's mock interview. You can practice with just audio."
+        ]
+      },
+      {
+        heading: "Online interview practice for different company types",
+        body: [
+          "Service companies (TCS, Infosys, Wipro): Practice HR + aptitude questions. Set type to 'HR' or 'Mixed', difficulty to 'Easy'. Focus on clear communication and confident delivery.",
+          "Product companies (Amazon, Microsoft): Practice coding + system design. Set type to 'Technical', difficulty to 'Medium/Hard'. Enable coding rounds. Focus on thinking aloud.",
+          "Fintech (Goldman Sachs, JP Morgan): Practice DP + finance domain. Set type to 'Technical', difficulty to 'Medium'. Focus on correctness and edge cases.",
+          "Startups (Swiggy, Zomato): Practice medium coding + culture fit. Set type to 'Mixed', difficulty to 'Medium'. Focus on adaptability and quick thinking."
+        ]
+      },
+      {
+        heading: "Common online interview mistakes to avoid",
+        body: [
+          "Don't look at yourself on screen — look at the camera (or the AI interviewer tile). Eye contact matters even online.",
+          "Don't use filler words excessively. 'Um', 'like', 'you know' reduce clarity. Practice pausing instead of filling silence.",
+          "Don't sit too close to the camera. Maintain arm's length distance. Frame your face and shoulders.",
+          "Don't have poor lighting. Sit facing a window or lamp. Avoid backlight (camera facing window).",
+          "Don't use a noisy background. Use a quiet room. Close windows. Silence notifications.",
+          "Don't read from a script. Interviewers can tell. Prepare key points, not full sentences."
+        ]
+      },
+      {
+        heading: "How to track your interview practice progress",
+        body: [
+          "Apply saves every mock interview session automatically. Go to /dashboard/applications to see your session history.",
+          "Track: overall score (1-10), questions answered, strong answers, coding tests passed, session duration.",
+          "Aim for consistent improvement: if your first session scored 5/10, target 6/10 next time, then 7/10.",
+          "Keep a notebook of recurring weaknesses: 'I freeze on system design questions' → practice 3 system design mocks."
+        ]
+      },
+      {
+        heading: "Start practicing interviews online free",
+        body: [
+          "Apply's free online interview practice tool is built for Indian students — voice AI, live captions, coding rounds, 5 languages, company-specific questions. No download, no credit card.",
+          "Open /mock-interview and start your first practice session in 30 seconds. Pair with company PYQs at /pyqs for complete placement readiness."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "free-resume-maker-for-students-india",
+    title: "Free Resume Maker for Students: How to Build a Resume Online Free in India",
+    description:
+      "Complete guide to free resume makers for students in India — what to look for, how to use AI resume builders, ATS-friendly templates, and free PDF download without watermark.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "9 min",
+    category: "Resume Tools",
+    targetKeyword: "free resume maker for students",
+    keywords: [
+      "free resume maker for students",
+      "resume builder free for students",
+      "free resume maker India",
+      "free resume builder for students India",
+      "resume maker free online no watermark",
+      "free resume maker for freshers",
+      "free resume builder online India",
+      "resume maker for engineering students free",
+      "free ATS resume builder",
+      "student resume maker free PDF"
+    ],
+    excerpt:
+      "Looking for a free resume maker that actually works for Indian students? Here's how to build an ATS-friendly resume online for free — no watermark, no credit card, free PDF download.",
+    sections: [
+      {
+        heading: "What makes a good free resume maker for students",
+        body: [
+          "Free PDF download: No watermark, no 'pay to download' trap. You should be able to build and download your resume completely free.",
+          "ATS-friendly: The resume must be parseable by Applicant Tracking Systems (Workday, Greenhouse, Naukri). Visual templates with columns fail ATS.",
+          "Easy to use: Fill in your details, get a resume. No design skills needed. Guided forms are better than blank canvas editors.",
+          "India-specific: Supports CGPA, Indian education format, Indian company keywords. Most global tools (Zety, Canva) are US-focused.",
+          "AI assistance: Suggests improvements, matches keywords from job descriptions, helps write better bullet points."
+        ]
+      },
+      {
+        heading: "Apply — free resume maker for Indian students",
+        body: [
+          "Apply is a free resume maker built specifically for Indian engineering students preparing for campus placements.",
+          "Free plan: 5 resume generations (per account + per device). No credit card needed. Clean ATS-friendly PDF download with no watermark.",
+          "How it works: Upload your existing resume (PDF/Word/text) or build one from scratch using guided questions. Apply extracts your content, then tailors it to any job description.",
+          "AI tailoring: Paste a job description, and Apply matches keywords from the JD to your resume — improving your ATS keyword match score automatically.",
+          "ATS score: Every generated resume shows a keyword match percentage so you know how well your resume aligns with the job."
+        ]
+      },
+      {
+        heading: "How to build a resume free on Apply — step by step",
+        body: [
+          "Method 1 — Upload existing resume:",
+          "1. Go to apply.neexmeet.com/dashboard/generate",
+          "2. Upload your resume (PDF, Word, TXT, Markdown, or RTF)",
+          "3. Apply extracts your content automatically",
+          "4. Paste the job description for the role you want",
+          "5. Click 'Generate' — AI tailors your resume to match the JD",
+          "6. Preview the before/after ATS score",
+          "7. Download clean PDF — free, no watermark",
+          "",
+          "Method 2 — Build from scratch:",
+          "1. Go to apply.neexmeet.com/dashboard/build",
+          "2. Answer guided questions: personal info, education, skills, projects, experience",
+          "3. Live PDF preview updates as you type",
+          "4. Click 'Save' to generate your resume",
+          "5. Download clean PDF — free, no watermark"
+        ]
+      },
+      {
+        heading: "Free resume maker comparison — Apply vs others",
+        body: [
+          "Apply: Free 5 resumes, ATS scoring, AI tailoring, no watermark, India-specific, company PYQs + mock interview included. Best for Indian students.",
+          "Novoresume: Free 1-page resume with watermark. €6/month for premium. No ATS scoring, no India-specific features.",
+          "Canva: Free, beautiful templates, but NOT ATS-friendly. Visual layouts get rejected by ATS. Use for portfolios, not placements.",
+          "Zety: $5.45/month. US-focused. No free PDF download. Not ideal for Indian students.",
+          "Resume.io: Free trial then $2.95/month. Good templates but no AI tailoring or ATS scoring.",
+          "For Indian students: Apply is the only free resume maker with ATS scoring, AI tailoring, no watermark, and India-specific features."
+        ]
+      },
+      {
+        heading: "What to include in a student resume",
+        body: [
+          "Header: Full name, email, phone, LinkedIn, GitHub. No photo, age, or marital status (Indian companies don't require these).",
+          "Education: Degree, college, university, CGPA, expected graduation year. Include relevant coursework (DSA, DBMS, OOP).",
+          "Projects: 2-3 projects with name, description, tech stack, GitHub link. This is the most important section for freshers.",
+          "Skills: Programming languages, frameworks, tools, databases. Only list skills you can answer questions about.",
+          "Achievements: Hackathon participation, coding contest ranks, certifications, extracurricular leadership.",
+          "Keep it to ONE page. Indian campus placement resumes are one page — no exceptions."
+        ]
+      },
+      {
+        heading: "ATS-friendly resume tips for free resume makers",
+        body: [
+          "Use single-column layout. ATS systems read top-to-bottom, left-to-right. Multi-column layouts break parsing.",
+          "Use standard fonts: Arial, Calibri, Georgia, Times New Roman. Avoid fancy fonts that ATS can't read.",
+          "Include keywords from the job description. If the JD says 'Java, Spring Boot, REST APIs', include those exact words in your skills section.",
+          "Use standard section headers: 'Education', 'Experience', 'Projects', 'Skills'. Don't use creative names like 'My Journey'.",
+          "Save as PDF. PDF preserves formatting across all systems. Don't submit Word docs (formatting breaks).",
+          "Apply's resume maker does all of this automatically — single column, standard fonts, keyword matching, clean PDF."
+        ]
+      },
+      {
+        heading: "Free resume maker for engineering students specifically",
+        body: [
+          "Engineering students need: CGPA (not GPA), Indian university name, relevant coursework, technical projects with tech stack, coding skills.",
+          "Apply's resume builder at /dashboard/build has guided fields specifically for engineering students — education with CGPA, project section with tech stack field, skills categorized by languages/frameworks/tools.",
+          "For TCS/Infosys/Wipro: Focus on CGPA, basic skills (Java, C, SQL), and 1-2 simple projects. Keep it simple.",
+          "For Amazon/Microsoft/Google: Focus on impact metrics, complex projects, advanced skills (DP, system design), and leadership.",
+          "Tailor your resume for each company using Apply's AI tailoring tool at /dashboard/generate."
+        ]
+      },
+      {
+        heading: "Start building your resume free",
+        body: [
+          "Apply's free resume maker is built for Indian students — ATS-friendly, AI-powered, no watermark, free PDF download. 5 free resume generations, no credit card.",
+          "Go to apply.neexmeet.com/dashboard/build to build from scratch, or /dashboard/generate to upload and tailor. Then browse 64+ company PYQs at /pyqs and practice mock interviews at /mock-interview."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "resume-for-engineering-students-india-template",
+    title: "Resume for Engineering Students: Free Template, Format & Examples for India",
+    description:
+      "Complete resume guide for engineering students in India — what to include, format, CGPA, projects, skills, free template download, and company-specific resume tips for TCS, Amazon, and more.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "10 min",
+    category: "Fresher Resumes",
+    targetKeyword: "resume engineering student",
+    keywords: [
+      "resume engineering student",
+      "engineering student resume format India",
+      "resume for engineering freshers",
+      "B.Tech resume template",
+      "engineering student resume with projects",
+      "resume format for engineering students India",
+      "campus placement resume format",
+      "engineering resume examples India",
+      "resume for CS engineering student",
+      "resume for IT engineering fresher"
+    ],
+    excerpt:
+      "The complete resume guide for engineering students in India — what to include, how to format, CGPA handling, project descriptions, skills section, and company-specific tips.",
+    sections: [
+      {
+        heading: "What recruiters look for in an engineering student resume",
+        body: [
+          "For service companies (TCS, Infosys, Wipro): CGPA (7+ is safe), basic programming skills (C/Java/Python), 1-2 projects, good communication. Simple and clean.",
+          "For product companies (Amazon, Microsoft, Google): Strong projects with impact metrics, advanced DSA skills, system design basics, GitHub profile with contributions. Complex and achievement-focused.",
+          "For startups: Relevant tech stack (React, Node.js, Python), side projects, GitHub activity, ability to learn fast. Agile and adaptable.",
+          "All recruiters: One page, clean formatting, no typos, ATS-friendly, honest claims you can defend in an interview."
+        ]
+      },
+      {
+        heading: "Engineering student resume format — section by section",
+        body: [
+          "HEADER: Full name | Email | Phone | LinkedIn | GitHub. No photo, no age, no marital status. Keep it one line if possible.",
+          "EDUCATION: B.E./B.Tech in [branch] | [college name], [university] | CGPA: X.XX/10 | Expected: [month] [year]. Include relevant coursework: Data Structures, DBMS, OOP, OS, CN.",
+          "PROJECTS (most important for freshers): 2-3 projects. Each: Project name | Tech stack | 2-line description | Your role | GitHub link. Use bullet points with impact metrics.",
+          "SKILLS: Languages (Java, Python, C++), Frameworks (React, Node.js, Spring Boot), Tools (Git, Postman, VS Code), Databases (MySQL, MongoDB). Group by category.",
+          "ACHIEVEMENTS: Smart India Hackathon finalist, LeetCode 150+ problems, NPTEL certification, college tech fest winner. Show initiative and excellence.",
+          "EXPERIENCE (if any): Internship or part-time role. Company | Role | Duration | 2-3 bullet points with impact. If no experience, skip this section — projects are your experience."
+        ]
+      },
+      {
+        heading: "Free engineering student resume template",
+        body: [
+          "[YOUR NAME] | email@gmail.com | +91-XXXXXXXXXX | linkedin.com/in/username | github.com/username",
+          "",
+          "EDUCATION",
+          "B.E. Information Technology | Atharva College, Mumbai University | CGPA: 8.2/10 | Expected: June 2027",
+          "Relevant coursework: Data Structures, Algorithms, DBMS, OOP, Operating Systems, Computer Networks",
+          "",
+          "PROJECTS",
+          "Fintech Stock Dashboard | React, Node.js, MongoDB, Chart.js | github.com/username/stock-dashboard",
+          "- Real-time NSE stock screener with interactive charts and price alerts",
+          "- Designed REST API, JWT authentication, deployed on Vercel | 10,000+ API calls/day during testing",
+          "",
+          "College Event Management System | Java, Spring Boot, PostgreSQL | github.com/username/event-mgmt",
+          "- Full-stack event registration platform for 500+ students",
+          "- Built role-based access (admin, student, organizer) with Spring Security",
+          "",
+          "SKILLS",
+          "Languages: Java, Python, JavaScript, C++",
+          "Frameworks: React, Node.js, Express, Spring Boot",
+          "Tools: Git, Postman, VS Code, Docker",
+          "Databases: MySQL, MongoDB, PostgreSQL",
+          "",
+          "ACHIEVEMENTS",
+          "Smart India Hackathon 2025 finalist | LeetCode 150+ problems solved | NPTEL DBIPC Elite certification",
+          "",
+          "Use Apply's free resume builder at /dashboard/build to create this format automatically — just fill in your details."
+        ]
+      },
+      {
+        heading: "How to write engineering projects on your resume",
+        body: [
+          "Project name: Use a descriptive name, not 'Project 1'. 'Fintech Stock Dashboard' is better than 'Web App Project'.",
+          "Tech stack: List every technology used — this is what recruiters scan for. 'React, Node.js, MongoDB, Chart.js, Vercel'.",
+          "Description: 1-2 lines explaining what the project does. 'A real-time stock screener that displays NSE prices with interactive charts.'",
+          "Your role: What YOU did, not the team. 'Designed REST API, implemented JWT auth, deployed on Vercel.'",
+          "Impact: Numbers make it credible. 'Handled 10,000+ API calls/day. Reduced page load by 40% with lazy loading.'",
+          "GitHub link: Make sure the repo is public with a good README. Recruiters DO check GitHub."
+        ]
+      },
+      {
+        heading: "Company-specific resume tips for engineering students",
+        body: [
+          "TCS resume: Simple format. CGPA 7+ is safe. List Java/C/SQL skills. 1-2 simple projects. Keep it basic — TCS values consistency over complexity.",
+          "Infosys resume: Similar to TCS but slightly more technical. For SP/DSE roles: advanced DSA, harder projects, system design basics. Check Infosys resume format on Apply /prepare.",
+          "Amazon resume: Impact-focused. Use metrics (X% improvement, Y users served). Leadership principles in bullet points. 2-3 complex projects. Check Amazon SDE internship guide on Apply /prepare.",
+          "Microsoft resume: Show breadth — multiple languages, cloud (Azure), open-source contributions. Clean code matters. Check Microsoft internship guide on Apply /prepare.",
+          "Startup resume: Show you can ship. Deployed projects > academic projects. GitHub activity > CGPA. Show you learn fast.",
+          "Tailor your resume for each company using Apply's AI tailoring tool at /dashboard/generate — paste the JD and get a matched version."
+        ]
+      },
+      {
+        heading: "Common engineering resume mistakes",
+        body: [
+          "Don't list skills you can't answer: If you list 'Docker', expect 'What's the difference between an image and a container?' List only what you can defend.",
+          "Don't use 2 pages: Engineering freshers get 1 page. If it overflows, cut the weakest project or shorten descriptions.",
+          "Don't use fancy templates: Columns, colors, icons, photos — all break ATS parsing. Use simple single-column layout.",
+          "Don't include personal details: Age, gender, religion, marital status, photo, father's name — not required and can trigger bias.",
+          "Don't copy-paste bullet points from the internet: Recruiters have seen them all. Write your own from your actual experience.",
+          "Don't forget GitHub: If you list projects, make sure the GitHub repos are public with good READMEs."
+        ]
+      },
+      {
+        heading: "CGPA on resume — how to handle it",
+        body: [
+          "If CGPA is 7.5+: List it proudly. 'CGPA: 8.2/10'. This is above most company cut-offs.",
+          "If CGPA is 6.5-7.5: List it. Most service companies have 6.5 cut-off. You're safe for TCS, Infosys, Wipro.",
+          "If CGPA is below 6.5: You can still list it (some companies have no cut-off) or omit it and let your projects speak. Product companies care more about skills than CGPA.",
+          "If CGPA is very low (below 6): Omit it. Focus on projects, skills, and achievements. Apply to startups and companies that don't filter by CGPA.",
+          "Format: Always write as 'X.XX/10' — Indian universities use 10-point scale. Don't convert to 4-point GPA."
+        ]
+      },
+      {
+        heading: "Build your engineering resume free",
+        body: [
+          "Apply's free resume builder at /dashboard/build is designed for engineering students — guided fields for education (CGPA), projects (tech stack), skills (categorized), and achievements.",
+          "Free PDF download, no watermark, ATS-friendly format. 5 free resume generations. Then browse company PYQs at /pyqs and practice mock interviews at /mock-interview."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "tcs-resume-format-for-freshers",
+    title: "TCS Resume Format for Freshers: Template, Example & Tips for NQT 2026",
+    description:
+      "Complete TCS resume format guide for freshers — what TCS looks for, section-by-section format, CGPA requirements, skills to list, and a free TCS resume template for NQT 2026.",
+    publishedAt: "2026-07-20",
+    updatedAt: "2026-07-20",
+    readingTime: "8 min",
+    category: "Company Prep",
+    targetKeyword: "tcs resume format",
+    keywords: [
+      "tcs resume format",
+      "TCS resume format for freshers",
+      "TCS NQT resume format",
+      "resume format for TCS campus placement",
+      "TCS resume template",
+      "TCS resume sample for freshers",
+      "how to write resume for TCS",
+      "TCS fresher resume example India",
+      "TCS interview resume format",
+      "TCS Ninja resume format"
+    ],
+    excerpt:
+      "TCS has a specific resume format that gets shortlisted. Here's the exact format TCS recruiters expect — sections, CGPA, skills, projects, and a free template for NQT 2026.",
+    sections: [
+      {
+        heading: "What TCS looks for in a fresher resume",
+        body: [
+          "TCS is India's largest IT employer and hires 50,000+ freshers annually. The resume screening is largely automated (ATS) + brief HR review.",
+          "TCS looks for: CGPA 6.5+ (most roles), basic programming skills (C/Java/Python), SQL knowledge, good communication, 1-2 academic projects, and consistency in academics.",
+          "TCS does NOT expect: Advanced DSA, system design, open-source contributions, or complex projects. They hire for trainability, not expertise. Keep your resume simple and clean.",
+          "The biggest mistake: Over-complicating your TCS resume with fancy templates, too many skills, or exaggerated projects. TCS values simplicity and honesty."
+        ]
+      },
+      {
+        heading: "TCS resume format — section by section",
+        body: [
+          "HEADER: Full name | Email | Phone | LinkedIn. Keep it one line. No photo, no age.",
+          "EDUCATION: This is the MOST important section for TCS. B.E./B.Tech in [branch] | [college] | [university] | CGPA: X.XX/10 | [year]. Also include 12th (HSC) and 10th (SSC) percentages — TCS checks academic consistency.",
+          "SKILLS: Keep it basic. Programming: C, Java, Python (any 2). Database: SQL, MySQL. Web: HTML, CSS, JavaScript. Tools: Git, Eclipse. Don't list advanced skills like Kubernetes or microservices — TCS doesn't expect them.",
+          "PROJECTS: 1-2 simple academic projects. Example: 'College Management System using Java and MySQL'. Keep descriptions short — 2 lines each. TCS project discussion is basic.",
+          "ACHIEVEMENTS: Paper presentation, college fest participation, NPTEL certification, sports. Shows you're well-rounded.",
+          "PERSONAL DETAILS (optional): Languages known, hobbies. TCS's old format asked for these. Include if you have space — some TCS HR interviewers still expect it."
+        ]
+      },
+      {
+        heading: "Free TCS resume template for freshers",
+        body: [
+          "[YOUR NAME] | email@gmail.com | +91-XXXXXXXXXX | linkedin.com/in/username",
+          "",
+          "CAREER OBJECTIVE",
+          "To secure a position as a Software Engineer in a growth-oriented organization where I can contribute my technical skills and grow professionally.",
+          "",
+          "EDUCATION",
+          "B.E. Information Technology | [College Name], [University] | CGPA: 7.8/10 | 2023-2027",
+          "HSC (12th) | [School Name] | 82% | 2023",
+          "SSC (10th) | [School Name] | 88% | 2021",
+          "",
+          "SKILLS",
+          "Programming Languages: C, Java, Python",
+          "Database: SQL, MySQL",
+          "Web Technologies: HTML, CSS, JavaScript",
+          "Tools: Git, Eclipse, VS Code",
+          "",
+          "PROJECTS",
+          "College Management System | Java, MySQL, Swing | [duration]",
+          "- Desktop application for student registration, attendance, and grade management",
+          "- Implemented CRUD operations with MySQL backend and Java Swing UI",
+          "",
+          "Online Quiz Portal | Python, Flask, SQLite | [duration]",
+          "- Web-based quiz platform with 100+ MCQ questions and auto-scoring",
+          "- Built with Flask framework and SQLite database",
+          "",
+          "ACHIEVEMENTS",
+          "NPTEL 'Programming in Java' certification (Elite)",
+          "Participated in Smart India Hackathon 2025",
+          "Class representative (2024-25)",
+          "",
+          "PERSONAL DETAILS",
+          "Languages: English, Hindi, Marathi",
+          "Hobbies: Coding, Chess, Reading tech blogs",
+          "",
+          "Build this resume free on Apply at /dashboard/build — guided form, ATS-friendly PDF, no watermark."
+        ]
+      },
+      {
+        heading: "TCS resume vs other company resumes",
+        body: [
+          "TCS resume: Simple, basic skills, academic projects, career objective, personal details. 1 page. Focus on consistency and trainability.",
+          "Amazon resume: Impact-focused, metrics-driven, leadership principles, complex projects, no career objective. 1 page. Focus on results.",
+          "Infosys resume: Similar to TCS but slightly more technical. For SP/DSE roles: advanced skills, harder projects. Check Infosys resume format on Apply /prepare.",
+          "Startup resume: GitHub link, deployed projects, tech stack depth, open-source. No career objective. Focus on shipping.",
+          "Key difference: TCS is the only major company that still accepts 'Career Objective' and 'Personal Details' sections. Keep them for TCS, remove for product companies."
+        ]
+      },
+      {
+        heading: "TCS NQT resume upload — tips",
+        body: [
+          "When registering for TCS NQT, you'll upload your resume on the TCS iON or NextStep portal.",
+          "Upload a clean PDF — not Word. PDF preserves formatting across all systems.",
+          "File name: 'YourName_TCS_Resume.pdf'. Not 'resume_final_v3.pdf'. Professionalism starts with the file name.",
+          "File size: Keep under 1MB. Don't add photos or graphics that bloat the file.",
+          "Make sure your resume matches your NQT application details — same college name, same CGPA, same skills. Inconsistencies get flagged."
+        ]
+      },
+      {
+        heading: "TCS interview resume questions to prepare for",
+        body: [
+          "TCS technical interview will reference your resume. Prepare for:",
+          "'Tell me about your project' — explain your project in 2 minutes: what it does, your role, tech stack, challenges.",
+          "'Why did you choose Java/Python?' — have a reason. 'Java is platform-independent and widely used in enterprise applications.'",
+          "'What database did you use and why?' — 'MySQL because it's open-source, reliable, and suitable for our scale.'",
+          "'What is [skill you listed]?' — if you list OOP, expect 'What are the 4 pillars of OOP?' Don't list skills you can't explain.",
+          "Practice these with Apply's AI mock interview at /mock-interview with company set to TCS."
+        ]
+      },
+      {
+        heading: "Common TCS resume mistakes",
+        body: [
+          "Don't list too many skills: TCS values depth over breadth. 3-4 solid skills are better than 15 shallow ones.",
+          "Don't exaggerate projects: TCS interviewers ask basic questions about your project. If you claim 'AI-powered' but can't explain the algorithm, you'll get caught.",
+          "Don't skip 10th and 12th marks: TCS checks academic consistency from 10th onwards. Include all three education levels.",
+          "Don't use multi-column templates: TCS's ATS (Workday) can't parse columns. Use single-column.",
+          "Don't forget the career objective: TCS is old-school. A simple career objective shows you understand their culture.",
+          "Don't exceed 1 page: TCS expects 1-page resumes. If it overflows, shorten project descriptions."
+        ]
+      },
+      {
+        heading: "Build your TCS resume free",
+        body: [
+          "Apply's free resume builder at /dashboard/build creates a TCS-friendly resume with education (CGPA + 10th/12th), basic skills, academic projects, and achievements — all in a clean single-column ATS-friendly PDF.",
+          "Free 5 resume generations, no watermark. Then read TCS interview prep guide at /prepare/tcs-interview-questions-2026 and practice mock interview at /mock-interview with company set to TCS."
         ]
       }
     ]
