@@ -25,6 +25,9 @@ const columns = [
     links: [
       { label: "Company PYQs library", href: "/pyqs" },
       { label: "Previous year coding questions guide", href: "/blog/company-previous-year-coding-questions-india" },
+      { label: "Best mock interview platforms", href: "/blog/best-mock-interview-placement-prep-platforms" },
+      { label: "Best AI resume builder for students", href: "/blog/best-ai-resume-builder-students-india" },
+      { label: "Best free resume editor for placements", href: "/blog/best-free-resume-editor-campus-placements" },
       { label: "AI mock interview guide", href: "/blog/ai-mock-interview-practice-campus-placements" },
       { label: "Mock interview practice online", href: "/blog/mock-interview-practice-online-guide" },
       { label: "Free resume maker for students", href: "/blog/free-resume-maker-for-students-india" },

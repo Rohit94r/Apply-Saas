@@ -65,20 +65,20 @@ const blogJsonLd = {
 
 const intentGuides = [
   {
+    label: "Best AI resume builder for students",
+    href: "/blog/best-ai-resume-builder-students-india"
+  },
+  {
+    label: "Best free resume editor for placements",
+    href: "/blog/best-free-resume-editor-campus-placements"
+  },
+  {
+    label: "Best mock interview platforms compared",
+    href: "/blog/best-mock-interview-placement-prep-platforms"
+  },
+  {
     label: "Start free mock interview practice",
     href: "/blog/mock-interview-practice-online-guide"
-  },
-  {
-    label: "Unlimited interview practice online",
-    href: "/blog/unlimited-interview-practice-online"
-  },
-  {
-    label: "Free resume maker for students",
-    href: "/blog/free-resume-maker-for-students-india"
-  },
-  {
-    label: "Engineering student resume template",
-    href: "/blog/engineering-student-resume-template"
   }
 ];
 

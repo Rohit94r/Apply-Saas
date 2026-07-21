@@ -1,4 +1,5 @@
 import { CheckCircle, MinusCircle, XCircle } from "@phosphor-icons/react/ssr";
+import Link from "next/link";
 import { Reveal } from "@/components/animations/reveal";
 import { SectionHeading } from "@/components/landing/section-heading";
 import { comparisonRows } from "@/lib/constants";
@@ -69,6 +70,32 @@ export function ComparisonSection() {
               </div>
             </div>
           </div>
+        </Reveal>
+        <Reveal delay={0.15}>
+          <p className="mt-8 text-sm leading-7 text-muted-foreground">
+            Longer write-ups:{" "}
+            <Link
+              href="/blog/best-mock-interview-placement-prep-platforms"
+              className="font-semibold text-primary underline-offset-2 hover:underline"
+            >
+              mock interview platforms compared
+            </Link>
+            ,{" "}
+            <Link
+              href="/blog/best-ai-resume-builder-students-india"
+              className="font-semibold text-primary underline-offset-2 hover:underline"
+            >
+              best AI resume builder for students
+            </Link>
+            , and{" "}
+            <Link
+              href="/blog/best-free-resume-editor-campus-placements"
+              className="font-semibold text-primary underline-offset-2 hover:underline"
+            >
+              best free resume editor for campus placements
+            </Link>
+            .
+          </p>
         </Reveal>
       </div>
     </section>

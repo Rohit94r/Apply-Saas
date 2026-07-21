@@ -63,10 +63,17 @@ const softwareJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Apply Free AI Mock Interview",
+  alternateName: ["Apply Mock Interview Practice", "Apply AI Interviewer"],
   applicationCategory: "EducationalApplication",
   operatingSystem: "Web",
   url: absoluteUrl("/mock-interview"),
   description,
+  isAccessibleForFree: true,
+  audience: {
+    "@type": "EducationalAudience",
+    educationalRole: "student",
+    audienceType: "Indian students and freshers preparing for campus placements"
+  },
   offers: {
     "@type": "Offer",
     price: "0",
@@ -77,7 +84,8 @@ const softwareJsonLd = {
     "ElevenLabs interviewer voice",
     "English, Hindi, Tamil, Telugu, Marathi",
     "Coding questions with test runner",
-    "5–10 question sessions with scored feedback"
+    "5–10 question sessions with scored feedback",
+    "Pairs with company PYQs and ATS resume tools"
   ]
 };
 
@@ -85,6 +93,14 @@ const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
+    {
+      "@type": "Question",
+      name: "What should students use for mock interview practice before campus placements?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Prefer a tool that makes you speak answers aloud under time pressure, ideally with optional coding and company context. Apply's AI mock interview at /mock-interview includes voice practice, scored feedback, and optional coding rounds, and works best when paired with company PYQs at /pyqs and an ATS resume on Apply."
+      }
+    },
     {
       "@type": "Question",
       name: "Is Apply's AI mock interview free for freshers?",
@@ -177,6 +193,10 @@ const features = [
 
 const relatedGuides = [
   {
+    href: "/blog/best-mock-interview-placement-prep-platforms",
+    label: "Best mock interview platforms for campus placements"
+  },
+  {
     href: "/blog/mock-interview-practice-online-guide",
     label: "Mock interview practice online: fresher guide"
   },
@@ -201,12 +221,8 @@ const relatedGuides = [
     label: "AI mock interview practice for campus placements"
   },
   {
-    href: "/blog/online-mock-interview-with-coding-round",
-    label: "Online mock interview with coding round"
-  },
-  {
-    href: "/blog/use-ai-mock-interview-feedback",
-    label: "How to use mock interview feedback"
+    href: "/blog/best-ai-resume-builder-students-india",
+    label: "Best AI resume builder for students in India"
   }
 ];
 

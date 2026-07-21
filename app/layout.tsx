@@ -91,6 +91,12 @@ export default function RootLayout({
           title="Sitemap"
           href={`${seoConfig.url}/sitemap.xml`}
         />
+        <link
+          rel="alternate"
+          type="text/plain"
+          title="LLM context"
+          href={`${seoConfig.url}/llms.txt`}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

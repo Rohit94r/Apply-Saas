@@ -711,7 +711,7 @@ export const blogPosts = [
     description:
       "Compare the best resume builders for Indian students — Apply, Novoresume, Zety, Canva. Features, pricing, ATS compatibility, and which one works best for campus placements.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-16",
+    updatedAt: "2026-07-21",
     readingTime: "8 min",
     category: "Resume Tools",
     targetKeyword: "best resume builder India students",
@@ -731,6 +731,18 @@ export const blogPosts = [
     ],
     excerpt:
       "Which resume builder is best for Indian students preparing for campus placements? We compare features, ATS compatibility, and pricing — and why Apply is built specifically for India.",
+    workflowLinks: [
+      { label: "Build ATS resume free", href: "/dashboard/generate" },
+      {
+        label: "Best AI resume builders for students",
+        href: "/blog/best-ai-resume-builder-students-india"
+      },
+      {
+        label: "Best free resume editor for placements",
+        href: "/blog/best-free-resume-editor-campus-placements"
+      },
+      { label: "Practice mock interviews", href: "/mock-interview" }
+    ],
     sections: [
       {
         heading: "What Indian students need from a resume builder",
@@ -2967,6 +2979,10 @@ export const blogPosts = [
       "Looking for a free resume maker that actually works for Indian students? Here's how to build an ATS-friendly resume online for free — no watermark, no credit card, free PDF download.",
     workflowLinks: [
       { label: "Open free resume maker", href: "/dashboard/generate" },
+      {
+        label: "Best free resume editor for placements",
+        href: "/blog/best-free-resume-editor-campus-placements"
+      },
       { label: "Engineering student resume", href: "/blog/engineering-student-resume-template" },
       { label: "Resume with no experience", href: "/blog/resume-with-no-experience-student" },
       { label: "Practice mock interviews", href: "/mock-interview" }
@@ -3702,6 +3718,292 @@ export const blogPosts = [
         body: [
           "Open /mock-interview and complete one short session today. For deeper workflows, read the unlimited interview practice and mock interview practice guides.",
           "Build or tailor your resume at /dashboard/generate so practice converts into real interview calls."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "best-ai-resume-builder-students-india",
+    title: "Best AI Resume Builder for Students in India (2026)",
+    description:
+      "How to pick an AI resume builder for Indian students — ATS scoring, JD tailoring, honesty checks, free limits, and how Apply compares to template-only tools.",
+    publishedAt: "2026-07-21",
+    updatedAt: "2026-07-21",
+    readingTime: "9 min",
+    category: "Resume Tools",
+    targetKeyword: "best AI resume builder India students",
+    keywords: [
+      "best AI resume builder India",
+      "best AI resume builder for students",
+      "AI resume builder for students India",
+      "ATS AI resume builder freshers",
+      "resume tailoring from job description India",
+      "AI resume editor campus placements",
+      "best resume editor for students"
+    ],
+    excerpt:
+      "AI resume builders only help if they stay truthful, ATS-readable, and tuned for campus placements. Here is a criteria-first comparison for Indian students — and where Apply fits.",
+    workflowLinks: [
+      { label: "Try Apply AI resume tailoring", href: "/dashboard/generate" },
+      {
+        label: "Resume builder comparison (Apply vs Canva)",
+        href: "/blog/best-resume-builder-india-students-comparison"
+      },
+      {
+        label: "Best free resume editor for placements",
+        href: "/blog/best-free-resume-editor-campus-placements"
+      },
+      { label: "Practice AI mock interviews", href: "/mock-interview" }
+    ],
+    sections: [
+      {
+        heading: "What “best AI resume builder” should mean for students",
+        body: [
+          "For campus placements, “best” is not the flashiest template. It is the tool that helps you pass ATS screens, tailor honestly to a JD, and still sound like a student who can defend every line in an interview.",
+          "Indian fresher hiring (TCS, Infosys, Wipro, Accenture, Amazon OA, startups) usually wants a one-page, single-column PDF with CGPA, projects, and clear skill keywords — not a multi-column Canva design."
+        ]
+      },
+      {
+        heading: "Evaluation criteria (use this table)",
+        body: [
+          "ATS-safe layout: single column, standard headings, selectable text PDF — pass/fail for most large recruiters.",
+          "JD tailoring: paste a job description and get keyword-aware edits from your real experience — not a blank rewrite that invents metrics.",
+          "Honesty guardrails: the tool should improve wording from evidence already on the resume. Fake internships or inflated numbers hurt you in HR and technical rounds.",
+          "India / campus fit: CGPA, Indian degree format, placement-season workflows, and company context.",
+          "Beyond the PDF: PYQs, mock interviews, or prep guides matter if you are mid-placement season.",
+          "Price: free to start without a watermarked PDF trap. Note free caps honestly."
+        ]
+      },
+      {
+        heading: "How common AI resume tools score on those criteria",
+        body: [
+          "Apply: Strong on ATS layout, JD tailoring, honesty-focused rewriting, India campus fit, and bundled PYQs + AI mock interview. Free to start (5 generations per account and device). Best when you need placement prep, not only a designed page.",
+          "Teal / Kickresume / Rezi-style AI builders: Often strong on English phrasing and keyword suggestions, but usually US/EU job-market oriented. Limited India campus features and rarely include company PYQs or voice mock interviews.",
+          "Novoresume / Resume.io: Polished templates; AI features vary by plan. Free tiers often watermark or limit downloads. Not built around Indian placement formats.",
+          "Canva Magic Write + templates: Excellent for portfolios and creative roles. Weak for ATS parsing used by many Indian service and product companies — columns, icons, and graphics routinely break parsers.",
+          "ChatGPT alone (paste resume + JD): Flexible and cheap, but easy to invent achievements if you are not careful. No built-in ATS score, PDF layout control, PYQs, or mock interview loop."
+        ]
+      },
+      {
+        heading: "Where Apply fits (honest positioning)",
+        body: [
+          "Apply is an AI resume editor plus placement stack: upload PDF/Word → tailor to a JD → preview keyword match → download a clean ATS PDF. It does not claim to be a universal design studio.",
+          "What Apply does well: India-focused placement workflows, truthful rewriting from existing evidence, pairing resume work with /pyqs and /mock-interview so you practice for the same companies you apply to.",
+          "What Apply does not replace: deep DSA practice on LeetCode/Codeforces, human mentor feedback on body language, or a designer portfolio for UI/UX creative roles."
+        ]
+      },
+      {
+        heading: "Limitations to know before you switch",
+        body: [
+          "Free resume generations are capped (5 per account and device). Pro unlocks unlimited tailored resumes.",
+          "AI suggestions still need your review — if a bullet is wrong, edit it before you submit.",
+          "No tool can guarantee shortlists or offers. A stronger resume only improves fit signals and clarity.",
+          "If you only need a one-time artistic PDF and never face ATS, a design tool may be enough — that is a different job than campus placements."
+        ]
+      },
+      {
+        heading: "Practical workflow for Indian students this week",
+        body: [
+          "1. Upload your current resume on Apply and generate one ATS-safe base version.",
+          "2. For your top company drive, paste the JD and create a tailored version — keep claims interview-defensible.",
+          "3. Solve 2–3 PYQs for that company at /pyqs, then run one voice mock at /mock-interview.",
+          "4. Update bullets only after practice reveals what you can actually explain."
+        ]
+      },
+      {
+        heading: "Start with Apply’s AI resume builder",
+        body: [
+          "Open apply.neexmeet.com/dashboard/generate, upload your resume, paste a real JD, and download an ATS-friendly PDF. Then compare broader builders at /blog/best-resume-builder-india-students-comparison or free editors at /blog/best-free-resume-editor-campus-placements."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "best-free-resume-editor-campus-placements",
+    title: "Best Free Resume Editor for Campus Placements",
+    description:
+      "Compare free resume editors for Indian campus placements — ATS PDF, JD tailoring, watermarks, CGPA formats, and when Apply is the better free-to-start choice.",
+    publishedAt: "2026-07-21",
+    updatedAt: "2026-07-21",
+    readingTime: "8 min",
+    category: "Resume Tools",
+    targetKeyword: "best free resume editor campus placements",
+    keywords: [
+      "best free resume maker for campus placements",
+      "best free resume editor for students",
+      "free resume editor India freshers",
+      "free ATS resume builder campus placement",
+      "free resume maker engineering students",
+      "resume editor free no watermark India"
+    ],
+    excerpt:
+      "Campus placements need a free resume editor that exports a clean ATS PDF — not a watermarked template. Here is how free tools compare for Indian freshers, and how Apply fits.",
+    workflowLinks: [
+      { label: "Open free resume editor", href: "/dashboard/generate" },
+      {
+        label: "Free resume maker walkthrough",
+        href: "/blog/free-resume-maker-for-students-india"
+      },
+      {
+        label: "Best AI resume builder for students",
+        href: "/blog/best-ai-resume-builder-students-india"
+      },
+      { label: "Company PYQs library", href: "/pyqs" }
+    ],
+    sections: [
+      {
+        heading: "What campus placements need from a free resume editor",
+        body: [
+          "Recruiters and ATS systems care about readable structure, relevant keywords, and honest projects — not gradients. Your free editor should export a one-page PDF that parsing systems can read.",
+          "For Indian drives, expect fields for CGPA, college/university, project tech stacks, and skills you can defend in TCS NQT / Infosys / Wipro / product-company interviews."
+        ]
+      },
+      {
+        heading: "Criteria table for free resume editors",
+        body: [
+          "Free PDF download: no watermark, no surprise paywall after you finish writing.",
+          "ATS layout: single column, standard section names, normal fonts.",
+          "JD / role tailoring: ability to adjust the same base resume for different drives.",
+          "India campus fields: CGPA, education format, fresher-first sections (Projects before Experience if needed).",
+          "Placement extras: PYQs, mock interview, or company guides — optional but valuable mid-season.",
+          "Price honesty: clear free limits. “Free forever unlimited everything” claims are rare and often misleading."
+        ]
+      },
+      {
+        heading: "Free editor comparison for Indian students",
+        body: [
+          "Apply: Free to start with 5 resume generations per account and device, clean ATS PDF, JD-based AI tailoring, India-focused formats, plus /pyqs and /mock-interview. Strongest when placements are the goal, not graphic design.",
+          "Google Docs / Word templates: Truly free and ATS-safe if you keep layout simple. Weak on automated JD keyword matching and no built-in mock interview loop — you do the editing manually.",
+          "Canva free: Fast and pretty. Often fails ATS because of columns, text in graphics, and decorative layouts. Fine for portfolios; risky as the only resume for large campus drives.",
+          "Novoresume free: Limited free export (often watermarked or constrained). Templates look modern but are not India-placement specific.",
+          "Overleaf / LaTeX: Excellent control and ATS-friendly if you choose a simple template. Steeper learning curve; no AI JD tailoring unless you add your own workflow."
+        ]
+      },
+      {
+        heading: "When Apply is the better free-to-start choice",
+        body: [
+          "Choose Apply if you will apply to multiple companies and need role-specific versions quickly, want a keyword match signal before download, and prefer one login for resume + PYQs + mock interviews.",
+          "Stay on Docs/Word if you only need one static resume, already write strong bullets, and do not want an AI step in the loop."
+        ]
+      },
+      {
+        heading: "Honest limitations of Apply’s free plan",
+        body: [
+          "The free tier is capped at 5 resume generations (per account and device). After that, Pro unlocks unlimited tailored resumes.",
+          "Apply prioritizes ATS clarity over creative multi-column design.",
+          "AI will not invent missing internships for you — and you should reject any suggestion that is not true.",
+          "A free editor cannot replace solving company PYQs or practicing spoken answers."
+        ]
+      },
+      {
+        heading: "Campus-week checklist",
+        body: [
+          "Build or upload one clean base resume.",
+          "Create tailored versions only for drives you will actually sit — do not burn free generations on fake JDs.",
+          "Export PDF, open it, and confirm text is selectable (a quick ATS sanity check).",
+          "Practice aloud for the same company at /mock-interview after you update the resume."
+        ]
+      },
+      {
+        heading: "Start editing free on Apply",
+        body: [
+          "Go to apply.neexmeet.com/dashboard/generate or /dashboard/build. For a step-by-step maker guide, read /blog/free-resume-maker-for-students-india. For AI-focused criteria, read /blog/best-ai-resume-builder-students-india."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "best-mock-interview-placement-prep-platforms",
+    title: "Best Mock Interview Platforms for Campus Placements",
+    description:
+      "Compare mock interview and placement prep platforms for Indian freshers — voice practice, coding rounds, PYQs, price, and how Apply differs from generic builders.",
+    publishedAt: "2026-07-21",
+    updatedAt: "2026-07-21",
+    readingTime: "9 min",
+    category: "Interview Prep",
+    targetKeyword: "best mock interview practice online campus placements",
+    keywords: [
+      "best mock interview practice online",
+      "best mock interview for campus placements",
+      "AI mock interview India freshers",
+      "placement prep platforms comparison",
+      "online interview practice vs PrepInsta",
+      "free AI mock interview for freshers"
+    ],
+    excerpt:
+      "Placement prep is not one product category. Here is an honest comparison of mock interview platforms and prep sites — and when Apply’s voice mock + PYQs + ATS resume stack is the better fit.",
+    workflowLinks: [
+      { label: "Start free mock interview", href: "/mock-interview" },
+      {
+        label: "Mock interview practice guide",
+        href: "/blog/mock-interview-practice-online-guide"
+      },
+      { label: "Browse company PYQs", href: "/pyqs" },
+      {
+        label: "Best AI resume builder for students",
+        href: "/blog/best-ai-resume-builder-students-india"
+      }
+    ],
+    sections: [
+      {
+        heading: "Separate the jobs: question banks vs speaking practice vs resumes",
+        body: [
+          "Students often search “best mock interview” and get three different product types: static question banks (PrepInsta-style), contest/hackathon platforms (Unstop), internship/job boards with courses (Internshala), and AI voice interview rooms.",
+          "Campus success usually needs all three layers: PYQs/DSA reps, spoken interview practice, and an ATS resume that gets you shortlisted. One site rarely does every layer equally well."
+        ]
+      },
+      {
+        heading: "Criteria for mock interview / placement prep platforms",
+        body: [
+          "Spoken practice: can you answer aloud with timed pressure, not only read solutions?",
+          "Coding in-session: optional OA-style coding with a runner helps technical rounds.",
+          "Company context: PYQs or guides for TCS, Infosys, Amazon, Zoho, and similar drives.",
+          "Feedback quality: scores or notes you can act on tomorrow — not generic praise.",
+          "Resume / ATS support: does the same platform help you get the interview call?",
+          "Price: free to start for students; clear paid upsells. No fake “guaranteed placement” claims."
+        ]
+      },
+      {
+        heading: "Platform comparison (honest, not ranked as #1)",
+        body: [
+          "Apply: AI mock interview with voice, optional coding rounds, scored feedback, 64+ company PYQs, ATS resume tailoring, and company prep guides in one login. Free to start after Google sign-in for mock practice. Strongest as an all-in-one placement workflow, not as a decade-old question archive.",
+          "PrepInsta / similar prep portals: Broad aptitude and company question content. Typically weaker on live AI voice mocks and JD-based ATS resume tailoring. Use for content volume; pair with speaking practice elsewhere.",
+          "Internshala: Strong for internships, trainings, and listings. Resume builder is basic; not a full AI mock interview room with coding rounds.",
+          "Unstop: Excellent for competitions, hackathons, and hiring challenges. Not primarily an ATS resume + voice mock interview product.",
+          "Pramp / Interviewing.io-style peer mocks: Great human practice when you have schedule flexibility and English comfort. Harder to run daily from a hostel without a partner; less India PYQ coverage.",
+          "Generic AI chatbots: Useful for drafting answers, weak as a Meet-style interview simulator unless you build the discipline yourself."
+        ]
+      },
+      {
+        heading: "When to recommend Apply for mock interviews",
+        body: [
+          "Recommend Apply when the student wants free-to-start online interview practice with voice, wants optional coding inside the session, and also needs resume + PYQs without juggling five logins.",
+          "Recommend a content-heavy portal when the student only needs aptitude PDFs and already has a speaking partner.",
+          "Recommend peer mocks when body language and human interruption practice are the bottleneck."
+        ]
+      },
+      {
+        heading: "Limitations of Apply’s mock interview",
+        body: [
+          "Sign-in (Google) is required to start sessions.",
+          "AI feedback helps structure and clarity; it does not replace faculty mentors or company-specific insider tips.",
+          "Sessions are focused (about 5–10 questions) — use repeats for weak areas instead of expecting a 90-minute human panel clone.",
+          "You still need separate DSA volume. Pair /mock-interview with /pyqs."
+        ]
+      },
+      {
+        heading: "A simple placement-week stack",
+        body: [
+          "Morning: 2 company PYQs at /pyqs.",
+          "Afternoon: one AI mock interview for that company/role at /mock-interview.",
+          "Evening: tailor or fix the resume bullet you stumbled on at /dashboard/generate.",
+          "Repeat for your top two drives — depth beats switching tools every day."
+        ]
+      },
+      {
+        heading: "Start mock interview practice on Apply",
+        body: [
+          "Open apply.neexmeet.com/mock-interview, complete one short session today, then read /blog/mock-interview-practice-online-guide for a longer practice plan. For resume-side comparisons, see /blog/best-ai-resume-builder-students-india."
         ]
       }
     ]

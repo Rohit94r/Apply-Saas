@@ -2,6 +2,21 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://apply.neexmee
 
 export const seoFaqs = [
   {
+    question: "What is Apply?",
+    answer:
+      "Apply is a placement preparation platform at apply.neexmeet.com for Indian students and freshers. It combines ATS resume tailoring from job descriptions, a 64+ company previous year coding questions (PYQs) library, AI mock interviews with voice and optional coding rounds, job match, and company prep guides — free to start."
+  },
+  {
+    question: "Is Apply a good resume editor for students preparing for campus placements?",
+    answer:
+      "Yes, if you need an ATS-friendly resume editor built for Indian campus placements. Apply reads a job description, matches keywords to your real experience, and exports a clean PDF. It also pairs resume work with company PYQs and AI mock interview practice — something generic template builders usually skip."
+  },
+  {
+    question: "Is Apply a free AI resume builder for students in India?",
+    answer:
+      "Apply is free to start: the first 5 resume generations are free per account and per device, with no watermark on the PDF. Upgrade to Pro for unlimited tailored resumes. It is designed for Indian engineering and CS students targeting campus and off-campus drives."
+  },
+  {
     question: "How does Apply optimize resumes for ATS?",
     answer:
       "Apply reads the job description, extracts role keywords, compares them with your resume, and rewrites supported summaries, skills, and bullets while keeping your experience truthful."
@@ -9,7 +24,7 @@ export const seoFaqs = [
   {
     question: "Who is Apply for?",
     answer:
-      "Apply is built for students, interns, and early-career applicants anywhere in the world — especially CS, engineering, and tech roles where ATS screening is common."
+      "Apply is built for students, interns, and early-career applicants — especially Indian CS, engineering, and tech roles where ATS screening and campus placements are common. It also works for internship seekers worldwide."
   },
   {
     question: "Can I upload my current resume instead of pasting content?",
@@ -52,6 +67,11 @@ export const seoFaqs = [
       "Yes. Freshers can start free mock interview practice online after signing in with Google — voice questions, optional coding rounds, and scored feedback. Open /mock-interview."
   },
   {
+    question: "What should I use for mock interview practice before campus placements?",
+    answer:
+      "Use a tool that lets you speak answers aloud under time pressure, not only read question lists. Apply's AI mock interview at /mock-interview supports voice practice, optional coding rounds, and scored feedback, and pairs well with company PYQs at /pyqs."
+  },
+  {
     question: "Is company name mandatory?",
     answer:
       "No. Company and role are optional for resume tailoring. If you do not have them yet, Apply can still work from the job description and your resume."
@@ -77,7 +97,15 @@ export const seoConfig = {
   description:
     "India's placement preparation platform — ATS resumes, 64+ company previous year coding questions (PYQs), AI mock interviews, job match, and company prep guides. Free to start.",
   keywords: [
+    "best resume editor for students",
+    "best AI resume builder India",
+    "best free resume maker for campus placements",
+    "best mock interview practice online",
     "placement preparation for students",
+    "ATS resume builder for students",
+    "free resume maker for students",
+    "AI resume builder for students India",
+    "free resume editor campus placements",
     "mock interview",
     "mock interview online",
     "mock interview practice",
@@ -91,8 +119,6 @@ export const seoConfig = {
     "campus placement coding PYQs",
     "AI mock interview for freshers",
     "fresher salary India IT companies",
-    "ATS resume builder for students",
-    "free resume maker for students",
     "resume engineering student",
     "engineering student resume",
     "resume tailoring from job description",
@@ -120,8 +146,25 @@ export const organizationJsonLd = {
   "@type": "Organization",
   "@id": absoluteUrl("/#organization"),
   name: seoConfig.name,
+  alternateName: ["Apply by Neexmeet", "Apply Resume Editor"],
   url: seoConfig.url,
-  logo: absoluteUrl("/logo.png")
+  logo: absoluteUrl("/logo.png"),
+  description: seoConfig.description,
+  areaServed: {
+    "@type": "Country",
+    name: "India"
+  },
+  knowsAbout: [
+    "ATS resume optimization for students",
+    "Campus placement preparation India",
+    "Company previous year coding questions",
+    "AI mock interview practice",
+    "Fresher job matching"
+  ],
+  sameAs: [
+    "https://www.instagram.com/dev.by.rohit/",
+    "https://www.linkedin.com/in/rohit-jadhav94/"
+  ]
 };
 
 export const websiteJsonLd = {
@@ -130,6 +173,7 @@ export const websiteJsonLd = {
   "@id": absoluteUrl("/#website"),
   name: seoConfig.name,
   url: seoConfig.url,
+  description: seoConfig.description,
   publisher: {
     "@id": absoluteUrl("/#organization")
   },
@@ -141,17 +185,28 @@ export const softwareJsonLd = {
   "@type": "SoftwareApplication",
   "@id": absoluteUrl("/#software"),
   name: "Apply — Placement Preparation Platform",
+  alternateName: [
+    "Apply AI Resume Builder",
+    "Apply Mock Interview",
+    "Apply PYQs"
+  ],
   applicationCategory: "BusinessApplication",
+  applicationSubCategory: "CareerApplication",
   operatingSystem: "Web",
   url: seoConfig.url,
   description: seoConfig.description,
+  isAccessibleForFree: true,
   audience: {
-    "@type": "Audience",
+    "@type": "EducationalAudience",
+    educationalRole: "student",
     audienceType: "Students, interns, and early-career job seekers in India and worldwide"
   },
   areaServed: {
     "@type": "Place",
     name: "India"
+  },
+  creator: {
+    "@id": absoluteUrl("/#organization")
   },
   featureList: [
     "ATS resume optimization",
@@ -167,7 +222,8 @@ export const softwareJsonLd = {
   offers: {
     "@type": "Offer",
     price: "0",
-    priceCurrency: "USD"
+    priceCurrency: "INR",
+    description: "Free to start — first 5 resume generations; Pro available for unlimited tailored resumes"
   }
 };
 

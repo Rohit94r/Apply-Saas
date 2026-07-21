@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     Math.max(...preparePages.map((page) => new Date(page.updatedAt).getTime()))
   );
   const publicRouteUpdates: Record<string, Date> = {
-    "/": new Date("2026-07-19"),
+    "/": new Date("2026-07-21"),
     "/blog": latestBlogUpdate,
     "/prepare": latestPrepareUpdate,
     "/pyqs": new Date("2026-07-19"),
