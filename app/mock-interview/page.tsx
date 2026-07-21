@@ -6,9 +6,9 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
-const title = "Free Mock Interview Online — AI Interview Practice | Apply";
+const title = "Mock Interview Online Free — AI Practice | Apply";
 const description =
-  "Practice free AI mock interviews online for campus placements — Meet-style room, voice questions, live captions, coding rounds, and scored feedback. Mock interview practice for freshers. Start free on Apply.";
+  "Free mock interview practice online for campus placements — AI voice interviewer, coding rounds, scored feedback, and unlimited interview practice for freshers. Start free on Apply.";
 
 export const metadata: Metadata = {
   title: {
@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     "AI mock interview",
     "online interview practice",
     "free online interview practice",
+    "unlimited interview practice",
     "mock interview practice for freshers",
     "AI mock interview for freshers",
     "campus placement mock interview",
@@ -90,6 +91,14 @@ const faqJsonLd = {
       acceptedAnswer: {
         "@type": "Answer",
         text: "Yes. You can start free after signing in with Google. The web mock interview includes voice questions, live captions, optional coding rounds, and a score summary when you end the call."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "Can I do unlimited interview practice on Apply?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Start as many mock interview sessions as you need. Each session is 5–10 focused questions with scored feedback, so you can practice daily before campus placements."
       }
     },
     {
@@ -168,24 +177,28 @@ const features = [
 
 const relatedGuides = [
   {
+    href: "/blog/mock-interview-practice-online-guide",
+    label: "Mock interview practice online: fresher guide"
+  },
+  {
+    href: "/blog/unlimited-interview-practice-online",
+    label: "Unlimited interview practice online (free)"
+  },
+  {
     href: "/blog/mock-interview-online-free-practice-2026",
-    label: "Mock interview online free: how to practice for placements in 2026"
+    label: "Mock interview online free for placements"
   },
   {
     href: "/blog/ai-mock-interview-free-for-freshers-2026",
-    label: "AI mock interview free for freshers: complete guide"
+    label: "AI mock interview free for freshers"
   },
   {
     href: "/blog/online-interview-practice-free-india",
-    label: "Online interview practice free: how to practice from home in India"
+    label: "Free online interview practice in India"
   },
   {
     href: "/blog/ai-mock-interview-practice-campus-placements",
     label: "AI mock interview practice for campus placements"
-  },
-  {
-    href: "/blog/free-ai-mock-interview-for-freshers",
-    label: "Free AI mock interview guide for freshers"
   },
   {
     href: "/blog/online-mock-interview-with-coding-round",
@@ -211,15 +224,15 @@ export default function MockInterviewMarketingPage() {
       <main>
         <section className="border-b border-border/70 py-20">
           <div className="section-shell max-w-4xl">
-            <p className="fine-label mb-5">Free AI mock interview</p>
+            <p className="fine-label mb-5">Mock interview practice online</p>
             <h1 className="font-serif text-5xl leading-[1.02] text-primary sm:text-6xl">
-              Free AI mock interview practice for campus placements.
+              Mock interview practice online — free AI for campus placements.
             </h1>
             <p className="mt-6 text-base leading-8 text-muted-foreground">
-              Stop reading answers silently. Apply runs a live virtual interview —
-              speaks the question, listens to your answer, scores you, and can add
-              coding rounds like company OA / previous year questions. Free to start
-              for freshers and students.
+              Stop reading answers silently. Practice a live AI mock interview —
+              voice questions, spoken answers, scored feedback, and optional coding
+              rounds like company OA / previous year questions. Unlimited interview
+              practice for freshers. Free to start.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
@@ -230,6 +243,9 @@ export default function MockInterviewMarketingPage() {
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="/pyqs">Browse company PYQs</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/dashboard/generate">Build ATS resume</Link>
               </Button>
             </div>
           </div>

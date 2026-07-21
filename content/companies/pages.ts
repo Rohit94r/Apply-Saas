@@ -1495,9 +1495,9 @@ export const preparePages: PreparePage[] = [
   },
   {
     slug: "phonepe-interview-questions-2026",
-    title: "PhonePe Interview Questions 2026: SDE, Backend & Coding Guide",
+    title: "PhonePe Interview Questions 2026: SDE & Coding",
     description:
-      "PhonePe interview questions for SDE 1, SDE 2, and backend engineer roles. Covers OA coding, system design, technical interview, and HR rounds with preparation strategy.",
+      "PhonePe interview questions 2026 for SDE and backend — OA coding, system design, HR rounds. Practice PhonePe mock interviews free on Apply.",
     companyId: "phonepe",
     companyName: "PhonePe",
     category: "interview",
@@ -1513,7 +1513,7 @@ export const preparePages: PreparePage[] = [
       "fintech interview questions India"
     ],
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-16",
+    updatedAt: "2026-07-21",
     readingTime: "9 min",
     excerpt:
       "PhonePe hires SDE 1, SDE 2, and backend engineers for its Bengaluru fintech platform. Here is the complete interview process — OA, coding, system design, and HR — with preparation tips.",
@@ -1569,15 +1569,15 @@ export const preparePages: PreparePage[] = [
       {
         heading: "How Apply helps for PhonePe",
         body: [
-          "Tailor your resume with PhonePe JD keywords (Java, Spring Boot, Kafka, Redis, distributed systems). Use Interview prep with company set to PhonePe.",
-          "Browse PhonePe PYQs at /pyqs. Practice mock interview at /mock-interview."
+          "Tailor your resume with PhonePe JD keywords (Java, Spring Boot, Kafka, Redis, distributed systems) at /dashboard/generate.",
+          "Browse PhonePe PYQs at /pyqs. Start a PhonePe mock interview at /mock-interview — set company to PhonePe, type technical, coding enabled."
         ]
       }
     ],
-    primaryCta: { label: "Tailor resume for PhonePe", href: "/dashboard/generate" },
+    primaryCta: { label: "Start PhonePe mock interview", href: "/mock-interview" },
     secondaryCtas: [
       { label: "PhonePe PYQs", href: "/pyqs" },
-      { label: "Practice mock interview", href: "/mock-interview" }
+      { label: "Tailor resume for PhonePe", href: "/dashboard/generate" }
     ],
     relatedSlugs: ["amazon-sde-internship-india", "razorpay-interview-questions-2026", "swiggy-interview-questions-2026"]
   },

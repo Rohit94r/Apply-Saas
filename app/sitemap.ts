@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog": latestBlogUpdate,
     "/prepare": latestPrepareUpdate,
     "/pyqs": new Date("2026-07-19"),
-    "/mock-interview": new Date("2026-07-19")
+    "/mock-interview": new Date("2026-07-21")
   };
   const publicRoutes = seoConfig.publicRoutes.map((route) => ({
     url: absoluteUrl(route),

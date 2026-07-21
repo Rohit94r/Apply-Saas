@@ -44,7 +44,12 @@ export const seoFaqs = [
   {
     question: "Is there an AI mock interview on Apply?",
     answer:
-      "Yes. The web mock interview is a Meet-style practice room with ElevenLabs voice, multilingual options, coding questions, scored feedback, and session history. Start at /mock-interview."
+      "Yes. The web mock interview is a Meet-style practice room with ElevenLabs voice, multilingual options, coding questions, scored feedback, and session history. You can run unlimited interview practice sessions. Start at /mock-interview."
+  },
+  {
+    question: "Is online interview practice free for students?",
+    answer:
+      "Yes. Freshers can start free mock interview practice online after signing in with Google — voice questions, optional coding rounds, and scored feedback. Open /mock-interview."
   },
   {
     question: "Is company name mandatory?",
@@ -73,13 +78,23 @@ export const seoConfig = {
     "India's placement preparation platform — ATS resumes, 64+ company previous year coding questions (PYQs), AI mock interviews, job match, and company prep guides. Free to start.",
   keywords: [
     "placement preparation for students",
+    "mock interview",
+    "mock interview online",
+    "mock interview practice",
+    "AI mock interview",
+    "free online interview practice",
+    "unlimited interview practice",
     "free AI mock interview for freshers",
     "mock interview practice online",
+    "online interview practice",
     "company previous year coding questions",
     "campus placement coding PYQs",
     "AI mock interview for freshers",
     "fresher salary India IT companies",
     "ATS resume builder for students",
+    "free resume maker for students",
+    "resume engineering student",
+    "engineering student resume",
     "resume tailoring from job description",
     "job matching for freshers",
     "company placement prep guides",
