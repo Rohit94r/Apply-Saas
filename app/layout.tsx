@@ -13,7 +13,7 @@ const geist = Geist({
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  weight: "400",
+  weight: "400",                  
   variable: "--font-serif",
   display: "swap"
 });

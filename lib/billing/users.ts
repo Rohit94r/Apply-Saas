@@ -5,8 +5,8 @@ import { users } from "@/packages/db/schema";
 import { toUserDocument, type UserDocument } from "@/models/User";
 
 /**
- * Profile from Auth.js (Google) session.
- * `users.user_id` stores the Google account id (JWT subject).
+ * Profile from Auth.js session (Google or email/password).
+ * `users.user_id` stores the stable auth id (Google sub or credentials UUID).
  */
 export async function getCurrentUserProfile() {
   const user = await getCurrentUser();

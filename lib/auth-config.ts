@@ -41,10 +41,15 @@ export function getGoogleClientSecret() {
   return readEnv("AUTH_GOOGLE_SECRET", "GOOGLE_CLIENT_SECRET");
 }
 
-/** True when Google OAuth + JWT secret are ready for login. */
+/** True when JWT sessions can be issued (email/password and/or Google). */
+export function isAuthConfigured() {
+  return isUsableValue(getAuthSecret(), 16);
+}
+
+/** True when Google OAuth + JWT secret are ready for Google login. */
 export function isGoogleAuthConfigured() {
   return (
-    isUsableValue(getAuthSecret(), 16) &&
+    isAuthConfigured() &&
     isUsableValue(getGoogleClientId(), 12) &&
     isUsableValue(getGoogleClientSecret(), 12)
   );
@@ -94,7 +99,7 @@ export function neonAuthIsConfigured() {
   return isGoogleAuthConfigured();
 }
 
-/** Runtime check (prefer calling the function, not a module constant). */
+/** Runtime check: AUTH_SECRET is enough for email/password auth. */
 export function authIsConfigured() {
-  return isGoogleAuthConfigured();
+  return isAuthConfigured();
 }

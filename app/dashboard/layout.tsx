@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DashboardActivityTracker } from "@/components/dashboard/activity-tracker";
 import { getCurrentUser } from "@/lib/auth";
-import { isGoogleAuthConfigured } from "@/lib/auth-config";
+import { isAuthConfigured } from "@/lib/auth-config";
 import { trackDashboardSession } from "@/lib/admin/session";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  if (!isGoogleAuthConfigured()) {
+  if (!isAuthConfigured()) {
     return (
       <DashboardShell authConfigured={false}>{children}</DashboardShell>
     );

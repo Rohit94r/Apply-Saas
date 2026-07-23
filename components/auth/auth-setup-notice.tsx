@@ -10,28 +10,29 @@ export function AuthSetupNotice({ fullPage = true }: AuthSetupNoticeProps) {
 
   const body = (
     <div className="mx-auto max-w-xl rounded-2xl border border-border bg-white p-8 shadow-sm dark:bg-[#1a1a20]">
-      <h1 className="font-serif text-3xl text-primary">Google auth setup</h1>
+      <h1 className="font-serif text-3xl text-primary">Auth setup</h1>
       <p className="mt-3 text-sm leading-7 text-muted-foreground">
-        Google Console redirect URIs look fine. This screen appears only when
-        env vars are incomplete in the current runtime (local{" "}
-        <code className="text-xs">.env.local</code> or Vercel Environment
-        Variables).
+        This screen appears when required auth env vars are incomplete in the
+        current runtime (local <code className="text-xs">.env.local</code> or
+        Vercel Environment Variables). Email/password needs{" "}
+        <code className="text-xs">AUTH_SECRET</code>; Google is optional.
       </p>
       <ol className="mt-5 list-decimal space-y-3 pl-5 text-sm leading-7 text-foreground">
         <li>
-          Set all three in <code className="text-xs">.env.local</code>{" "}
+          Set in <code className="text-xs">.env.local</code>{" "}
           <strong>and</strong> Vercel → Settings → Environment Variables:
           <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
             <li>
-              <code className="text-xs">AUTH_SECRET</code> — {hints.secretLabel}
+              <code className="text-xs">AUTH_SECRET</code> — {hints.secretLabel}{" "}
+              (required)
             </li>
             <li>
               <code className="text-xs">AUTH_GOOGLE_ID</code> —{" "}
-              {hints.googleIdLabel}
+              {hints.googleIdLabel} (optional, for Google sign-in)
             </li>
             <li>
               <code className="text-xs">AUTH_GOOGLE_SECRET</code> —{" "}
-              {hints.googleSecretLabel}
+              {hints.googleSecretLabel} (optional)
             </li>
           </ul>
         </li>

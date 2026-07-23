@@ -12,7 +12,7 @@ export function GoogleSignInButton({
   return (
     <button
       type="button"
-      onClick={() => authClient.signIn("google", { callbackUrl })}
+      onClick={() => authClient.signIn("google", callbackUrl)}
       className="flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-white px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-muted dark:bg-[#131318]"
     >
       <GoogleIcon />

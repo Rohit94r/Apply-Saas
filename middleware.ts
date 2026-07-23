@@ -1,12 +1,12 @@
 import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import { authConfig } from "@/lib/auth/auth.config";
-import { isGoogleAuthConfigured } from "@/lib/auth-config";
+import { isAuthConfigured } from "@/lib/auth-config";
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((request) => {
-  if (!isGoogleAuthConfigured()) {
+  if (!isAuthConfigured()) {
     return NextResponse.next();
   }
 

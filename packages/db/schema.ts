@@ -11,14 +11,21 @@ import {
   uuid
 } from "drizzle-orm/pg-core";
 
-/** Auth-provider user id (Google account id from Auth.js JWT). */
+/**
+ * Auth-provider user id from Auth.js JWT.
+ * Google OAuth: Google `sub` / providerAccountId.
+ * Email+password: app-generated UUID (stable across sessions).
+ * Google-only users have null `passwordHash`.
+ */
 export const users = pgTable(
   "users",
   {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: text("user_id").notNull().unique(),
     name: text("name").notNull(),
-    email: text("email").notNull(),
+    email: text("email").notNull().unique(),
+    /** bcrypt hash; null for Google-only accounts */
+    passwordHash: text("password_hash"),
     image: text("image"),
     subscriptionPlan: text("subscription_plan", { enum: ["free", "pro"] })
       .notNull()

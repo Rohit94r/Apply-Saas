@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import {
   getGoogleClientId,
   getGoogleClientSecret,
+  isAuthConfigured,
   isGoogleAuthConfigured
 } from "@/lib/auth-config";
 
@@ -24,7 +25,7 @@ function googleProviders() {
 
 /**
  * Edge-safe Auth.js config (no DB / Node-only imports).
- * Used by middleware. Full callbacks with DB live in `server.ts`.
+ * Used by middleware. Credentials provider + DB callbacks live in `server.ts`.
  */
 export const authConfig = {
   providers: googleProviders(),
@@ -42,7 +43,7 @@ export const authConfig = {
       if (!pathname.startsWith("/dashboard")) {
         return true;
       }
-      if (!isGoogleAuthConfigured()) {
+      if (!isAuthConfigured()) {
         return true;
       }
       return Boolean(auth?.user);
@@ -64,3 +65,6 @@ export const authConfig = {
   },
   trustHost: true
 } satisfies NextAuthConfig;
+
+/** Re-export for callers that previously imported from this module. */
+export { isGoogleAuthConfigured };
