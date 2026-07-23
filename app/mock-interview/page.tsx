@@ -6,9 +6,9 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
-const title = "Mock Interview Online Free — AI Practice | Apply";
+const title = "Mock Interview Free — AI Practice Online | Apply";
 const description =
-  "Free mock interview practice online for campus placements — AI voice interviewer, coding rounds, scored feedback, and unlimited interview practice for freshers. Start free on Apply.";
+  "Mock interview free online for campus placements — AI voice, coding rounds, scored feedback. Unlimited mock interview practice for freshers. Start free on Apply.";
 
 export const metadata: Metadata = {
   title: {
@@ -30,6 +30,8 @@ export const metadata: Metadata = {
     "coding mock interview practice",
     "free mock interview for students",
     "mock interview practice online free",
+    "mock interviews",
+    "AI mock interview",
     "AI interviewer practice"
   ],
   alternates: {
@@ -193,36 +195,36 @@ const features = [
 
 const relatedGuides = [
   {
-    href: "/blog/best-mock-interview-placement-prep-platforms",
-    label: "Best mock interview platforms for campus placements"
+    href: "/blog/mock-interview-practice-online-free",
+    label: "Mock interview practice online free"
+  },
+  {
+    href: "/blog/mock-interviews-for-freshers",
+    label: "Mock interviews for freshers"
+  },
+  {
+    href: "/blog/interview-preparation-for-freshers",
+    label: "Interview preparation for freshers"
   },
   {
     href: "/blog/mock-interview-practice-online-guide",
     label: "Mock interview practice online: fresher guide"
   },
   {
-    href: "/blog/unlimited-interview-practice-online",
-    label: "Unlimited interview practice online (free)"
-  },
-  {
-    href: "/blog/mock-interview-online-free-practice-2026",
-    label: "Mock interview online free for placements"
+    href: "/blog/best-mock-interview-placement-prep-platforms",
+    label: "Best mock interview platforms for campus placements"
   },
   {
     href: "/blog/ai-mock-interview-free-for-freshers-2026",
     label: "AI mock interview free for freshers"
   },
   {
-    href: "/blog/online-interview-practice-free-india",
-    label: "Free online interview practice in India"
+    href: "/blog/unlimited-interview-practice-online",
+    label: "Unlimited interview practice online (free)"
   },
   {
-    href: "/blog/ai-mock-interview-practice-campus-placements",
-    label: "AI mock interview practice for campus placements"
-  },
-  {
-    href: "/blog/best-ai-resume-builder-students-india",
-    label: "Best AI resume builder for students in India"
+    href: "/blog/engineering-student-resume-template",
+    label: "Engineering student resume free template"
   }
 ];
 
@@ -240,15 +242,14 @@ export default function MockInterviewMarketingPage() {
       <main>
         <section className="border-b border-border/70 py-20">
           <div className="section-shell max-w-4xl">
-            <p className="fine-label mb-5">Mock interview practice online</p>
+            <p className="fine-label mb-5">Free mock interview practice online</p>
             <h1 className="font-serif text-5xl leading-[1.02] text-primary sm:text-6xl">
-              Mock interview practice online — free AI for campus placements.
+              Mock interview — free AI practice online for campus placements.
             </h1>
             <p className="mt-6 text-base leading-8 text-muted-foreground">
-              Stop reading answers silently. Practice a live AI mock interview —
-              voice questions, spoken answers, scored feedback, and optional coding
-              rounds like company OA / previous year questions. Unlimited interview
-              practice for freshers. Free to start.
+              Free mock interview for Indian freshers: AI voice questions, spoken
+              answers, scored feedback, and optional coding rounds. Unlimited mock
+              interview practice — start free after Google sign-in.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">

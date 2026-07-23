@@ -224,11 +224,11 @@ export const blogPosts = [
   },
   {
     slug: "engineering-student-resume-template",
-    title: "Engineering Student Resume: Free Template India",
+    title: "Engineering Student Resume Free Template India",
     description:
-      "Engineering student resume template for Indian campus placements — section order, project bullets, ATS-safe format. Build free on Apply.",
+      "Engineering student resume free template for Indian campus placements — section order, project bullets, ATS-safe format. Build free on Apply.",
     publishedAt: "2026-05-24",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "5 min read",
     category: "Templates",
     targetKeyword: "engineering student resume",
@@ -239,13 +239,15 @@ export const blogPosts = [
       "free engineering resume template India",
       "IIT student resume template",
       "college student resume builder",
-      "ATS resume template for engineering students"
+      "ATS resume template for engineering students",
+      "resume for engineering student India"
     ],
     excerpt:
       "Use this engineering resume structure when you need a clean base resume for internships, campus placements, and fresher jobs.",
     workflowLinks: [
       { label: "Build this template in Apply", href: "/dashboard/generate" },
       { label: "Resume engineering student guide", href: "/blog/resume-for-engineering-students-india-template" },
+      { label: "Resume for student with no experience", href: "/blog/resume-with-no-experience-student" },
       { label: "Free resume maker for students", href: "/blog/free-resume-maker-for-students-india" },
       { label: "Practice mock interviews", href: "/mock-interview" }
     ],
@@ -354,15 +356,16 @@ export const blogPosts = [
     slug: "ai-mock-interview-practice-campus-placements",
     title: "AI Mock Interview Practice Online for Freshers",
     description:
-      "AI mock interview practice online for Indian campus placements — voice answers, coding rounds, scored feedback. Free unlimited practice on Apply.",
+      "AI mock interview free for freshers — voice answers, coding rounds, scored feedback. Unlimited mock interview practice online on Apply.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "7 min read",
     category: "Mock interviews",
     targetKeyword: "AI mock interview",
     keywords: [
       "AI mock interview",
       "AI mock interview for freshers",
+      "mock interview",
       "mock interview practice online",
       "mock interview practice",
       "campus placement mock interview",
@@ -370,7 +373,8 @@ export const blogPosts = [
       "coding mock interview practice",
       "free mock interview for students",
       "free AI mock interview online",
-      "unlimited interview practice"
+      "unlimited interview practice",
+      "mock interviews"
     ],
     excerpt:
       "A good mock interview should feel like a real call: you on camera, an interviewer speaking questions, live captions, optional coding, and a clear score when you hang up.",
@@ -809,16 +813,17 @@ export const blogPosts = [
   },
   {
     slug: "interview-tips-for-freshers-first-job",
-    title: "Interview Tips for Freshers: How to Crack Your First Job Interview in India",
+    title: "Interview Tips for Freshers: First Job in India",
     description:
-      "Practical interview tips for freshers — HR round answers, technical round strategy, dress code, body language, and how to handle nervousness in your first campus placement interview.",
+      "Interview tips for freshers — HR answers, technical strategy, dress code, and nervousness. Pair with free mock interview practice on Apply.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-16",
+    updatedAt: "2026-07-23",
     readingTime: "9 min",
     category: "Interview Tips",
     targetKeyword: "interview tips for freshers",
     keywords: [
       "interview tips for freshers",
+      "interview preparation for freshers",
       "first job interview tips India",
       "HR interview questions for freshers",
       "campus placement interview tips",
@@ -831,6 +836,12 @@ export const blogPosts = [
     ],
     excerpt:
       "Your first job interview is stressful. Here are practical, proven tips for freshers — what to say in HR rounds, how to approach technical questions, and how to project confidence even when nervous.",
+    workflowLinks: [
+      { label: "Interview preparation for freshers", href: "/blog/interview-preparation-for-freshers" },
+      { label: "Start free mock interview", href: "/mock-interview" },
+      { label: "Browse company PYQs", href: "/pyqs" },
+      { label: "Build ATS resume", href: "/dashboard/generate" }
+    ],
     sections: [
       {
         heading: "Before the interview: preparation checklist",
@@ -1887,15 +1898,16 @@ export const blogPosts = [
   },
   {
     slug: "resume-with-no-experience-student",
-    title: "Resume with No Experience: Student Guide & Template",
+    title: "Resume for Student with No Experience (Free)",
     description:
-      "Write a student resume with no work experience — projects, skills, coursework, and a free ATS template. Build and download on Apply.",
+      "Resume for student with no experience — projects, skills, coursework, and a free ATS template for Indian campus placements. Build on Apply.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "8 min",
     category: "Fresher Resumes",
-    targetKeyword: "resume with no experience student",
+    targetKeyword: "resume for student with no experience",
     keywords: [
+      "resume for student with no experience",
       "resume with no experience student",
       "how to write resume with no work experience",
       "resume for college student no experience",
@@ -1913,6 +1925,7 @@ export const blogPosts = [
       { label: "Build resume free", href: "/dashboard/generate" },
       { label: "Engineering student resume", href: "/blog/engineering-student-resume-template" },
       { label: "Free resume maker guide", href: "/blog/free-resume-maker-for-students-india" },
+      { label: "Interview preparation for freshers", href: "/blog/interview-preparation-for-freshers" },
       { label: "Practice mock interviews", href: "/mock-interview" }
     ],
     sections: [
@@ -2598,16 +2611,17 @@ export const blogPosts = [
   },
   {
     slug: "mock-interview-online-free-practice-2026",
-    title: "Mock Interview Online Free: Practice for Placements",
+    title: "Mock Interview Online Free for Campus Placements",
     description:
-      "Free mock interview online for campus placements — AI voice, coding rounds, HR questions, scored feedback. Start unlimited practice on Apply.",
+      "Mock interview online free for campus placements — AI voice, coding rounds, HR questions, scored feedback. Unlimited practice on Apply.",
     publishedAt: "2026-07-20",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "10 min",
     category: "Mock Interview",
     targetKeyword: "mock interview online",
     keywords: [
       "mock interview online",
+      "mock interview",
       "mock interview practice",
       "free online interview practice",
       "mock interview practice online free",
@@ -2616,13 +2630,18 @@ export const blogPosts = [
       "virtual mock interview free",
       "campus placement mock interview online",
       "how to practice mock interview online",
-      "best free mock interview tool India"
+      "best free mock interview tool India",
+      "mock interviews"
     ],
     excerpt:
       "Mock interview practice online is the fastest way to prepare for campus placements. Here's how to use free AI mock interview tools — voice questions, coding rounds, and scored feedback.",
     workflowLinks: [
       { label: "Start free mock interview", href: "/mock-interview" },
       { label: "Browse company PYQs", href: "/pyqs" },
+      {
+        label: "Mock interview practice online free",
+        href: "/blog/mock-interview-practice-online-free"
+      },
       {
         label: "Unlimited interview practice",
         href: "/blog/unlimited-interview-practice-online"
@@ -2721,17 +2740,18 @@ export const blogPosts = [
   },
   {
     slug: "ai-mock-interview-free-for-freshers-2026",
-    title: "AI Mock Interview Free for Freshers: Practice Guide",
+    title: "AI Mock Interview Free for Freshers Practice",
     description:
       "AI mock interview free for freshers — how AI interview practice works, why it beats reading questions, and how to start free on Apply.",
     publishedAt: "2026-07-20",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "9 min",
     category: "Mock Interview",
     targetKeyword: "AI mock interview",
     keywords: [
       "AI mock interview",
       "AI mock interview for freshers",
+      "ai mock interview",
       "AI interview practice",
       "AI interviewer online",
       "artificial intelligence mock interview",
@@ -2739,13 +2759,18 @@ export const blogPosts = [
       "AI mock interview India",
       "AI interview simulator",
       "AI interview preparation tool",
-      "free AI mock interview for students"
+      "free AI mock interview for students",
+      "mock interview"
     ],
     excerpt:
       "AI mock interviews are replacing static interview prep. Here's how AI interview practice works, why it's more effective than reading questions, and how to use it free.",
     workflowLinks: [
       { label: "Start AI mock interview", href: "/mock-interview" },
       { label: "Browse company PYQs", href: "/pyqs" },
+      {
+        label: "Mock interview practice online free",
+        href: "/blog/mock-interview-practice-online-free"
+      },
       {
         label: "Mock interview practice guide",
         href: "/blog/mock-interview-practice-online-guide"
@@ -3082,11 +3107,11 @@ export const blogPosts = [
   },
   {
     slug: "resume-for-engineering-students-india-template",
-    title: "Resume Engineering Student: Free Template India",
+    title: "Resume Engineering Student Free Template India",
     description:
-      "Resume for engineering students in India — format, CGPA, projects, skills, free template, and tips for TCS, Infosys, Amazon campus placements.",
+      "Resume engineering student free template for India — format, CGPA, projects, skills, and tips for TCS, Infosys, Amazon campus placements.",
     publishedAt: "2026-07-20",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "10 min",
     category: "Fresher Resumes",
     targetKeyword: "resume engineering student",
@@ -3111,6 +3136,11 @@ export const blogPosts = [
         label: "Engineering resume template",
         href: "/blog/engineering-student-resume-template"
       },
+      {
+        label: "Engineering student resume examples",
+        href: "/blog/engineering-student-resume-examples-india"
+      },
+      { label: "Resume for student with no experience", href: "/blog/resume-with-no-experience-student" },
       { label: "Free resume maker for students", href: "/blog/free-resume-maker-for-students-india" },
       { label: "Practice mock interviews", href: "/mock-interview" }
     ],
@@ -3448,17 +3478,18 @@ export const blogPosts = [
   },
   {
     slug: "mock-interview-practice-online-guide",
-    title: "Mock Interview Practice Online: Fresher Guide India",
+    title: "Mock Interview Practice Online Free for Freshers",
     description:
-      "Mock interview practice online for Indian freshers — how to run AI voice mocks, coding rounds, and a weekly plan before campus placements.",
+      "Mock interview practice online free for Indian freshers — AI voice mocks, coding rounds, and a weekly plan before campus placements.",
     publishedAt: "2026-07-21",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "9 min",
     category: "Mock Interview",
     targetKeyword: "mock interview practice",
     keywords: [
       "mock interview practice",
       "mock interview practice online",
+      "mock interview practice online free",
       "mock interview",
       "mock interview online",
       "online mock interview practice",
@@ -3466,13 +3497,22 @@ export const blogPosts = [
       "how to practice mock interview",
       "campus placement mock interview practice",
       "AI mock interview practice",
-      "free mock interview practice India"
+      "free mock interview practice India",
+      "mock interviews"
     ],
     excerpt:
       "Mock interview practice online is the bridge between reading questions and speaking answers under pressure. Here's a practical fresher workflow for Indian campus placements.",
     workflowLinks: [
       { label: "Start mock interview practice", href: "/mock-interview" },
       { label: "Browse company PYQs", href: "/pyqs" },
+      {
+        label: "Mock interview practice online free",
+        href: "/blog/mock-interview-practice-online-free"
+      },
+      {
+        label: "Interview preparation for freshers",
+        href: "/blog/interview-preparation-for-freshers"
+      },
       {
         label: "Unlimited interview practice",
         href: "/blog/unlimited-interview-practice-online"
@@ -3542,11 +3582,11 @@ export const blogPosts = [
   },
   {
     slug: "engineering-student-resume-examples-india",
-    title: "Engineering Student Resume Examples India (Free)",
+    title: "Engineering Student Resume Examples India Free",
     description:
-      "Engineering student resume examples for India — CS/IT samples, project bullets, skills layout, and ATS tips. Build free on Apply.",
+      "Engineering student resume examples for India — CS/IT samples, no-experience project bullets, ATS tips. Build free on Apply.",
     publishedAt: "2026-07-21",
-    updatedAt: "2026-07-21",
+    updatedAt: "2026-07-23",
     readingTime: "8 min",
     category: "Fresher Resumes",
     targetKeyword: "engineering student resume",
@@ -3560,7 +3600,8 @@ export const blogPosts = [
       "B.Tech resume examples India",
       "campus placement resume examples",
       "engineering resume project examples",
-      "student resume examples for placements"
+      "student resume examples for placements",
+      "resume for student with no experience"
     ],
     excerpt:
       "Copy-ready engineering student resume examples for Indian campus placements — structure, project bullets, and company-specific tweaks without fake metrics.",
@@ -3573,6 +3614,10 @@ export const blogPosts = [
       {
         label: "Resume engineering student guide",
         href: "/blog/resume-for-engineering-students-india-template"
+      },
+      {
+        label: "Engineering resume with no experience",
+        href: "/blog/engineering-student-resume-no-experience"
       },
       { label: "Practice mock interviews", href: "/mock-interview" }
     ],
@@ -3935,6 +3980,14 @@ export const blogPosts = [
     workflowLinks: [
       { label: "Start free mock interview", href: "/mock-interview" },
       {
+        label: "Mock interview practice online free",
+        href: "/blog/mock-interview-practice-online-free"
+      },
+      {
+        label: "Mock interviews for freshers",
+        href: "/blog/mock-interviews-for-freshers"
+      },
+      {
         label: "Mock interview practice guide",
         href: "/blog/mock-interview-practice-online-guide"
       },
@@ -4003,7 +4056,341 @@ export const blogPosts = [
       {
         heading: "Start mock interview practice on Apply",
         body: [
-          "Open apply.neexmeet.com/mock-interview, complete one short session today, then read /blog/mock-interview-practice-online-guide for a longer practice plan. For resume-side comparisons, see /blog/best-ai-resume-builder-students-india."
+          "Open apply.neexmeet.com/mock-interview, complete one short session today, then read /blog/mock-interview-practice-online-free for a free long-tail practice plan. For interview preparation for freshers, see /blog/interview-preparation-for-freshers. For resume-side comparisons, see /blog/best-ai-resume-builder-students-india."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "interview-preparation-for-freshers",
+    title: "Interview Preparation for Freshers: Free Plan India",
+    description:
+      "Interview preparation for freshers in India — 2-week campus placement plan covering resume, PYQs, HR answers, and free mock interview practice.",
+    publishedAt: "2026-07-23",
+    updatedAt: "2026-07-23",
+    readingTime: "9 min",
+    category: "Interview Prep",
+    targetKeyword: "interview preparation for freshers",
+    keywords: [
+      "interview preparation for freshers",
+      "interview preparation for freshers India",
+      "campus placement interview preparation",
+      "how to prepare for interview as fresher",
+      "fresher interview preparation plan",
+      "first job interview preparation India",
+      "technical interview preparation freshers",
+      "HR interview preparation for freshers",
+      "mock interview for interview preparation",
+      "placement interview preparation guide"
+    ],
+    excerpt:
+      "Interview preparation for freshers is not cramming 200 questions the night before. It is a short, repeatable loop: truthful resume, company PYQs, spoken answers, and scored mock interviews.",
+    workflowLinks: [
+      { label: "Start free mock interview", href: "/mock-interview" },
+      { label: "Build ATS resume", href: "/dashboard/generate" },
+      { label: "Browse company PYQs", href: "/pyqs" },
+      {
+        label: "Mock interviews for freshers",
+        href: "/blog/mock-interviews-for-freshers"
+      },
+      {
+        label: "Interview tips for first job",
+        href: "/blog/interview-tips-for-freshers-first-job"
+      }
+    ],
+    sections: [
+      {
+        heading: "What interview preparation for freshers actually means",
+        body: [
+          "Campus interview preparation for freshers has three layers: getting shortlisted (ATS resume), clearing the written / OA (aptitude + coding PYQs), and speaking clearly in HR + technical rounds.",
+          "Most students over-index on reading question PDFs and under-practice speaking. Interviewers hire people who can explain projects under pressure — not people who only recognize questions on paper.",
+          "Apply pairs all three layers: resume at /dashboard/generate, company PYQs at /pyqs, and free mock interview practice at /mock-interview."
+        ]
+      },
+      {
+        heading: "Two-week interview preparation plan for freshers",
+        body: [
+          "Days 1–2: Rewrite one honest one-page resume. Lead with projects if you have no internship. Use the no-experience student resume guide if needed.",
+          "Days 3–5: Solve 8–12 previous year coding questions for your top two companies at /pyqs. Write approaches out loud, not only in silence.",
+          "Days 6–8: Run three mock interviews — one HR, one technical with coding, one mixed — for the same company and role.",
+          "Days 9–11: Fix the weakest answer from feedback. Rebuild one project story using STAR (Situation, Task, Action, Result).",
+          "Days 12–14: Two more mocks for your second company, plus one full resume walk-through timed to 90 seconds."
+        ]
+      },
+      {
+        heading: "Fresher interview preparation checklist (HR + technical)",
+        body: [
+          "HR: 90-second introduction, why this company, one strength with proof, one weakness with a fix, and one conflict/teamwork STAR story.",
+          "Technical: explain every project on your resume, revise OOP + SQL basics, and practice one Easy coding problem while narrating.",
+          "Logistics: formal or smart-casual clothes, quiet room for online rounds, charged laptop, and company name on the resume file.",
+          "Honesty rule: never claim frameworks you cannot defend. Interviewers ask follow-ups; fake skills lose offers."
+        ]
+      },
+      {
+        heading: "Common interview preparation mistakes for freshers",
+        body: [
+          "Memorizing scripts word-for-word — panels notice. Memorize points, not paragraphs.",
+          "Skipping mock interviews until the night before — speaking skill needs reps.",
+          "Preparing for five companies at once — depth on two drives beats shallow prep on ten.",
+          "Ignoring the resume — if you cannot explain a bullet, delete or rewrite it before the call.",
+          "Only reading aptitude PDFs — pair written prep with spoken mock interview practice."
+        ]
+      },
+      {
+        heading: "How Apply helps interview preparation for freshers",
+        body: [
+          "Upload or build an ATS resume, tailor it to a real JD, then practice the same company aloud in a Meet-style AI mock interview.",
+          "Use scored feedback to pick one weak answer per day. Combine with company PYQs so coding and communication improve together.",
+          "Start free: open /mock-interview after Google sign-in, browse /pyqs for your drive, and keep the resume loop at /dashboard/generate."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "mock-interview-practice-online-free",
+    title: "Mock Interview Practice Online Free for Students",
+    description:
+      "Mock interview practice online free for Indian students — start AI voice mocks, optional coding, scored feedback. Unlimited sessions on Apply.",
+    publishedAt: "2026-07-23",
+    updatedAt: "2026-07-23",
+    readingTime: "8 min",
+    category: "Mock Interview",
+    targetKeyword: "mock interview practice online free",
+    keywords: [
+      "mock interview practice online free",
+      "mock interview practice",
+      "mock interview online",
+      "mock interview",
+      "free mock interview practice online",
+      "online mock interview free for students",
+      "AI mock interview free",
+      "free online mock interview India",
+      "campus placement mock interview free",
+      "unlimited free mock interview practice"
+    ],
+    excerpt:
+      "You can do mock interview practice online free without booking a coach. Speak answers aloud, enable coding when ready, and use scored feedback before campus week.",
+    workflowLinks: [
+      { label: "Start free mock interview", href: "/mock-interview" },
+      { label: "Browse company PYQs", href: "/pyqs" },
+      { label: "Build ATS resume", href: "/dashboard/generate" },
+      {
+        label: "Weekly practice guide",
+        href: "/blog/mock-interview-practice-online-guide"
+      },
+      {
+        label: "Mock interviews for freshers",
+        href: "/blog/mock-interviews-for-freshers"
+      }
+    ],
+    sections: [
+      {
+        heading: "What “mock interview practice online free” should include",
+        body: [
+          "Free practice is useful only if you speak answers, not if you only read a chatbot reply. Prefer voice questions, timed turns, and feedback you can act on tomorrow.",
+          "Apply’s mock interview at /mock-interview is free to start after Google sign-in. Sessions stay focused (about 5–10 questions) so you can run several in a week.",
+          "Optional coding rounds let you rehearse OA-style pressure without leaving the same room."
+        ]
+      },
+      {
+        heading: "How to start mock interview practice online free today",
+        body: [
+          "1. Open apply.neexmeet.com/mock-interview and sign in with Google.",
+          "2. Enter one target company and role (for example TCS System Engineer or Amazon SDE Intern).",
+          "3. Choose HR, technical, or mixed. Enable coding only after you can solve a few Easy PYQs for that company at /pyqs.",
+          "4. Speak every answer. End the call, note one weak answer, and re-run tomorrow with the same company.",
+          "5. Keep volume high: unlimited sessions beat one long cram the night before the drive."
+        ]
+      },
+      {
+        heading: "Free practice loop that compounds",
+        body: [
+          "Morning: 2 company previous year coding questions at /pyqs.",
+          "Afternoon: one free mock interview for the same company and role.",
+          "Evening: fix the resume bullet you stumbled on at /dashboard/generate.",
+          "Repeat for your top two drives. Depth beats switching tools every day."
+        ]
+      },
+      {
+        heading: "Common mistakes on free online mock interviews",
+        body: [
+          "Typing answers instead of speaking — real interviews are spoken.",
+          "Changing company every session — you never learn patterns.",
+          "Ignoring scored feedback — practice without correction plateaus.",
+          "Enabling Hard coding on day one — start Easy, then raise difficulty.",
+          "Treating free practice as entertainment — treat it like a real shortlist round."
+        ]
+      },
+      {
+        heading: "Start free mock interview practice on Apply",
+        body: [
+          "Open /mock-interview, complete one short free session today, then follow the longer weekly plan at /blog/mock-interview-practice-online-guide.",
+          "For full interview preparation for freshers (resume + PYQs + speaking), read /blog/interview-preparation-for-freshers."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "mock-interviews-for-freshers",
+    title: "Mock Interviews for Freshers: Free Practice Guide",
+    description:
+      "Mock interviews for freshers — why they matter, how many to do, HR vs technical formats, and free AI practice for Indian campus placements.",
+    publishedAt: "2026-07-23",
+    updatedAt: "2026-07-23",
+    readingTime: "8 min",
+    category: "Mock Interview",
+    targetKeyword: "mock interviews",
+    keywords: [
+      "mock interviews",
+      "mock interview",
+      "mock interviews for freshers",
+      "mock interviews for campus placements",
+      "free mock interviews online",
+      "how many mock interviews before placement",
+      "HR mock interviews for freshers",
+      "technical mock interviews for students",
+      "AI mock interviews India",
+      "online mock interviews free"
+    ],
+    excerpt:
+      "Mock interviews train delivery under pressure. Freshers who speak answers aloud before campus week usually sound clearer than peers who only read PDFs.",
+    workflowLinks: [
+      { label: "Start free mock interviews", href: "/mock-interview" },
+      { label: "Company PYQs library", href: "/pyqs" },
+      { label: "Build ATS resume", href: "/dashboard/generate" },
+      {
+        label: "Mock interview practice online free",
+        href: "/blog/mock-interview-practice-online-free"
+      },
+      {
+        label: "Interview preparation for freshers",
+        href: "/blog/interview-preparation-for-freshers"
+      }
+    ],
+    sections: [
+      {
+        heading: "Why mock interviews matter for freshers",
+        body: [
+          "Reading “tell me about yourself” silently is not the same as saying it to an interviewer. Mock interviews train pace, structure, recovery when you blank, and thinking aloud on coding turns.",
+          "Most Indian campus drives still include HR + technical panels (and often a coding OA). Mock interviews let you rehearse the speaking half before the real shortlist.",
+          "Apply’s AI room at /mock-interview mirrors a light Google Meet call — you on camera, interviewer voice, live captions, optional coding, scored feedback."
+        ]
+      },
+      {
+        heading: "How many mock interviews should freshers do",
+        body: [
+          "Minimum: 3 mock interviews before your first real campus interview — enough to stop freezing on the introduction.",
+          "Recommended: 5–8 sessions over two weeks for service companies (TCS, Infosys Ninja, Wipro).",
+          "Product / premium tracks (Amazon, Infosys SP/DSE, PhonePe): 10+ with coding enabled, paired with company PYQs at /pyqs.",
+          "Quality rule: same company for consecutive sessions beats random company-hopping."
+        ]
+      },
+      {
+        heading: "Types of mock interviews to schedule",
+        body: [
+          "HR mock interviews: introduction, strengths, weaknesses, why this company — practice STAR stories out loud.",
+          "Technical mock interviews: projects, OOP, SQL, and one coding problem with narration.",
+          "Mixed mock interviews: closest to many campus same-day loops.",
+          "Coding-enabled mock interviews: editor + tests inside the session for OA-style pressure."
+        ]
+      },
+      {
+        heading: "How to run mock interviews without memorizing",
+        body: [
+          "After each session, write one weak answer and one strong answer in your own words — do not copy the AI phrasing.",
+          "Rewrite the weak answer as three bullet points, then re-run a short mock focused on that topic the next day.",
+          "Keep your resume truthful. If a mock question exposes a fake skill line, delete it before the real drive."
+        ]
+      },
+      {
+        heading: "Start free mock interviews on Apply",
+        body: [
+          "Open apply.neexmeet.com/mock-interview, sign in with Google, pick company and role, and start your first session free.",
+          "Pair mock interviews with PYQs at /pyqs and an ATS resume at /dashboard/generate. For a full prep calendar, use /blog/interview-preparation-for-freshers."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "engineering-student-resume-no-experience",
+    title: "Engineering Student Resume with No Experience",
+    description:
+      "Engineering student resume with no experience — project-first format, skills, coursework, and free ATS tips for Indian campus placements.",
+    publishedAt: "2026-07-23",
+    updatedAt: "2026-07-23",
+    readingTime: "8 min",
+    category: "Fresher Resumes",
+    targetKeyword: "engineering student resume",
+    keywords: [
+      "engineering student resume",
+      "resume engineering student",
+      "engineering student resume with no experience",
+      "resume for student with no experience",
+      "engineering fresher resume no internship",
+      "B.Tech resume with only projects",
+      "first year engineering student resume",
+      "second year engineering resume India",
+      "campus placement resume no experience",
+      "ATS engineering resume for freshers"
+    ],
+    excerpt:
+      "No internship yet? An engineering student resume still works if projects, coursework, and skills are framed clearly for campus placements.",
+    workflowLinks: [
+      { label: "Build engineering resume free", href: "/dashboard/generate" },
+      {
+        label: "Engineering student resume template",
+        href: "/blog/engineering-student-resume-template"
+      },
+      {
+        label: "Resume for student with no experience",
+        href: "/blog/resume-with-no-experience-student"
+      },
+      {
+        label: "Resume engineering student guide",
+        href: "/blog/resume-for-engineering-students-india-template"
+      },
+      { label: "Practice mock interviews", href: "/mock-interview" },
+      { label: "Browse company PYQs", href: "/pyqs" }
+    ],
+    sections: [
+      {
+        heading: "Engineering student resume when you have no experience",
+        body: [
+          "Recruiters hiring freshers do not expect two years of work history. They look for fundamentals, 1–2 explainable projects, and honest skills.",
+          "Treat projects as experience: name, tech stack, what you built, what you personally did, and a GitHub link with a readable README.",
+          "Keep the resume one page, single column, ATS-safe — no photo, no multi-column Canva layout for NQT / InfyTQ portals."
+        ]
+      },
+      {
+        heading: "Section order for no-internship engineering resumes",
+        body: [
+          "Header → Education (with coursework) → Projects → Skills → Achievements / certifications. Skip empty Experience sections.",
+          "If you later get an internship, move Experience above Projects. Until then, projects carry the narrative.",
+          "CGPA as X.XX/10. Add 10th/12th only when a company form or TCS-style format requires it."
+        ]
+      },
+      {
+        heading: "Project bullet examples (truthful, interview-safe)",
+        body: [
+          "Built a campus event registration portal with Java and MySQL used by 200 classmates for fest sign-ups.",
+          "Implemented REST APIs in Node.js for a personal expense tracker; added JWT auth and deployed on free hosting.",
+          "Do not invent revenue or user metrics. Scope and your role beat fake percentages in interviews."
+        ]
+      },
+      {
+        heading: "Common mistakes on engineering resumes with no experience",
+        body: [
+          "Listing skills you only watched in a YouTube video — panels will ask follow-ups.",
+          "Using a two-page template filled with soft-skill fluff.",
+          "Hiding GitHub because the repo is messy — clean the README instead.",
+          "Sending the same resume to Amazon and TCS without keyword tailoring — use /dashboard/generate with the real JD."
+        ]
+      },
+      {
+        heading: "Build free, then practice the interview",
+        body: [
+          "Create the base engineering student resume on Apply at /dashboard/generate, then rehearse explaining every project in a free mock interview at /mock-interview.",
+          "For full templates and examples, see /blog/engineering-student-resume-template and /blog/engineering-student-resume-examples-india. For the general no-experience guide, see /blog/resume-with-no-experience-student."
         ]
       }
     ]

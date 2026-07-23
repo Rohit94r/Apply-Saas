@@ -14,13 +14,18 @@ export const metadata: Metadata = {
   description:
     "Campus placement guides: free AI mock interviews, company previous year coding questions, fresher salary India 2026, and ATS resume formats for IT companies.",
   keywords: [
+    "mock interview",
+    "mock interview practice online free",
+    "AI mock interview",
+    "interview preparation for freshers",
+    "engineering student resume",
+    "resume engineering student",
+    "resume for student with no experience",
     "free AI mock interview for freshers",
     "mock interview practice online",
     "unlimited interview practice",
     "free online interview practice",
     "free resume maker for students",
-    "resume engineering student",
-    "engineering student resume",
     "previous year coding questions",
     "fresher salary India IT companies",
     "ATS resume tips India",
@@ -65,20 +70,20 @@ const blogJsonLd = {
 
 const intentGuides = [
   {
-    label: "Best AI resume builder for students",
-    href: "/blog/best-ai-resume-builder-students-india"
+    label: "Mock interview practice online free",
+    href: "/blog/mock-interview-practice-online-free"
   },
   {
-    label: "Best free resume editor for placements",
-    href: "/blog/best-free-resume-editor-campus-placements"
+    label: "Interview preparation for freshers",
+    href: "/blog/interview-preparation-for-freshers"
   },
   {
-    label: "Best mock interview platforms compared",
-    href: "/blog/best-mock-interview-placement-prep-platforms"
+    label: "Engineering student resume (free)",
+    href: "/blog/engineering-student-resume-template"
   },
   {
-    label: "Start free mock interview practice",
-    href: "/blog/mock-interview-practice-online-guide"
+    label: "Resume for student with no experience",
+    href: "/blog/resume-with-no-experience-student"
   }
 ];
 
