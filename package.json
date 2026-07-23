@@ -32,6 +32,8 @@
     "openai": "^4.85.1",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^2.4.5",
+    "posthog-js": "^1.146.0",
+    "posthog-node": "^5.46.0",
     "puppeteer-core": "^24.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

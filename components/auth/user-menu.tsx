@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SignOut, UserCircle } from "@phosphor-icons/react";
+import posthog from "posthog-js";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ export function UserMenu({
 
   async function handleSignOut() {
     setSigningOut(true);
+    posthog.reset();
     try {
       await authClient.signOut({ callbackUrl: "/" });
       router.refresh();

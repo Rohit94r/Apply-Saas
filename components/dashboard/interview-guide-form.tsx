@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import posthog from "posthog-js";
 import {
   ArrowSquareOut,
   BookOpenText,
@@ -297,6 +298,14 @@ export function InterviewGuideForm({
       );
 
       setGuide(data.guide);
+      posthog.capture("interview_guide_created", {
+        company: form.company,
+        role: form.role,
+        experience_level: form.experienceLevel,
+        timeline: form.timeline,
+        focus_areas: focusAreas,
+        language: form.preferredLanguage
+      });
       toast.success("Interview prep created");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CheckCircle, QrCode, WhatsappLogo } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 import { FounderSupportCard } from "@/components/billing/founder-support-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,10 @@ export function UpgradeCheckout() {
       }
 
       setPricing(data);
+      posthog.capture("discount_code_applied", {
+        percent_off: data.percentOff,
+        amount_inr: data.amountInr
+      });
       toast.success(`Locked in — pay ₹${data.amountInr} on UPI`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "That code didn't work");
@@ -86,6 +91,10 @@ export function UpgradeCheckout() {
         throw new Error(data.error ?? "Payment flow failed");
       }
 
+      posthog.capture("upgrade_payment_initiated", {
+        amount_inr: pricing.amountInr,
+        has_discount_code: Boolean(pricing.code ?? discountCode.trim())
+      });
       toast.success("WhatsApp opened. Pro activates after payment is confirmed.");
       window.open(data.whatsappUrl, "_blank", "noopener,noreferrer");
       router.refresh();

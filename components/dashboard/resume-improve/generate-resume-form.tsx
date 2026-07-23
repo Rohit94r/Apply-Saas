@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import {
   CheckCircle,
   DownloadSimple,
@@ -437,6 +438,10 @@ export function GenerateResumeForm({
       setTitleDraft(data.masterResume.title);
       setSourceName(data.masterResume.sourceName ?? file.name);
       setEditingMaster(false);
+      posthog.capture("resume_imported", {
+        source_name: data.masterResume.sourceName ?? file.name,
+        file_type: file.name.split(".").pop()?.toLowerCase() ?? "unknown"
+      });
       toast.success(uploadMessage(file.name));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Upload failed");
@@ -506,9 +511,17 @@ export function GenerateResumeForm({
         "Resume generation failed"
       );
 
-      setPreview(toPreview(data.resume));
+      const tailoredPreview = toPreview(data.resume);
+      setPreview(tailoredPreview);
       setPreviewMode("after");
       setShowRefinePanel(false);
+      posthog.capture("resume_tailored", {
+        company: tailoredPreview.company,
+        role: tailoredPreview.role,
+        ats_score: tailoredPreview.atsScore,
+        before_ats_score: tailoredPreview.beforeAtsScore,
+        keyword_count: tailoredPreview.keywords.length
+      });
       toast.success("Tailored resume ready");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");
@@ -546,10 +559,15 @@ export function GenerateResumeForm({
         "Resume refinement failed"
       );
 
-      setPreview(toPreview(data.resume));
+      const refinedPreview = toPreview(data.resume);
+      setPreview(refinedPreview);
       setPreviewMode("after");
       setRefinePromptDraft("");
       setShowRefinePanel(false);
+      posthog.capture("resume_refined", {
+        resume_id: refinedPreview.id,
+        ats_score: refinedPreview.atsScore
+      });
       toast.success("Refinement applied");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");
@@ -607,6 +625,11 @@ export function GenerateResumeForm({
     const saved = await savePreview({ silent: true });
 
     if (saved) {
+      posthog.capture("resume_downloaded", {
+        resume_id: saved.id,
+        company: saved.company,
+        role: saved.role
+      });
       window.open(`/api/pdf?resumeId=${saved.id}`, "_blank", "noopener,noreferrer");
     }
   }

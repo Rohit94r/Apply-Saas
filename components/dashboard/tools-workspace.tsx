@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import posthog from "posthog-js";
 import {
   Camera,
   DownloadSimple,
@@ -146,6 +147,10 @@ export function ToolsWorkspace({
       });
 
       setCoverLetter(data.coverLetter);
+      posthog.capture("cover_letter_generated", {
+        has_company: Boolean(company.trim()),
+        has_role: Boolean(role.trim())
+      });
       toast.success("Cover letter generated");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");
@@ -165,6 +170,9 @@ export function ToolsWorkspace({
       });
 
       setCritique(data.critique);
+      posthog.capture("resume_critique_requested", {
+        ats_score: data.critique.atsScore
+      });
       toast.success("Resume critique generated");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");

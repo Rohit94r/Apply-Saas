@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { authClient } from "@/lib/auth/client";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/password-rules";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,7 @@ export function CredentialsAuthForm({
           setError(data.error || "Could not create your account.");
           return;
         }
+        posthog.capture("user_registered", { method: "email" });
       }
 
       const result = await authClient.signInWithCredentials({

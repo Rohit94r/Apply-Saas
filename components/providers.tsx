@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 import { SmokeCursor } from "@/components/smoke-cursor";
+import { PostHogIdentify } from "@/components/auth/posthog-identify";
 
 type Theme = "light" | "dark";
 
@@ -70,6 +71,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
+      <PostHogIdentify />
       <ThemeProvider>{children}</ThemeProvider>
     </SessionProvider>
   );

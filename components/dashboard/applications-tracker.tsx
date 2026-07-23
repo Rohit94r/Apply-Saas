@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 import { ArrowRight, PencilSimple, Plus, Trash } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,6 +101,17 @@ export function ApplicationsTracker({
         }
         return [data.application, ...prev];
       });
+      if (editingId) {
+        posthog.capture("application_updated", {
+          status: form.status,
+          company: form.company
+        });
+      } else {
+        posthog.capture("application_added", {
+          status: form.status,
+          company: form.company
+        });
+      }
       resetForm();
       toast.success(editingId ? "Application updated" : "Application added");
     } catch (error) {
@@ -119,6 +131,7 @@ export function ApplicationsTracker({
       }
       setItems((prev) => prev.filter((row) => row.id !== id));
       if (editingId === id) resetForm();
+      posthog.capture("application_deleted");
       toast.success("Deleted");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Delete failed");
