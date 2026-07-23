@@ -11,6 +11,8 @@ const columns = [
     links: [
       { label: "Tailor resume", href: "/dashboard/generate" },
       { label: "Mock interview", href: "/mock-interview" },
+      { label: "TCS mock interview", href: "/mock-interview/tcs" },
+      { label: "Freshers mock interview", href: "/mock-interview/freshers" },
       { label: "Company PYQs", href: "/pyqs" },
       { label: "My applications", href: "/dashboard/applications" },
       { label: "AI tools", href: "/dashboard/tools" },
@@ -25,6 +27,9 @@ const columns = [
     links: [
       { label: "Company PYQs library", href: "/pyqs" },
       { label: "Previous year coding questions guide", href: "/blog/company-previous-year-coding-questions-india" },
+      { label: "Mock interview practice online free", href: "/blog/mock-interview-practice-online-free" },
+      { label: "TCS NQT 2026", href: "/blog/tcs-nqt-2026" },
+      { label: "Fresher resume building India", href: "/blog/fresher-resume-building-india" },
       { label: "Best mock interview platforms", href: "/blog/best-mock-interview-placement-prep-platforms" },
       { label: "Best AI resume builder for students", href: "/blog/best-ai-resume-builder-students-india" },
       { label: "Best free resume editor for placements", href: "/blog/best-free-resume-editor-campus-placements" },

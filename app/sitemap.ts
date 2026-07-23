@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog";
 import { preparePages } from "@/lib/prepare";
-import { absoluteUrl, seoConfig } from "@/lib/seo";
+import { absoluteUrl, mockInterviewSubpages, seoConfig } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const latestBlogUpdate = new Date(
@@ -10,18 +10,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const latestPrepareUpdate = new Date(
     Math.max(...preparePages.map((page) => new Date(page.updatedAt).getTime()))
   );
+  const mockInterviewUpdated = new Date("2026-07-23");
   const publicRouteUpdates: Record<string, Date> = {
-    "/": new Date("2026-07-21"),
+    "/": mockInterviewUpdated,
     "/blog": latestBlogUpdate,
     "/prepare": latestPrepareUpdate,
     "/pyqs": new Date("2026-07-19"),
-    "/mock-interview": new Date("2026-07-21")
+    "/mock-interview": mockInterviewUpdated,
+    ...Object.fromEntries(
+      mockInterviewSubpages.map((route) => [route, mockInterviewUpdated])
+    )
   };
   const publicRoutes = seoConfig.publicRoutes.map((route) => ({
     url: absoluteUrl(route),
     lastModified: publicRouteUpdates[route],
     changeFrequency: "weekly" as const,
-    priority: route === "/" ? 1 : 0.9
+    priority:
+      route === "/"
+        ? 1
+        : route === "/mock-interview" || route.startsWith("/mock-interview/")
+          ? 0.95
+          : 0.9
   }));
   const blogRoutes = blogPosts.map((post) => ({
     url: absoluteUrl(`/blog/${post.slug}`),

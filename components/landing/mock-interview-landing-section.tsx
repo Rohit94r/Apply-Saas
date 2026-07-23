@@ -38,13 +38,13 @@ export function MockInterviewLandingSection() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild>
-              <Link href="/mock-interview">
-                Try mock interview
+              <Link href="/dashboard/mock-interview">
+                Start free mock interview
                 <ArrowRight className="h-4 w-4" weight="regular" />
               </Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/pyqs">Browse previous year questions</Link>
+              <Link href="/mock-interview">See how it works</Link>
             </Button>
           </div>
         </Reveal>

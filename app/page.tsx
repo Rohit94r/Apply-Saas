@@ -70,8 +70,8 @@ export default function Home() {
       <SiteHeader />
       <main>
         <HeroSection />
-        <PyqsSection />
         <MockInterviewLandingSection />
+        <PyqsSection />
         <ProductFeaturesSection />
         <CompanyPrepSection />
         <ComingSoonSection />

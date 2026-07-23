@@ -78,12 +78,20 @@ const intentGuides = [
     href: "/blog/interview-preparation-for-freshers"
   },
   {
-    label: "Engineering student resume (free)",
-    href: "/blog/engineering-student-resume-template"
+    label: "Fresher resume building India",
+    href: "/blog/fresher-resume-building-india"
   },
   {
-    label: "Resume for student with no experience",
-    href: "/blog/resume-with-no-experience-student"
+    label: "How to apply off campus",
+    href: "/blog/how-to-apply-off-campus-placement"
+  },
+  {
+    label: "TCS NQT 2026 guide",
+    href: "/blog/tcs-nqt-2026"
+  },
+  {
+    label: "Engineering student resume (free)",
+    href: "/blog/engineering-student-resume-template"
   }
 ];
 
@@ -119,7 +127,7 @@ export default function BlogPage() {
         <nav aria-label="Popular guide workflows" className="border-b border-border bg-white py-8">
           <div className="section-shell">
             <p className="fine-label mb-4">Start with your goal</p>
-            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {intentGuides.map((guide) => (
                 <li key={guide.href}>
                   <Link

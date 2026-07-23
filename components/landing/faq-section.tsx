@@ -9,8 +9,8 @@ export function FaqSection() {
         <Reveal>
           <SectionHeading
             eyebrow="FAQ"
-            title="Answers before students upload a resume."
-            description="Clear details for students and early-career applicants comparing resume builders and ATS tools — free to use worldwide."
+            title="Mock interviews, resumes, and campus prep — answered."
+            description="Clear details for students comparing free AI mock interview practice, ATS resume tools, and company PYQs — free to start worldwide."
           />
         </Reveal>
         <div className="mt-12 grid gap-4 md:grid-cols-2">

@@ -920,31 +920,32 @@ export const blogPosts = [
     ]
   },
   {
-    slug: "tcs-nqt-preparation-guide-2026",
-    title: "TCS NQT Preparation Guide 2026: Syllabus & Tips",
+    slug: "tcs-nqt-2026",
+    title: "TCS NQT 2026: Syllabus, Negative Marking & Plan",
     description:
-      "TCS NQT 2026 prep — aptitude, reasoning, verbal, coding syllabus, cut-off, and a 30-day plan. Practice PYQs and mock interviews on Apply.",
+      "TCS NQT 2026 guide — exam pattern, negative marking (0.25), syllabus, cut-offs, and a 30-day plan. Practice TCS PYQs and mock interviews on Apply.",
     publishedAt: "2026-07-16",
-    updatedAt: "2026-07-21",
-    readingTime: "11 min",
+    updatedAt: "2026-07-23",
+    readingTime: "12 min",
     category: "Company Prep",
-    targetKeyword: "TCS NQT preparation 2026",
+    targetKeyword: "TCS NQT 2026",
     keywords: [
+      "TCS NQT 2026",
       "TCS NQT preparation 2026",
       "TCS NQT syllabus",
+      "TCS NQT negative marking",
       "TCS NQT exam pattern",
       "TCS NQT cut off marks",
       "TCS NQT aptitude questions",
       "TCS NQT coding questions",
       "TCS NQT preparation tips",
-      "TCS national qualifier test preparation",
-      "TCS NQT previous year papers",
       "how to crack TCS NQT"
     ],
     excerpt:
-      "TCS NQT is the gateway to India's largest IT employer. Here is the complete 2026 preparation guide — syllabus, exam pattern, section-wise cut-off, coding topics, and a 30-day study plan.",
+      "TCS NQT 2026 is still the gateway to India's largest IT employer. This guide covers syllabus, negative marking, cut-offs, coding topics, and a 30-day plan — plus free TCS mock interview practice.",
     workflowLinks: [
       { label: "Browse TCS PYQs", href: "/pyqs" },
+      { label: "TCS interview practice", href: "/mock-interview/tcs" },
       { label: "TCS interview prep guide", href: "/prepare/tcs-interview-questions-2026" },
       { label: "TCS resume format", href: "/blog/tcs-resume-format-for-freshers" },
       { label: "Practice TCS mock interview", href: "/mock-interview" }
@@ -964,6 +965,15 @@ export const blogPosts = [
           "Foundation Section (mandatory for all): Verbal ability (15 questions, 10 min), Reasoning ability (15 questions, 25 min), Numerical ability (15 questions, 25 min). Total: 45 questions in 60 minutes.",
           "Advanced Section (optional, for Digital/Prime roles): Advanced quantitative + logical (15 questions, 25 min), Advanced coding (2 problems, 45 min). Total: 17 questions in 70 minutes.",
           "There is negative marking: 0.25 marks deducted for each wrong answer in the Foundation section. No negative marking in Advanced."
+        ]
+      },
+      {
+        heading: "TCS NQT negative marking — how to play it",
+        body: [
+          "Foundation negative marking is 0.25 per wrong answer. Random guessing across the paper can drop you below the cut-off even if you knew half the topics well.",
+          "Rule of thumb: attempt a question only if you can eliminate at least two options or are reasonably sure. Skip and return later if a quant problem burns more than ~90 seconds.",
+          "Advanced section does not carry the same Foundation penalty — but coding accuracy still decides Digital/Prime shortlists. Do not rush wrong submissions.",
+          "After each timed mock, review wrong attempts vs skipped questions. Improving skip discipline often raises scores faster than learning one new advanced topic."
         ]
       },
       {
@@ -998,7 +1008,7 @@ export const blogPosts = [
         body: [
           "After clearing NQT, you face 2 rounds: Technical + HR. Technical covers basic programming (C/Java/Python), OOP concepts, DBMS, and your project. HR covers behavioral questions.",
           "Prepare 2 projects thoroughly — TCS interviewers ask about your role, tech stack, and challenges faced.",
-          "Practice with Apply's AI mock interview at /mock-interview with company set to TCS for realistic preparation."
+          "Practice with Apply's AI mock interview at /mock-interview/tcs (or set company to TCS in /dashboard/mock-interview) for realistic preparation."
         ]
       },
       {
@@ -1011,9 +1021,9 @@ export const blogPosts = [
         ]
       },
       {
-        heading: "Start your TCS NQT prep free",
+        heading: "Start your TCS NQT 2026 prep free",
         body: [
-          "Apply has TCS-specific PYQs, interview prep guides, and mock interviews — all free to start. Browse TCS coding questions at /pyqs, read the TCS interview prep guide at /prepare/tcs-interview-questions-2026, and practice mock interviews at /mock-interview."
+          "Apply has TCS-specific PYQs, interview prep guides, and free AI mock interviews — all free to start. Browse TCS coding questions at /pyqs, read /prepare/tcs-interview-questions-2026, and practice at /mock-interview/tcs."
         ]
       }
     ]
@@ -1286,6 +1296,7 @@ export const blogPosts = [
     excerpt:
       "Not every college has TCS and Amazon visiting campus. Here's how to crack off-campus placements — where to apply, how to get referrals, and how to stand out without campus placement support.",
     workflowLinks: [
+      { label: "How to apply off campus (steps)", href: "/blog/how-to-apply-off-campus-placement" },
       { label: "Tailor resume for each JD", href: "/dashboard/generate" },
       { label: "Browse company PYQs", href: "/pyqs" },
       { label: "Practice mock interviews", href: "/mock-interview" },
@@ -3273,7 +3284,7 @@ export const blogPosts = [
       "TCS has a specific resume format that gets shortlisted. Here's the exact format TCS recruiters expect — sections, CGPA, skills, projects, and a free template for NQT 2026.",
     workflowLinks: [
       { label: "Build TCS resume free", href: "/dashboard/generate" },
-      { label: "TCS NQT prep guide", href: "/blog/tcs-nqt-preparation-guide-2026" },
+      { label: "TCS NQT 2026 guide", href: "/blog/tcs-nqt-2026" },
       { label: "TCS interview questions", href: "/prepare/tcs-interview-questions-2026" },
       { label: "Practice TCS mock interview", href: "/mock-interview" }
     ],
@@ -4148,12 +4159,12 @@ export const blogPosts = [
   },
   {
     slug: "mock-interview-practice-online-free",
-    title: "Mock Interview Practice Online Free for Students",
+    title: "Mock Interview Practice Online Free: 2026 Guide",
     description:
-      "Mock interview practice online free for Indian students — start AI voice mocks, optional coding, scored feedback. Unlimited sessions on Apply.",
+      "Complete guide to mock interview practice online free for students 2026 — AI voice, coding rounds, weekly plan, and scored feedback on Apply.",
     publishedAt: "2026-07-23",
     updatedAt: "2026-07-23",
-    readingTime: "8 min",
+    readingTime: "10 min",
     category: "Mock Interview",
     targetKeyword: "mock interview practice online free",
     keywords: [
@@ -4162,22 +4173,20 @@ export const blogPosts = [
       "mock interview online",
       "mock interview",
       "free mock interview practice online",
-      "online mock interview free for students",
       "AI mock interview free",
-      "free online mock interview India",
+      "free online interview practice",
+      "online mock interview free for students",
       "campus placement mock interview free",
       "unlimited free mock interview practice"
     ],
     excerpt:
-      "You can do mock interview practice online free without booking a coach. Speak answers aloud, enable coding when ready, and use scored feedback before campus week.",
+      "Mock interview practice online free is the fastest way for students to sound ready before campus week. This 2026 guide covers voice practice, coding rounds, a weekly loop, and how to use scored feedback.",
     workflowLinks: [
       { label: "Start free mock interview", href: "/mock-interview" },
+      { label: "Freshers mock interview page", href: "/mock-interview/freshers" },
+      { label: "Software engineer mocks", href: "/mock-interview/software-engineer" },
       { label: "Browse company PYQs", href: "/pyqs" },
       { label: "Build ATS resume", href: "/dashboard/generate" },
-      {
-        label: "Weekly practice guide",
-        href: "/blog/mock-interview-practice-online-guide"
-      },
       {
         label: "Mock interviews for freshers",
         href: "/blog/mock-interviews-for-freshers"
@@ -4185,11 +4194,21 @@ export const blogPosts = [
     ],
     sections: [
       {
+        heading: "Why mock interview practice online free matters in 2026",
+        body: [
+          "Campus and off-campus interviews still reward students who can speak answers under time pressure. Reading question PDFs helps knowledge — it does not train delivery.",
+          "Free AI mock interview practice online lets you rehearse daily without booking a coach. Prefer tools with voice questions, optional coding, and feedback you can act on tomorrow.",
+          "Apply’s mock interview at /mock-interview is free to start after Google sign-in. Sessions stay focused (about 5–10 questions) so you can run several in a week."
+        ]
+      },
+      {
         heading: "What “mock interview practice online free” should include",
         body: [
-          "Free practice is useful only if you speak answers, not if you only read a chatbot reply. Prefer voice questions, timed turns, and feedback you can act on tomorrow.",
-          "Apply’s mock interview at /mock-interview is free to start after Google sign-in. Sessions stay focused (about 5–10 questions) so you can run several in a week.",
-          "Optional coding rounds let you rehearse OA-style pressure without leaving the same room."
+          "Spoken answers — not only typed chatbot replies.",
+          "Company and role targeting (TCS, Infosys, Amazon, SDE Intern, etc.).",
+          "Optional coding rounds with a test runner for OA-style pressure.",
+          "A short score summary so you know what to fix next.",
+          "Company-specific landing pages help you rehearse the right flavor: /mock-interview/tcs, /mock-interview/infosys, /mock-interview/amazon, /mock-interview/freshers, /mock-interview/software-engineer."
         ]
       },
       {
@@ -4203,12 +4222,14 @@ export const blogPosts = [
         ]
       },
       {
-        heading: "Free practice loop that compounds",
+        heading: "Weekly free practice loop for students (2026)",
         body: [
-          "Morning: 2 company previous year coding questions at /pyqs.",
-          "Afternoon: one free mock interview for the same company and role.",
-          "Evening: fix the resume bullet you stumbled on at /dashboard/generate.",
-          "Repeat for your top two drives. Depth beats switching tools every day."
+          "Monday–Tuesday: 4 company previous year coding questions at /pyqs for your top drive.",
+          "Wednesday: one HR-focused free mock (Tell me about yourself + projects).",
+          "Thursday: one technical mock with Easy coding enabled.",
+          "Friday: resume bullet cleanup at /dashboard/generate for any answer you stumbled on.",
+          "Weekend: one full mixed mock for the same company; review scored feedback and write three improved STAR lines.",
+          "Repeat for a second company only after you can complete one clean week on the first."
         ]
       },
       {
@@ -4224,8 +4245,8 @@ export const blogPosts = [
       {
         heading: "Start free mock interview practice on Apply",
         body: [
-          "Open /mock-interview, complete one short free session today, then follow the longer weekly plan at /blog/mock-interview-practice-online-guide.",
-          "For full interview preparation for freshers (resume + PYQs + speaking), read /blog/interview-preparation-for-freshers."
+          "Open /mock-interview, complete one short free session today, then deepen with role pages like /mock-interview/software-engineer or /mock-interview/freshers.",
+          "For full interview preparation for freshers (resume + PYQs + speaking), read /blog/interview-preparation-for-freshers. For TCS NQT written prep, use /blog/tcs-nqt-2026."
         ]
       }
     ]
@@ -4391,6 +4412,171 @@ export const blogPosts = [
         body: [
           "Create the base engineering student resume on Apply at /dashboard/generate, then rehearse explaining every project in a free mock interview at /mock-interview.",
           "For full templates and examples, see /blog/engineering-student-resume-template and /blog/engineering-student-resume-examples-india. For the general no-experience guide, see /blog/resume-with-no-experience-student."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "fresher-resume-building-india",
+    title: "Fresher Resume Building India: Free Templates",
+    description:
+      "Fresher resume building in India — section order, project bullets, ATS tips, and free templates for campus and off-campus IT roles on Apply.",
+    publishedAt: "2026-07-23",
+    updatedAt: "2026-07-23",
+    readingTime: "9 min",
+    category: "Resume",
+    targetKeyword: "fresher resume building India",
+    keywords: [
+      "fresher resume building India",
+      "fresher resume India",
+      "fresher resume format",
+      "engineering student resume",
+      "resume for student with no experience",
+      "ATS resume for freshers India",
+      "free fresher resume template",
+      "campus placement resume India"
+    ],
+    excerpt:
+      "Fresher resume building in India is about clarity and truth: one page, strong projects, ATS-safe layout, then tailor per JD. Use free templates on Apply and rehearse every bullet in a mock interview.",
+    workflowLinks: [
+      { label: "Build free ATS resume", href: "/dashboard/generate" },
+      { label: "Engineering student template", href: "/blog/engineering-student-resume-template" },
+      { label: "Fresher IT resume format", href: "/blog/fresher-resume-format-it-companies" },
+      { label: "Practice mock interview", href: "/mock-interview" },
+      { label: "Mock interview for freshers", href: "/mock-interview/freshers" }
+    ],
+    sections: [
+      {
+        heading: "Fresher resume building India — the goal",
+        body: [
+          "Recruiters and ATS systems both scan fresher resumes in seconds. Your job is to show education, skills you can defend, and projects with clear ownership — not to invent internships.",
+          "Indian campus portals (TCS, Infosys, Wipro) often prefer simple single-column PDFs. Fancy multi-column Canva layouts frequently break parsing.",
+          "Build once on Apply at /dashboard/generate, then tailor keywords for each JD before you apply."
+        ]
+      },
+      {
+        heading: "Section order that works for freshers",
+        body: [
+          "Header (name, phone, email, LinkedIn, GitHub, city) → Education → Projects → Skills → Achievements / certifications.",
+          "If you have an internship, put Experience above Projects. If not, skip empty Experience sections entirely.",
+          "CGPA as X.XX/10. Add 10th/12th only when the company form asks (common for TCS-style formats)."
+        ]
+      },
+      {
+        heading: "Project bullets that survive interviews",
+        body: [
+          "Name the problem, your role, the stack, and one concrete outcome you can explain aloud.",
+          "Example: Built a campus fest registration portal in Java and MySQL used by 200 classmates for event sign-ups.",
+          "Do not invent revenue or user metrics. Panels will ask follow-ups — practice answers in a free mock at /mock-interview/freshers."
+        ]
+      },
+      {
+        heading: "ATS and keyword tips for Indian IT roles",
+        body: [
+          "Mirror role keywords from the JD: Java, SQL, DSA, REST, React — only if you can discuss them.",
+          "Use Apply’s tailoring flow: paste the JD at /dashboard/generate so the resume matches the posting without fake experience.",
+          "Export a clean PDF. Avoid tables for core content, photos, and text inside images."
+        ]
+      },
+      {
+        heading: "Common fresher resume mistakes in India",
+        body: [
+          "Two-page fluff with soft skills and no projects.",
+          "Listing every tutorial watched as a skill.",
+          "One generic resume for Amazon and TCS — tailor each time.",
+          "Never rehearsing project explanations — resume gets you the call; speaking wins the round."
+        ]
+      },
+      {
+        heading: "Free templates and next steps on Apply",
+        body: [
+          "Start free resume building at /dashboard/generate. Read /blog/fresher-resume-format-it-companies and /blog/engineering-student-resume-template for formats.",
+          "After the PDF is ready, run a mock interview at /mock-interview so every bullet on the page is something you can say clearly."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "how-to-apply-off-campus-placement",
+    title: "How to Apply Off Campus Placement: Step Guide",
+    description:
+      "How to apply for off-campus placements in India — portals, referrals, resume tailoring, tracking, and interview practice when campus hiring is limited.",
+    publishedAt: "2026-07-23",
+    updatedAt: "2026-07-23",
+    readingTime: "9 min",
+    category: "Placement Strategy",
+    targetKeyword: "how to apply off campus placement",
+    keywords: [
+      "how to apply off campus placement",
+      "how to apply for off campus jobs",
+      "off campus placement apply process",
+      "off-campus job application India",
+      "fresher off campus apply",
+      "apply off campus without referral",
+      "off campus placement for engineering students"
+    ],
+    excerpt:
+      "How to apply off campus is a process: find openings, tailor the resume, get referrals when possible, track every application, and practice interviews before calls arrive.",
+    workflowLinks: [
+      { label: "Tailor resume per JD", href: "/dashboard/generate" },
+      { label: "Track applications", href: "/dashboard/applications" },
+      { label: "Practice mock interviews", href: "/mock-interview" },
+      { label: "Full off-campus prep guide", href: "/blog/off-campus-placement-preparation-guide" },
+      { label: "Browse company PYQs", href: "/pyqs" }
+    ],
+    sections: [
+      {
+        heading: "How to apply off campus — the 6-step flow",
+        body: [
+          "1. Shortlist 30–50 target companies (service + product + startups).",
+          "2. Build one base ATS resume, then tailor per JD before each apply.",
+          "3. Submit on company careers pages, Naukri, LinkedIn Easy Apply, and Instahyre.",
+          "4. Ask for referrals after you apply (or before, if a warm alumni link exists).",
+          "5. Log every application with date and status.",
+          "6. Practice mock interviews weekly so you are ready when calls come with short notice.",
+          "For strategy depth (boards, timelines, mistakes), also read /blog/off-campus-placement-preparation-guide. This page focuses on the apply mechanics."
+        ]
+      },
+      {
+        heading: "Where to submit off-campus applications",
+        body: [
+          "Company career portals: check weekly for fresher / graduate / intern roles at TCS, Infosys, Amazon, and your target list.",
+          "LinkedIn: filter SDE fresher / software engineer intern, past month, India.",
+          "Naukri and Instahyre: volume for service roles; higher signal for product/startup respectively.",
+          "College alumni WhatsApp/LinkedIn groups often share drive links — apply the same day."
+        ]
+      },
+      {
+        heading: "What to attach when you apply",
+        body: [
+          "One-page ATS PDF tailored to that JD — generate at /dashboard/generate.",
+          "GitHub and LinkedIn URLs in the header. Pin two projects with clear READMEs.",
+          "Optional: short cover note (3–4 lines) for email or LinkedIn InMail — role, college, one project proof.",
+          "Never send a photo-heavy or multi-column design to Indian ATS portals."
+        ]
+      },
+      {
+        heading: "Referral message template (keep it short)",
+        body: [
+          "Hi [Name], I’m a final-year [branch] student at [college]. I’m applying for [role] at [company] and would appreciate a referral if you’re open to it. Resume: [link]. Thanks either way.",
+          "Personalize one line about their team or a product. Do not spam 50 people with the identical paragraph.",
+          "Apply on the portal first when the posting requires an ID — then ask for the referral."
+        ]
+      },
+      {
+        heading: "Track, follow up, and stay interview-ready",
+        body: [
+          "Log company, role, date, portal, and status in /dashboard/applications (or a simple sheet).",
+          "Follow up once after 7–10 days with the recruiter or referrer — polite, one paragraph.",
+          "Off-campus calls can arrive quickly. Keep PYQs warm at /pyqs and run free mocks at /mock-interview twice a week.",
+          "When you get a company name, open the matching practice page (e.g. /mock-interview/amazon) the same day."
+        ]
+      },
+      {
+        heading: "Start applying with Apply’s free toolkit",
+        body: [
+          "Tailor resumes at /dashboard/generate, track apps at /dashboard/applications, practice speaking at /mock-interview, and study company papers at /pyqs.",
+          "Broader off-campus strategy (when to start, referral psychology, common mistakes) lives at /blog/off-campus-placement-preparation-guide."
         ]
       }
     ]

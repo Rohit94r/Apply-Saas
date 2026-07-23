@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
         hostname: "**"
       }
     ]
+  },
+  async redirects() {
+    return [
+      {
+        source: "/blog/tcs-nqt-preparation-guide-2026",
+        destination: "/blog/tcs-nqt-2026",
+        permanent: true
+      }
+    ];
   }
 };
 

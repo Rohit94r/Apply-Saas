@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import sitemap from "@/app/sitemap";
 import { blogMetadataTitle, blogPostUrl, blogPosts } from "@/lib/blog";
+import { absoluteUrl } from "@/lib/seo";
 
 describe("blog SEO", () => {
   it("uses unique, non-empty slugs", () => {
@@ -35,6 +36,22 @@ describe("blog SEO", () => {
 
     for (const post of blogPosts) {
       expect(sitemapUrls.has(blogPostUrl(post)), post.slug).toBe(true);
+    }
+  });
+
+  it("includes mock interview hub and company subpages in the sitemap", () => {
+    const sitemapUrls = new Set(sitemap().map((entry) => entry.url));
+    const required = [
+      "/mock-interview",
+      "/mock-interview/software-engineer",
+      "/mock-interview/freshers",
+      "/mock-interview/tcs",
+      "/mock-interview/infosys",
+      "/mock-interview/amazon"
+    ];
+
+    for (const path of required) {
+      expect(sitemapUrls.has(absoluteUrl(path)), path).toBe(true);
     }
   });
 

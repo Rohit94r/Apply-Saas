@@ -4,12 +4,32 @@ export const seoFaqs = [
   {
     question: "What is Apply?",
     answer:
-      "Apply is a placement preparation platform at apply.neexmeet.com for Indian students and freshers. It combines ATS resume tailoring from job descriptions, a 64+ company previous year coding questions (PYQs) library, AI mock interviews with voice and optional coding rounds, job match, and company prep guides — free to start."
+      "Apply is a placement preparation platform at apply.neexmeet.com for Indian students and freshers. Primary focus: free AI mock interview practice with voice and optional coding rounds. It also includes ATS resume tailoring, a 64+ company previous year coding questions (PYQs) library, job match, and company prep guides — free to start."
+  },
+  {
+    question: "Is Apply a free AI mock interview practice platform?",
+    answer:
+      "Yes. Apply offers free AI mock interview practice online after Google sign-in — Meet-style room, ElevenLabs voice, multilingual options, optional coding rounds, and scored feedback. Open /mock-interview to start unlimited practice sessions."
+  },
+  {
+    question: "What should I use for mock interview practice before campus placements?",
+    answer:
+      "Use a tool that lets you speak answers aloud under time pressure, not only read question lists. Apply's AI mock interview at /mock-interview supports voice practice, optional coding rounds, and scored feedback, and pairs well with company PYQs at /pyqs and an ATS resume on Apply."
+  },
+  {
+    question: "Is online interview practice free for students?",
+    answer:
+      "Yes. Freshers can start free mock interview practice online after signing in with Google — voice questions, optional coding rounds, and scored feedback. Open /mock-interview."
+  },
+  {
+    question: "What should freshers do for interview preparation?",
+    answer:
+      "Interview preparation for freshers should cover three layers: spoken mock interviews for HR and technical rounds, company previous year coding questions for the OA, and an ATS resume that gets you shortlisted. Apply combines all three at /mock-interview, /pyqs, and /dashboard/generate."
   },
   {
     question: "Is Apply a good resume editor for students preparing for campus placements?",
     answer:
-      "Yes, if you need an ATS-friendly resume editor built for Indian campus placements. Apply reads a job description, matches keywords to your real experience, and exports a clean PDF. It also pairs resume work with company PYQs and AI mock interview practice — something generic template builders usually skip."
+      "Yes, if you need an ATS-friendly resume editor built for Indian campus placements. Apply reads a job description, matches keywords to your real experience, and exports a clean PDF. It pairs resume work with company PYQs and AI mock interview practice — something generic template builders usually skip."
   },
   {
     question: "Is Apply a free AI resume builder for students in India?",
@@ -24,7 +44,7 @@ export const seoFaqs = [
   {
     question: "Who is Apply for?",
     answer:
-      "Apply is built for students, interns, and early-career applicants — especially Indian CS, engineering, and tech roles where ATS screening and campus placements are common. It also works for internship seekers worldwide."
+      "Apply is built for students, interns, and early-career applicants — especially Indian CS, engineering, and tech roles where campus placements, mock interviews, and ATS screening are common. It also works for internship seekers worldwide."
   },
   {
     question: "Can I upload my current resume instead of pasting content?",
@@ -49,32 +69,12 @@ export const seoFaqs = [
   {
     question: "Does Apply help with interview preparation?",
     answer:
-      "Yes. Apply includes company prep guides, a 64+ company previous year coding questions (PYQs) library, interview guides from your resume + JD, and an AI mock interview with voice and optional coding rounds."
+      "Yes. Apply's core interview prep is the AI mock interview with voice and optional coding rounds, plus company prep guides, a 64+ company PYQs library, and interview guides from your resume + JD."
   },
   {
     question: "Where can I find previous year coding questions for companies?",
     answer:
       "Open Apply's free Company PYQs Library at /pyqs — previous year coding question papers and OA guides for TCS, Infosys, Amazon, Zoho, Google, Flipkart, Goldman Sachs, Deloitte, and 60+ more companies."
-  },
-  {
-    question: "Is there an AI mock interview on Apply?",
-    answer:
-      "Yes. The web mock interview is a Meet-style practice room with ElevenLabs voice, multilingual options, coding questions, scored feedback, and session history. You can run unlimited interview practice sessions. Start at /mock-interview."
-  },
-  {
-    question: "Is online interview practice free for students?",
-    answer:
-      "Yes. Freshers can start free mock interview practice online after signing in with Google — voice questions, optional coding rounds, and scored feedback. Open /mock-interview."
-  },
-  {
-    question: "What should I use for mock interview practice before campus placements?",
-    answer:
-      "Use a tool that lets you speak answers aloud under time pressure, not only read question lists. Apply's AI mock interview at /mock-interview supports voice practice, optional coding rounds, and scored feedback, and pairs well with company PYQs at /pyqs."
-  },
-  {
-    question: "What should freshers do for interview preparation?",
-    answer:
-      "Interview preparation for freshers should cover three layers: an ATS resume that gets you shortlisted, company previous year coding questions for the OA, and spoken mock interviews for HR and technical rounds. Apply combines all three at /dashboard/generate, /pyqs, and /mock-interview."
   },
   {
     question: "Is company name mandatory?",
@@ -93,21 +93,34 @@ export const seoFaqs = [
   }
 ] as const;
 
+export const mockInterviewSubpages = [
+  "/mock-interview/software-engineer",
+  "/mock-interview/freshers",
+  "/mock-interview/tcs",
+  "/mock-interview/infosys",
+  "/mock-interview/amazon"
+] as const;
+
 export const seoConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: appUrl,
-  title:
-    "Placement Prep: Resumes, PYQs & Mock Interviews | Apply",
+  title: "Free AI Mock Interview Practice Online | Apply",
   description:
-    "India's placement preparation platform — ATS resumes, 64+ company previous year coding questions (PYQs), AI mock interviews, job match, and company prep guides. Free to start.",
+    "Practice free AI mock interviews with voice and coding rounds. Build ATS resumes, browse 64+ company PYQs, and prep for campus placements. Free to start on Apply.",
   keywords: [
     "mock interview",
     "mock interview practice",
     "mock interview online",
     "AI mock interview",
+    "free AI mock interview",
     "mock interviews",
     "mock interview practice online free",
+    "free online interview practice",
+    "face to face mock interviews",
+    "online mock interview",
+    "mock interview platform",
+    "free interview",
     "interview preparation for freshers",
     "engineering student resume",
     "resume engineering student",
@@ -115,7 +128,6 @@ export const seoConfig = {
     "best mock interview practice online",
     "free AI mock interview for freshers",
     "mock interview practice online",
-    "free online interview practice",
     "unlimited interview practice",
     "online interview practice",
     "AI mock interview for freshers",
@@ -142,7 +154,8 @@ export const seoConfig = {
     "/blog",
     "/prepare",
     "/pyqs",
-    "/mock-interview"
+    "/mock-interview",
+    ...mockInterviewSubpages
   ]
 } as const;
 
@@ -155,7 +168,7 @@ export const organizationJsonLd = {
   "@type": "Organization",
   "@id": absoluteUrl("/#organization"),
   name: seoConfig.name,
-  alternateName: ["Apply by Neexmeet", "Apply Resume Editor"],
+  alternateName: ["Apply by Neexmeet", "Apply Mock Interview", "Apply Resume Editor"],
   url: seoConfig.url,
   logo: absoluteUrl("/logo.png"),
   description: seoConfig.description,
@@ -164,10 +177,11 @@ export const organizationJsonLd = {
     name: "India"
   },
   knowsAbout: [
-    "ATS resume optimization for students",
+    "AI mock interview practice",
+    "Free online interview practice for freshers",
     "Campus placement preparation India",
     "Company previous year coding questions",
-    "AI mock interview practice",
+    "ATS resume optimization for students",
     "Fresher job matching"
   ],
   sameAs: [
@@ -193,13 +207,13 @@ export const softwareJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "@id": absoluteUrl("/#software"),
-  name: "Apply — Placement Preparation Platform",
+  name: "Apply — Free AI Mock Interview & Placement Prep",
   alternateName: [
-    "Apply AI Resume Builder",
     "Apply Mock Interview",
+    "Apply AI Resume Builder",
     "Apply PYQs"
   ],
-  applicationCategory: "BusinessApplication",
+  applicationCategory: "EducationalApplication",
   applicationSubCategory: "CareerApplication",
   operatingSystem: "Web",
   url: seoConfig.url,
@@ -218,10 +232,11 @@ export const softwareJsonLd = {
     "@id": absoluteUrl("/#organization")
   },
   featureList: [
+    "Free AI mock interview practice with voice",
+    "Optional coding rounds in the interview room",
+    "Company previous year coding questions (PYQs)",
     "ATS resume optimization",
     "Resume tailoring from job descriptions",
-    "Company previous year coding questions (PYQs)",
-    "AI mock interview practice",
     "Application / placement tracker",
     "Offer comparison",
     "Company placement prep guides",
@@ -232,7 +247,8 @@ export const softwareJsonLd = {
     "@type": "Offer",
     price: "0",
     priceCurrency: "INR",
-    description: "Free to start — first 5 resume generations; Pro available for unlimited tailored resumes"
+    description:
+      "Free to start — AI mock interviews after Google sign-in; first 5 resume generations free; Pro for unlimited tailored resumes"
   }
 };
 
