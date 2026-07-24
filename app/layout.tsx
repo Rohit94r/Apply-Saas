@@ -3,7 +3,7 @@ import { Geist, Instrument_Serif } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { absoluteUrl, seoConfig, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import { seoConfig, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -28,10 +28,8 @@ export const metadata: Metadata = {
   applicationName: seoConfig.name,
   creator: "Apply",
   publisher: "Apply",
-  category: "AI resume builder",
-  alternates: {
-    canonical: absoluteUrl("/")
-  },
+  category: "Career preparation",
+  // Canonicals are set per public page — do not inherit homepage canonical sitewide.
   icons: {
     icon: "/symbol.png",
     shortcut: "/symbol.png",

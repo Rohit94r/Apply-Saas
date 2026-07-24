@@ -9,15 +9,14 @@ export function HeroSection() {
     <section className="hero-glow relative overflow-hidden border-b border-border/70">
       <div className="section-shell pb-20 pt-20 text-center lg:pb-24 lg:pt-24">
         <Reveal>
-          <p className="fine-label mb-5">Free AI mock interview practice</p>
+          <p className="fine-label mb-5">AI-powered career prep for students &amp; freshers</p>
           <h1 className="mx-auto max-w-5xl font-serif text-5xl leading-[0.95] tracking-normal text-primary sm:text-7xl lg:text-8xl">
-            Practice mock interviews
+            Build your resume, ace the interview
             <span className="block text-accent italic">with AI.</span>
           </h1>
           <p className="mx-auto mt-7 max-w-xl text-base leading-8 text-muted-foreground sm:text-lg">
-            Build the perfect resume. Land your dream job. Voice mock interviews,
-            optional coding rounds, 64+ company PYQs, and ATS resume tailoring —
-            free to start on Apply.
+            ATS-friendly resume builder, voice mock interviews, optional coding
+            rounds, 64+ company PYQs, and placement prep — free to start on Apply.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg">

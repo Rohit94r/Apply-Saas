@@ -3,7 +3,7 @@ import { seoConfig } from "@/lib/seo";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Apply - Free AI Resume Builder for Students Worldwide",
+    name: "Apply — Free AI Resume Builder & Mock Interview Practice",
     short_name: seoConfig.name,
     description: seoConfig.description,
     start_url: "/",

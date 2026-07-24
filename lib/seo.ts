@@ -4,7 +4,7 @@ export const seoFaqs = [
   {
     question: "What is Apply?",
     answer:
-      "Apply is a placement preparation platform at apply.neexmeet.com for Indian students and freshers. Primary focus: free AI mock interview practice with voice and optional coding rounds. It also includes ATS resume tailoring, a 64+ company previous year coding questions (PYQs) library, job match, and company prep guides — free to start."
+      "Apply is a free AI career prep platform at apply.neexmeet.com for students and freshers. It combines an ATS-friendly resume builder with free AI mock interview practice (voice + optional coding), a 64+ company previous year coding questions (PYQs) library, job match, and company prep guides — free to start."
   },
   {
     question: "Is Apply a free AI mock interview practice platform?",
@@ -105,9 +105,10 @@ export const seoConfig = {
   name: "Apply",
   domain: "apply.neexmeet.com",
   url: appUrl,
-  title: "Free AI Mock Interview Practice Online | Apply",
+  // Durable sitewide default — keep distinct from /mock-interview; do not flip daily.
+  title: "Free AI Resume Builder & Mock Interview Practice — Apply",
   description:
-    "Practice free AI mock interviews with voice and coding rounds. Build ATS resumes, browse 64+ company PYQs, and prep for campus placements. Free to start on Apply.",
+    "Build ATS-friendly resumes and practice free AI mock interviews with voice & optional coding. 64+ company PYQs, placement guides, and campus or off-campus job prep. Free to start.",
   keywords: [
     "mock interview",
     "mock interview practice",
@@ -117,14 +118,14 @@ export const seoConfig = {
     "mock interviews",
     "mock interview practice online free",
     "free online interview practice",
-    "face to face mock interviews",
     "online mock interview",
     "mock interview platform",
-    "free interview",
     "interview preparation for freshers",
     "engineering student resume",
     "resume engineering student",
+    "engineer student resume",
     "resume for student with no experience",
+    "best ats friendly resume builder india",
     "best mock interview practice online",
     "free AI mock interview for freshers",
     "mock interview practice online",
@@ -147,7 +148,10 @@ export const seoConfig = {
     "company placement prep guides",
     "fresher resume format",
     "online mock interview with coding",
-    "freelancing for college students"
+    "freelancing for college students",
+    "how to get job off campus",
+    "off campus placement preparation",
+    "campus placement preparation"
   ],
   publicRoutes: [
     "/",
@@ -168,7 +172,7 @@ export const organizationJsonLd = {
   "@type": "Organization",
   "@id": absoluteUrl("/#organization"),
   name: seoConfig.name,
-  alternateName: ["Apply by Neexmeet", "Apply Mock Interview", "Apply Resume Editor"],
+  alternateName: ["Apply by Neexmeet", "Apply Mock Interview", "Apply AI Resume Builder", "Apply Resume Editor"],
   url: seoConfig.url,
   logo: absoluteUrl("/logo.png"),
   description: seoConfig.description,
@@ -180,9 +184,12 @@ export const organizationJsonLd = {
     "AI mock interview practice",
     "Free online interview practice for freshers",
     "Campus placement preparation India",
+    "Off campus placement preparation",
     "Company previous year coding questions",
     "ATS resume optimization for students",
-    "Fresher job matching"
+    "Free AI resume builder for students",
+    "Fresher job matching",
+    "Engineering student resume tips"
   ],
   sameAs: [
     "https://www.instagram.com/dev.by.rohit/",
@@ -207,11 +214,12 @@ export const softwareJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "@id": absoluteUrl("/#software"),
-  name: "Apply — Free AI Mock Interview & Placement Prep",
+  name: "Apply — Free AI Resume Builder & Mock Interview Practice",
   alternateName: [
     "Apply Mock Interview",
     "Apply AI Resume Builder",
-    "Apply PYQs"
+    "Apply PYQs",
+    "Apply Resume Editor"
   ],
   applicationCategory: "EducationalApplication",
   applicationSubCategory: "CareerApplication",

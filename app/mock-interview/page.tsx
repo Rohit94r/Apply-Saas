@@ -7,9 +7,10 @@ import { mockInterviewHubLinks } from "@/components/landing/mock-interview-compa
 import { Button } from "@/components/ui/button";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
 
-const title = "Free AI Mock Interview Practice Online | Apply";
+// Durable hub title — keep stable; do not rewrite daily for keyword experiments.
+const title = "Mock Interview Free — AI Practice Online | Apply";
 const description =
-  "Free AI mock interview practice online for campus placements — voice questions, coding rounds, scored feedback. Unlimited sessions for freshers. Start free on Apply.";
+  "Mock interview free online for campus placements — AI voice, coding rounds, scored feedback. Unlimited mock interview practice for freshers. Start free on Apply.";
 
 export const metadata: Metadata = {
   title: {
@@ -26,13 +27,13 @@ export const metadata: Metadata = {
     "free online interview practice",
     "online mock interview",
     "mock interview platform",
-    "face to face mock interviews",
-    "free interview",
     "unlimited interview practice",
     "mock interview practice for freshers",
     "AI mock interview for freshers",
     "campus placement mock interview",
-    "coding mock interview practice"
+    "coding mock interview practice",
+    "free mock interview for students",
+    "AI interviewer practice"
   ],
   alternates: {
     canonical: absoluteUrl("/mock-interview")
@@ -262,24 +263,28 @@ const relatedGuides = [
     label: "Interview preparation for freshers"
   },
   {
-    href: "/blog/tcs-nqt-2026",
-    label: "TCS NQT 2026 guide"
-  },
-  {
-    href: "/blog/how-to-apply-off-campus-placement",
-    label: "How to apply off-campus"
-  },
-  {
-    href: "/blog/fresher-resume-building-india",
-    label: "Fresher resume building India"
+    href: "/blog/mock-interview-practice-online-guide",
+    label: "Mock interview practice online: fresher guide"
   },
   {
     href: "/blog/best-mock-interview-placement-prep-platforms",
     label: "Best mock interview platforms for campus placements"
   },
   {
+    href: "/blog/ai-mock-interview-free-for-freshers-2026",
+    label: "AI mock interview free for freshers"
+  },
+  {
+    href: "/blog/unlimited-interview-practice-online",
+    label: "Unlimited interview practice online (free)"
+  },
+  {
     href: "/blog/engineering-student-resume-template",
     label: "Engineering student resume free template"
+  },
+  {
+    href: "/blog/tcs-nqt-2026",
+    label: "TCS NQT 2026 guide"
   }
 ];
 
@@ -297,15 +302,15 @@ export default function MockInterviewMarketingPage() {
       <main>
         <section className="border-b border-border/70 py-20">
           <div className="section-shell max-w-4xl">
-            <p className="fine-label mb-5">Free AI mock interview practice online</p>
+            <p className="fine-label mb-5">Free mock interview practice online</p>
             <h1 className="font-serif text-5xl leading-[1.02] text-primary sm:text-6xl">
-              Free AI Mock Interview Practice Online
+              Mock interview — free AI practice online for campus placements.
             </h1>
             <p className="mt-6 text-base leading-8 text-muted-foreground">
-              Practice mock interviews with AI voice, optional coding rounds, and
-              scored feedback — then build an ATS resume and solve company PYQs.
-              Built for Indian campus and off-campus placements. Free to start after
-              Google sign-in.
+              Free mock interview for Indian freshers: AI voice questions, spoken
+              answers, scored feedback, and optional coding rounds. Unlimited mock
+              interview practice — start free after Google sign-in. Pair with ATS
+              resumes and company PYQs when you are ready.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
