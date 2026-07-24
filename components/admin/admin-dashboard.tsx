@@ -88,9 +88,10 @@ function formatTime(value: string | null) {
     return "—";
   }
   return new Date(value).toLocaleString("en-IN", {
-    timeStyle: "short",
     day: "2-digit",
-    month: "short"
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
   });
 }
 
