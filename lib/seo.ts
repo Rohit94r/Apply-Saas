@@ -98,7 +98,12 @@ export const mockInterviewSubpages = [
   "/mock-interview/freshers",
   "/mock-interview/tcs",
   "/mock-interview/infosys",
-  "/mock-interview/amazon"
+  "/mock-interview/amazon",
+  "/mock-interview/google",
+  "/mock-interview/wipro",
+  "/mock-interview/flipkart",
+  "/mock-interview/zomato",
+  "/mock-interview/microsoft"
 ] as const;
 
 export const seoConfig = {
@@ -151,7 +156,32 @@ export const seoConfig = {
     "freelancing for college students",
     "how to get job off campus",
     "off campus placement preparation",
-    "campus placement preparation"
+    "campus placement preparation",
+    "amazon oa questions",
+    "amazon online assessment preparation",
+    "flipkart grid 2026",
+    "flipkart grid eligibility criteria",
+    "tcs nqt 2026",
+    "tcs nqt negative marking",
+    "infosys sp dse preparation",
+    "infosys sp dse coding questions",
+    "wipro technical interview questions",
+    "zomato sde interview experience",
+    "razorpay interview questions",
+    "phonepe interview questions",
+    "group discussion for campus placement",
+    "group discussion topics",
+    "mock interview questions for freshers",
+    "how to give interview for freshers",
+    "internship cover letter",
+    "resume for it freshers",
+    "resume skills section for freshers",
+    "one page vs two page resume",
+    "ats score",
+    "system design interview for freshers",
+    "dsa roadmap for campus placements",
+    "off campus vs campus placement",
+    "portfolio website for students"
   ],
   publicRoutes: [
     "/",

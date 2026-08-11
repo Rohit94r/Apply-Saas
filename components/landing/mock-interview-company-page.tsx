@@ -332,7 +332,12 @@ export const mockInterviewHubLinks: MockInterviewPageLink[] = [
   { href: "/mock-interview/freshers", label: "Freshers India" },
   { href: "/mock-interview/tcs", label: "TCS" },
   { href: "/mock-interview/infosys", label: "Infosys" },
-  { href: "/mock-interview/amazon", label: "Amazon" }
+  { href: "/mock-interview/amazon", label: "Amazon" },
+  { href: "/mock-interview/google", label: "Google" },
+  { href: "/mock-interview/wipro", label: "Wipro" },
+  { href: "/mock-interview/flipkart", label: "Flipkart" },
+  { href: "/mock-interview/zomato", label: "Zomato" },
+  { href: "/mock-interview/microsoft", label: "Microsoft" }
 ];
 
 export function relatedMockInterviewPages(excludePath: string) {

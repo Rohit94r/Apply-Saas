@@ -6,6 +6,10 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { blogPostUrl, blogPosts } from "@/lib/blog";
 import { preparePages } from "@/lib/prepare";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
+import {
+  blogCategories,
+  blogCategoryUrl
+} from "@/content/blog/categories";
 
 export const metadata: Metadata = {
   title: {
@@ -92,6 +96,18 @@ const intentGuides = [
   {
     label: "Engineering student resume (free)",
     href: "/blog/engineering-student-resume-template"
+  },
+  {
+    label: "Amazon OA preparation",
+    href: "/blog/amazon-oa-preparation-guide-2026"
+  },
+  {
+    label: "Flipkart Grid 2026 rounds",
+    href: "/blog/flipkart-grid-eligibility-selection"
+  },
+  {
+    label: "Mock interview vs real interview",
+    href: "/blog/mock-interview-vs-real-interview"
   }
 ];
 
@@ -143,44 +159,75 @@ export default function BlogPage() {
           </div>
         </nav>
 
+        <section className="border-b border-border bg-white py-8">
+          <div className="section-shell">
+            <p className="fine-label mb-4">Browse by topic</p>
+            <div className="flex flex-wrap gap-3">
+              {blogCategories.map((category) => (
+                <Link
+                  key={category.slug}
+                  href={blogCategoryUrl(category.slug)}
+                  className="rounded-full border border-border bg-[#fbfaf6] px-4 py-2 text-sm font-semibold text-primary transition hover:border-accent/50 hover:text-accent"
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="bg-[#f7f4ee] py-16">
-          <div className="section-shell grid gap-5 md:grid-cols-2">
-            {newestBlogPosts.map((post) => (
-              <article
-                key={post.slug}
-                className="flex h-full flex-col rounded-xl border border-border bg-white p-6 shadow-soft"
-              >
-                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
-                  <span className="rounded-full bg-accent/10 px-3 py-1 text-accent">
-                    {post.category}
-                  </span>
-                  <span>{post.readingTime}</span>
-                </div>
-                <h2 className="mt-5 text-2xl font-bold leading-8 text-primary">
-                  <Link href={`/blog/${post.slug}`} className="transition hover:text-accent">
-                    {post.title}
-                  </Link>
+          <div className="section-shell">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="fine-label mb-3">Latest guides</p>
+                <h2 className="max-w-2xl font-serif text-4xl leading-[1.05] text-primary">
+                  Newest placement guides.
                 </h2>
-                <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">
-                  {post.description}
+                <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
+                  Fresh interview prep, resume, and company guides for Indian
+                  students and freshers.
                 </p>
-                <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-                  <time
-                    dateTime={post.updatedAt}
-                    className="text-xs font-semibold text-muted-foreground"
-                  >
-                    Updated {post.updatedAt}
-                  </time>
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-accent"
-                  >
-                    Read guide
-                    <ArrowRight className="h-4 w-4" weight="regular" />
-                  </Link>
-                </div>
-              </article>
-            ))}
+              </div>
+            </div>
+            <div className="mt-8 grid gap-5 md:grid-cols-2">
+              {newestBlogPosts.slice(0, 8).map((post) => (
+                <article
+                  key={post.slug}
+                  className="flex h-full flex-col rounded-xl border border-border bg-white p-6 shadow-soft"
+                >
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+                    <span className="rounded-full bg-accent/10 px-3 py-1 text-accent">
+                      {post.category}
+                    </span>
+                    <span>{post.readingTime}</span>
+                  </div>
+                  <h2 className="mt-5 text-2xl font-bold leading-8 text-primary">
+                    <Link href={`/blog/${post.slug}`} className="transition hover:text-accent">
+                      {post.title}
+                    </Link>
+                  </h2>
+                  <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">
+                    {post.description}
+                  </p>
+                  <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                    <time
+                      dateTime={post.updatedAt}
+                      className="text-xs font-semibold text-muted-foreground"
+                    >
+                      Updated {post.updatedAt}
+                    </time>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:text-accent"
+                    >
+                      Read guide
+                      <ArrowRight className="h-4 w-4" weight="regular" />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 

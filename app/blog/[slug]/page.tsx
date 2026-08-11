@@ -11,6 +11,10 @@ import {
   getBlogPost
 } from "@/lib/blog";
 import { absoluteUrl, seoConfig } from "@/lib/seo";
+import {
+  getBlogCategoryByPostCategory,
+  blogCategoryUrl
+} from "@/content/blog/categories";
 
 type BlogPostPageProps = {
   params: Promise<{
@@ -129,7 +133,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "ListItem",
         position: 3,
         name: post.category,
-        item: absoluteUrl("/blog")
+        item: getBlogCategoryByPostCategory(post.category)
+          ? absoluteUrl(
+              blogCategoryUrl(
+                getBlogCategoryByPostCategory(post.category)!.slug
+              )
+            )
+          : absoluteUrl("/blog")
       },
       {
         "@type": "ListItem",
@@ -139,6 +149,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       }
     ]
   };
+
+  const faqJsonLd = post.faq?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: post.faq.map((entry) => ({
+          "@type": "Question",
+          name: entry.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: entry.answer
+          }
+        }))
+      }
+    : null;
   const relatedPosts = blogPosts
     .filter(
       (candidate) =>
@@ -156,7 +181,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([articleJsonLd, breadcrumbJsonLd])
+          __html: JSON.stringify(
+            faqJsonLd
+              ? [articleJsonLd, breadcrumbJsonLd, faqJsonLd]
+              : [articleJsonLd, breadcrumbJsonLd]
+          )
         }}
       />
       <SiteHeader />
