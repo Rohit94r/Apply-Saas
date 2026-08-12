@@ -103,7 +103,10 @@ export const mockInterviewSubpages = [
   "/mock-interview/wipro",
   "/mock-interview/flipkart",
   "/mock-interview/zomato",
-  "/mock-interview/microsoft"
+  "/mock-interview/microsoft",
+  "/mock-interview/razorpay",
+  "/mock-interview/phonepe",
+  "/mock-interview/swiggy"
 ] as const;
 
 export const seoConfig = {

@@ -337,7 +337,10 @@ export const mockInterviewHubLinks: MockInterviewPageLink[] = [
   { href: "/mock-interview/wipro", label: "Wipro" },
   { href: "/mock-interview/flipkart", label: "Flipkart" },
   { href: "/mock-interview/zomato", label: "Zomato" },
-  { href: "/mock-interview/microsoft", label: "Microsoft" }
+  { href: "/mock-interview/microsoft", label: "Microsoft" },
+  { href: "/mock-interview/razorpay", label: "Razorpay" },
+  { href: "/mock-interview/phonepe", label: "PhonePe" },
+  { href: "/mock-interview/swiggy", label: "Swiggy" }
 ];
 
 export function relatedMockInterviewPages(excludePath: string) {

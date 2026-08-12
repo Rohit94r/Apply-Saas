@@ -1887,5 +1887,283 @@ export const preparePages: PreparePage[] = [
       { label: "Practice mock interview", href: "/mock-interview" }
     ],
     relatedSlugs: ["phonepe-interview-questions-2026", "razorpay-interview-questions-2026", "amazon-sde-internship-india"]
+  },
+  {
+    slug: "tcs-resume-format",
+    title: "TCS Resume Format for Freshers 2026: Ninja, Digital & NQT Guide",
+    description:
+      "TCS resume format for freshers — what the TCS application form and interview panels expect, sections, skills, and a fillable structure for Ninja, Digital, and Prime roles.",
+    companyId: "tcs",
+    companyName: "TCS",
+    category: "resume",
+    targetKeyword: "TCS resume format for freshers",
+    keywords: [
+      "tcs resume format",
+      "tcs resume for freshers",
+      "tcs ninja resume",
+      "tcs digital resume format",
+      "resume for tcs nqt"
+    ],
+    publishedAt: "2026-08-06",
+    updatedAt: "2026-08-06",
+    readingTime: "7 min read",
+    excerpt:
+      "TCS screens thousands of fresher resumes through NQT shortlisting and campus forms. A clean, ATS-safe format with verifiable projects gets your application read.",
+    questionBankKey: "tcs",
+    primaryCta: {
+      label: "Tailor resume for TCS JD",
+      href: "/dashboard/generate"
+    },
+    secondaryCtas: [
+      { label: "Practice TCS mock interview", href: "/mock-interview/tcs" },
+      { label: "TCS PYQs", href: "/pyqs" }
+    ],
+    relatedSlugs: [
+      "tcs-interview-questions-2026",
+      "infosys-resume-format",
+      "wipro-technical-interview"
+    ],
+    sections: [
+      {
+        heading: "How TCS reads resumes",
+        body: [
+          "TCS hiring flows through two channels: the online application form (with its own structured fields) and your PDF resume, which interview panels read during the technical and HR rounds. Both should match.",
+          "Panels spend most of the technical round walking through your resume line by line. Every project, skill, and certification you list must be explainable in an interview.",
+          "For campus drives, the resume also crosses the placement cell — keep it one page, PDF, and ATS-parseable."
+        ],
+        bullets: [
+          "Header: name, contact, LinkedIn, GitHub (if you have one)",
+          "Summary: 2–3 lines — degree, core skills, target role",
+          "Skills: one language in depth + SQL, DBMS, OOP, web basics",
+          "Projects: 2–3 with stack and outcome",
+          "Education: degree, college, CGPA, relevant coursework",
+          "Certifications and achievements: only role-relevant ones"
+        ]
+      },
+      {
+        heading: "Section order that works for TCS",
+        body: [
+          "Header → Summary → Skills → Projects → Education → Certifications → Achievements. Skills and projects come before education because TCS technical panels probe skills and projects first.",
+          "If you have an internship, place it above projects. If you do not, lead with two strong projects with real implementation detail."
+        ]
+      },
+      {
+        heading: "Skills TCS panels actually ask about",
+        body: [
+          "For Ninja and ASE tracks: Java or Python basics, OOP, SQL, DBMS, OS fundamentals, and basic web (HTML/CSS/JS or any framework you used). For Digital and Prime: deeper Java, REST APIs, cloud basics, and project architecture.",
+          "List only skills you can explain in 2 minutes each. A resume keyword without interview knowledge is the fastest way to fail the technical round."
+        ]
+      },
+      {
+        heading: "Formatting rules for the TCS resume",
+        body: [
+          "One page, standard headings, consistent dates, and a clean PDF export. Avoid photos, icons, and tables for core content — both ATS and TCS panels prefer plain structure.",
+          "Use Apply's resume builder to structure the TCS format and export an ATS-safe PDF, then practice the technical round at /mock-interview/tcs."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "google-apprenticeship-guide",
+    title: "Google Apprenticeship 2026: Roles, Resume & Interview Guide",
+    description:
+      "Google apprenticeship in India — roles, eligibility, resume tips, and interview rounds for apprenticeships at Google that need no prior experience.",
+    companyId: "google",
+    companyName: "Google",
+    category: "internship",
+    targetKeyword: "Google apprenticeship 2026 India",
+    keywords: [
+      "google apprenticeship",
+      "google apprenticeship resume",
+      "google apprenticeship India",
+      "google apprenticeship 2026",
+      "google apprenticeship interview"
+    ],
+    publishedAt: "2026-08-06",
+    updatedAt: "2026-08-06",
+    readingTime: "6 min read",
+    excerpt:
+      "Google apprenticeships are paid, no-experience-required programs in tech and digital roles. Here is who qualifies, what the resume needs, and how the interview goes.",
+    questionBankKey: "google",
+    primaryCta: {
+      label: "Tailor resume for apprenticeship",
+      href: "/dashboard/generate"
+    },
+    secondaryCtas: [
+      { label: "Google apprenticeship resume blog", href: "/blog/google-apprenticeship-resume" },
+      { label: "Practice interview", href: "/mock-interview/google" }
+    ],
+    relatedSlugs: [
+      "google-step-resume",
+      "microsoft-internship-guide",
+      "amazon-sde-internship-india"
+    ],
+    sections: [
+      {
+        heading: "What Google apprenticeships are",
+        body: [
+          "Google apprenticeships are structured, paid programs that combine on-the-job learning with formal training — open to candidates without a formal tech degree or experience. In India, roles include digital marketing, data analytics, UX, and software engineering tracks depending on the cycle.",
+          "Apprenticeships differ from internships: they are longer, include formal certification, and are designed as a career entry point rather than a semester attachment.",
+          "Eligibility is announced per posting — some tracks accept recent graduates, others are open to non-degree candidates. Read the specific posting before preparing."
+        ]
+      },
+      {
+        heading: "The resume for an apprenticeship",
+        body: [
+          "Apprenticeship resumes are judged on potential, not experience: show projects, self-learning (courses with certificates, practice portfolios), and communication skills. Keep it one page and ATS-safe.",
+          "For tech tracks, lead with projects and GitHub. For marketing and analytics tracks, lead with measurable outcomes — campaigns run, data analyzed, audiences grown — from any context, including college work.",
+          "Use the Google apprenticeship resume guide at /blog/google-apprenticeship-resume for the full walkthrough."
+        ]
+      },
+      {
+        heading: "The interview and selection process",
+        body: [
+          "The process typically includes an online application, an assessment or video-based questions, and one or more interviews focused on problem solving, communication, and growth mindset — not competitive programming.",
+          "Prepare answers about why you want the apprenticeship, how you learn new skills, and situations where you collaborated or solved a problem. STAR stories work well here."
+        ]
+      },
+      {
+        heading: "How to prepare and apply",
+        body: [
+          "Watch the Google careers page for apprenticeship openings — they open on a cycle and fill quickly. Tailor the resume per track, practice video answers aloud, and run a mock interview at /mock-interview/google before the real call."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "group-discussion-placements",
+    title: "Group Discussion Guide for Campus Placements: Rules and Scoring",
+    description:
+      "Group discussion for campus placement — format, rules, scoring criteria, common topics, and how to speak effectively in a GD round.",
+    companyId: "tcs",
+    companyName: "TCS",
+    category: "interview",
+    targetKeyword: "group discussion for campus placement",
+    keywords: [
+      "group discussion for campus placement",
+      "group discussion format",
+      "group discussion rules",
+      "gd for placements",
+      "group discussion topics"
+    ],
+    publishedAt: "2026-08-05",
+    updatedAt: "2026-08-05",
+    readingTime: "6 min read",
+    excerpt:
+      "Group discussions are a screening round at many campus drives. Learn the format, what panels score, and how to speak effectively without dominating.",
+    primaryCta: {
+      label: "Practice GD-style speaking",
+      href: "/dashboard/interview"
+    },
+    secondaryCtas: [
+      { label: "Group discussion tips blog", href: "/blog/group-discussion-tips-campus-placements" },
+      { label: "GD format and rules blog", href: "/blog/group-discussion-format-and-rules" }
+    ],
+    relatedSlugs: [
+      "tcs-interview-questions-2026",
+      "cognizant-aptitude-questions",
+      "wipro-technical-interview"
+    ],
+    sections: [
+      {
+        heading: "The standard GD format",
+        body: [
+          "A group of 6–12 candidates gets one topic, 3–5 minutes to think, then 10–20 minutes of open discussion with a panel observing. Some rounds end with a summary by one participant.",
+          "The moderator announces rules and then the group manages itself — how the group structures the discussion is part of the evaluation."
+        ]
+      },
+      {
+        heading: "What panels score",
+        body: [
+          "Content: valid, relevant points. Structure: organized arguments. Participation: effective frequency, not raw volume. Listening: building on others' points. Language: clarity over vocabulary.",
+          "Interruptions, monologues, and repeating others' points are penalized. A well-timed new point or a summary invitation scores more than speaking the most."
+        ]
+      },
+      {
+        heading: "Speaking effectively in a GD",
+        body: [
+          "Use signposts: I agree with the previous point, and I would add. Give each point a mini-structure — claim, reason, example. Invite quieter members to speak — panels notice inclusive behavior.",
+          "For the summary, capture both sides: the consensus, the strongest argument on each side, and a conclusion, in under 60 seconds. Volunteer only if you can deliver that structure."
+        ]
+      },
+      {
+        heading: "Common topics and preparation",
+        body: [
+          "Technology (AI in daily life, social media, online education), current affairs (startup culture, digital payments), and social topics (competition among students, gender equality) appear most often.",
+          "Prepare both-side notes for 30 topics, memorize 3–4 recent facts with dates, and practice 60-second structured openings aloud daily. The tips guide at /blog/group-discussion-tips-campus-placements has the full method."
+        ]
+      }
+    ]
+  },
+  {
+    slug: "off-campus-placement-process",
+    title: "Off Campus Placement Process for Freshers: Complete Guide",
+    description:
+      "The off campus placement process step by step — finding openings, applying, clearing tests and interviews, and converting offers without campus hiring.",
+    companyId: "tcs",
+    companyName: "TCS",
+    category: "process",
+    targetKeyword: "off campus placement process",
+    keywords: [
+      "off campus placement process",
+      "off campus placement for freshers",
+      "how to get off campus placement",
+      "off campus placement guide 2026",
+      "off campus job process India"
+    ],
+    publishedAt: "2026-08-05",
+    updatedAt: "2026-08-05",
+    readingTime: "7 min read",
+    excerpt:
+      "Off campus placement is a self-managed process — apply early, track everything, and prepare tests and interviews while applications run.",
+    primaryCta: {
+      label: "Tailor a resume per role",
+      href: "/dashboard/generate"
+    },
+    secondaryCtas: [
+      { label: "Off campus step-by-step blog", href: "/blog/off-campus-placement-step-by-step" },
+      { label: "Off campus preparation guide", href: "/blog/off-campus-placement-preparation-guide" }
+    ],
+    relatedSlugs: [
+      "tcs-interview-questions-2026",
+      "infosys-resume-format",
+      "amazon-sde-internship-india"
+    ],
+    sections: [
+      {
+        heading: "The off campus application pipeline",
+        body: [
+          "Off campus hiring runs through three channels: dedicated fresher drives (Infosys Superset, TCS off-campus, Wipro drives), direct applications on career pages, and referrals. Each has its own timeline — run all three in parallel.",
+          "The standard pipeline: application → online test (aptitude, coding, or both) → technical interview(s) → HR round → offer. Most candidates lose at the application or test stage, not the interviews."
+        ]
+      },
+      {
+        heading: "Step 1: Build the application stack",
+        body: [
+          "A role-matched ATS resume, a complete LinkedIn profile, and a project portfolio (GitHub or a simple site) are the baseline. Keep the resume tailored per role family — same experience, role language, matched skills.",
+          "For fresher drives, register the moment windows open. Eligibility is batch-specific and some drives close within days."
+        ]
+      },
+      {
+        heading: "Step 2: Prepare for the test stage",
+        body: [
+          "Most off campus tests combine aptitude and coding. Take company PYQs and mock tests weekly, and keep a mistake log — the test stage is where consistent preparation converts into callbacks.",
+          "For product companies, practice timed OA simulations with 2–3 medium problems. For services, aptitude speed matters equally."
+        ]
+      },
+      {
+        heading: "Step 3: Clear the interviews",
+        body: [
+          "When interviews arrive, run company-flavored mock sessions — technical, project deep-dives, and HR — so the rounds feel rehearsed. Track every application in a spreadsheet: company, role, deadline, stage, next action.",
+          "Follow up politely after 5–7 working days of silence. The full method is in the off campus guide at /blog/off-campus-placement-preparation-guide."
+        ]
+      },
+      {
+        heading: "How Apply supports the process",
+        body: [
+          "Tailor resumes per role at /dashboard/generate, practice mock interviews at /mock-interview, and work through company PYQs at /pyqs — the three stages of every off campus application."
+        ]
+      }
+    ]
   }
 ];
